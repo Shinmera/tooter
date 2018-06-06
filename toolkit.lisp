@@ -13,6 +13,30 @@
 (defun unix->universal (unix)
   (+ unix *unix-epoch-difference*))
 
+(defun parse-timestring (string)
+  (let* ((y -1)
+         (x (position #\- string))
+         (d (position #\- string :start (1+ x)))
+         (h (position #\T string :start (1+ d)))
+         (m (position #\: string :start (1+ h)))
+         (s (position #\: string :start (1+ m)))
+         (ms (position #\. string :start (1+ s))))
+    (flet ((part (s e)
+             (parse-integer string :start s :end e)))
+      (encode-universal-time
+       (part (1+ s) ms)
+       (part (1+ m) s)
+       (part (1+ h) m)
+       (part (1+ d) h)
+       (part (1+ x) d)
+       (part (1+ y) x)
+       0))))
+
+(defun convert-timestamp (stamp)
+  (etypecase stamp
+    (integer (unix->universal stamp))
+    (string (parse-timestring stamp))))
+
 (defun to-keyword (a)
   (intern (with-output-to-string (out)
             (loop for char across a

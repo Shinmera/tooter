@@ -47,7 +47,6 @@
    :base (error "BASE required.")
    :key NIL
    :secret NIL
-   :refresh-token NIL
    :access-token NIL
    :name (error "NAME required.")
    :redirect "urn:ietf:wg:oauth:2.0:oob"
@@ -102,6 +101,3 @@
                            :response-type "code"
                            :redirect-uri (redirect client)
                            :client-id (key client))))))
-
-(defmethod verify-credentials ((client client))
-  (query client "/api/v1/accounts/verify_credentials"))

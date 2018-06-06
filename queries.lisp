@@ -5,3 +5,6 @@
 |#
 
 (in-package #:org.shirakumo.tooter)
+
+(defmethod verify-credentials ((client client))
+  (decode-account (query client "/api/v1/accounts/verify_credentials")))

@@ -18,4 +18,5 @@
                (:file "queries")
                (:file "documentation"))
   :depends-on (:yason
+               :drakma
                :documentation-utils))

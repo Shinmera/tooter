@@ -12,9 +12,7 @@
 (defgeneric decode-entity (type data))
 
 (defmethod decode-entity ((type symbol) data)
-  (let ((entity (allocate-instance type)))
-    (decode-entity entity data)
-    (initialize-instance entity)))
+  (decode-entity (allocate-instance (find-class type)) data))
 
 (defmethod decode-entity ((type symbol) (data list))
   (loop for entry in data
@@ -37,7 +35,7 @@
                  collect `(let ((,value ,(cond ((null field) data)
                                                ((eq field #1#) `(getj ,data ,(translate-key slot)))
                                                (T `(getj ,data ,field)))))
-                            (unless ,value
+                            (when ,value
                               (setf (slot-value ,name ',slot)
                                     (funcall ,(or (getf options :translate-with)
                                                   '#'identity)
@@ -53,7 +51,7 @@
   (account :field "acct")
   (display-name)
   (locked)
-  (created-at :translate-with #'unix->universal)
+  (created-at :translate-with #'convert-timestamp)
   (followers-count)
   (following-count)
   (statuses-count)
@@ -65,7 +63,12 @@
   (header-static)
   (moved :nullable T)
   (fields :nullable T)
-  (bot :nullable T))
+  (bot :nullable T)
+  (source :nullable T))
+
+(defmethod print-object ((account account) stream)
+  (print-unreadable-object (account stream :type T)
+    (format stream "~a #~a" (username account) (id account))))
 
 (define-entity application
   (name)
@@ -78,11 +81,11 @@
   (remote-url :nullable T)
   (preview-url)
   (text-url :nullable T)
-  (metadata :field NIL :nullable T :translate-with #'decode-metadata)
+  (metadata :field NIL :nullable T :translate-with #'%decode-metadata)
   (description :nullable T))
 
 (defvar *translator*)
-(defun decode-metadata (data)
+(defun %decode-metadata (data)
   (ecase (to-keyword (getj data "type"))
     (:image
      (let ((*translator* (lambda (data) (decode-entity 'image-metadata data))))
@@ -156,7 +159,7 @@
 (define-entity notification
   (id)
   (kind :field "type" :translate-with #'to-keyword)
-  (created-at :translate-with #'unix->universal)
+  (created-at :translate-with #'convert-timestamp)
   (account :translate-with #'decode-account)
   (status :translate-with #'decode-status :nullable T))
 
@@ -194,7 +197,7 @@
   (in-reply-to-account-id :nullable T)
   (reblog :nullable T)
   (content)
-  (created-at :translate-with #'unix->universal)
+  (created-at :translate-with #'convert-timestamp)
   (emojis :translate-with #'decode-emoji)
   (reblogs-count)
   (favourites-count)
@@ -214,9 +217,9 @@
 (define-entity tag
   (name)
   (url)
-  (history :translate-with #'tag-history :nullable T))
+  (history :translate-with #'decode-tag-history :nullable T))
 
 (define-entity tag-history
-  (day :translate-with #'unix->universal)
+  (day :translate-with #'convert-timestamp)
   (uses)
   (accounts))
