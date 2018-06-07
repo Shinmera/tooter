@@ -218,7 +218,7 @@
 (define-entity relationship
   (id)
   (following)
-  (followed-by)
+  (followers :field "followed_by")
   (blocking)
   (muting)
   (muting-notifications)
@@ -249,7 +249,7 @@
   (account :translate-with #'decode-account)
   (in-reply-to-id :nullable T)
   (in-reply-to-account-id :nullable T)
-  (reblog :nullable T)
+  (parent :field "reblog" :nullable T)
   (content)
   (created-at :translate-with #'convert-timestamp)
   (emojis :translate-with #'decode-emoji)
@@ -271,6 +271,25 @@
 (defmethod print-object ((status status) stream)
   (print-unreadable-object (status stream :type T)
     (format stream "~a #~a" (account (account status)) (id status))))
+
+(defmethod describe-object ((status status) stream)
+  (let ((account (account status)))
+    (multiple-value-bind (ss mm hh d m y) (decode-universal-time (created-at status) 0)
+      (format stream "~s
+
+~v<~a @~a~;~d.~d.~d ~d:~2,'0d:~2,'0d~>
+~a
+~v<~d♺ ~d❤~>"
+              status
+              width
+              (display-name account)
+              (account account)
+              y m d hh mm ss
+              (line-wrap (plain-format (content status))
+                         :prefix "| ")
+              width
+              (reblogs-count status)
+              (favourites-count status)))))
 
 (define-entity tag
   (name)

@@ -66,6 +66,7 @@
 (defun param-plist->alist (plist)
   (flet ((param-value (val)
            (etypecase val
+             (pathname val)
              ((eql T) "true")
              ((eql NIL) "false")
              (integer (princ-to-string val))
@@ -108,3 +109,51 @@
                           collect (if (constantp attribute env)
                                       `(load-time-value ,form)
                                       form)))))
+
+(defun line-wrap (string &key (width 80) (prefix ""))
+  (with-output-to-string (out)
+    (flet ((out (start end)
+             (write-string prefix out)
+             (write-string string out :start start :end end)
+             (when end (terpri out))))
+      (loop with last-space = 0
+            with line-start = 0
+            for i from 0 below (length string)
+            for char = (char string i)
+            do (cond ((char= #\Space char)
+                      (setf last-space i))
+                     ((char= #\Linefeed char)
+                      (out line-start i)
+                      (setf last-space (1+ i)
+                            line-start (1+ i)))
+                     ((<= width (- i line-start))
+                      (cond ((< line-start last-space)
+                             (out line-start last-space)
+                             (setf i (1+ last-space)))
+                            (T
+                             (out line-start i)))
+                      (setf line-start i)))
+            finally (out line-start NIL)))))
+
+(defvar *html-escape-table*
+  '(("apos" . "'")
+    ("quot" . "\"")
+    ("lt" . "<")
+    ("gt" . ">")
+    ("amp" . "&")))
+
+(defun plain-format-html (string)
+  (flet ((r (reg rep str)
+           (cl-ppcre:regex-replace-all reg str rep)))
+    (cl-ppcre:regex-replace-all
+     "&\\w+;"
+     (r "<([^>]*)>" ""
+        (r "<br />" (string #\Linefeed)
+           string))
+     (lambda (string s e ms me rs re)
+       (declare (ignore s e rs re))
+       (print (list ms me (subseq string ms me)))
+       (or (loop for (key . val) in *html-escape-table*
+                 do (when (string= key string :start2 (1+ ms) :end2 (1- me))
+                      (return val)))
+           (subseq string ms me))))))

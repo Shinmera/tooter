@@ -58,6 +58,7 @@
     (format stream "~a ~a" (name client) (base client))))
 
 (defmethod make-load-form ((client client) &optional env)
+  (declare (ignore env))
   `(make-instance ',(type-of client)
                   :base ,(base client)
                   :key ,(key client)
@@ -65,7 +66,7 @@
                   :access-token ,(access-token client)
                   :name ,(name client)
                   :redirect ,(redirect client)
-                  :scopes ,(scopes client)
+                  :scopes (list ,@(scopes client))
                   :website ,(website client)))
 
 (defmethod default-headers ((client client))
@@ -82,7 +83,7 @@
              :headers (default-headers client))))
 
 (defmethod submit ((client client) endpoint &rest parameters)
-  (let ((method (or (getf parameters :http-method) :get)))
+  (let ((method (or (getf parameters :http-method) :post)))
     (remf parameters :http-method)
     (request (format NIL "~a~a" (base client) endpoint)
              :parameters (param-plist->alist parameters)

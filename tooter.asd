@@ -18,5 +18,6 @@
                (:file "queries")
                (:file "documentation"))
   :depends-on (:yason
+               :cl-ppcre
                :drakma
                :documentation-utils))

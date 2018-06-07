@@ -7,4 +7,5 @@
 (defpackage #:tooter
   (:nicknames #:org.shirakumo.tooter)
   (:use #:cl)
+  (:shadow #:block)
   (:export))
