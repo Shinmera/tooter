@@ -273,20 +273,23 @@
     (format stream "~a #~a" (account (account status)) (id status))))
 
 (defmethod describe-object ((status status) stream)
-  (let ((account (account status)))
-    (multiple-value-bind (ss mm hh d m y) (decode-universal-time (created-at status) 0)
-      (format stream "~s
+  (format stream "~s~%~%" status)
+  (present status stream))
 
-~v<~a @~a~;~d.~d.~d ~d:~2,'0d:~2,'0d~>
+(defmethod present ((status status) (stream stream))
+  (let ((account (account status))
+        (width (or *print-right-margin* 80)))
+    (multiple-value-bind (ss mm hh d m y) (decode-universal-time (created-at status) 0)
+      (format stream
+              "~v<~a @~a ~;~d.~d.~d ~d:~2,'0d:~2,'0d~>
 ~a
 ~v<~d♺ ~d❤~>"
-              status
               width
               (display-name account)
               (account account)
               y m d hh mm ss
               (line-wrap (plain-format (content status))
-                         :prefix "| ")
+                         :prefix "| " :width width)
               width
               (reblogs-count status)
               (favourites-count status)))))
