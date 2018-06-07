@@ -53,23 +53,42 @@
    :scopes '("read" "write" "follow")
    :website NIL))
 
+(defmethod print-object ((client client) stream)
+  (print-unreadable-object (client stream :type T)
+    (format stream "~a ~a" (name client) (base client))))
+
+(defmethod make-load-form ((client client) &optional env)
+  `(make-instance ',(type-of client)
+                  :base ,(base client)
+                  :key ,(key client)
+                  :secret ,(secret client)
+                  :access-token ,(access-token client)
+                  :name ,(name client)
+                  :redirect ,(redirect client)
+                  :scopes ,(scopes client)
+                  :website ,(website client)))
+
 (defmethod default-headers ((client client))
   (when (access-token client)
     `(("Authorization" . ,(format NIL "Bearer ~a" (access-token client))))))
 
 (defmethod query ((client client) endpoint &rest parameters)
-  (request (format NIL "~a~a" (base client) endpoint)
-           :parameters (param-plist->alist parameters)
-           :method :get
-           :content-type "client/x-www-form-urlencoded"
-           :headers (default-headers client)))
+  (let ((method (or (getf parameters :http-method) :get)))
+    (remf parameters :http-method)
+    (request (format NIL "~a~a" (base client) endpoint)
+             :parameters (param-plist->alist parameters)
+             :method method
+             :content-type "client/x-www-form-urlencoded"
+             :headers (default-headers client))))
 
 (defmethod submit ((client client) endpoint &rest parameters)
-  (request (format NIL "~a~a" (base client) endpoint)
-           :parameters (param-plist->alist parameters)
-           :method :post
-           :content-type "multipart/form-data"
-           :headers (default-headers client)))
+  (let ((method (or (getf parameters :http-method) :get)))
+    (remf parameters :http-method)
+    (request (format NIL "~a~a" (base client) endpoint)
+             :parameters (param-plist->alist parameters)
+             :method method
+             :content-type "multipart/form-data"
+             :headers (default-headers client))))
 
 (defmethod register ((client client))
   (let ((data (submit client "/api/v1/apps"

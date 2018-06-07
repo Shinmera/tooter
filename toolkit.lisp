@@ -64,8 +64,17 @@
                  (write-char (char-downcase char) out)))))
 
 (defun param-plist->alist (plist)
-  (loop for (key val) on plist by #'cddr
-        collect (cons (translate-key key) val)))
+  (flet ((param-value (val)
+           (etypecase val
+             ((eql T) "true")
+             ((eql NIL) "false")
+             (integer (princ-to-string val))
+             (string val))))
+    (loop for (key val) on plist by #'cddr
+          nconc (typecase val
+                  (list (loop with field = (format NIL "~a[]" (translate-key key))
+                              for v in val collect (cons field (param-value v))))
+                  (T (list (cons (translate-key key) (param-value val))))))))
 
 (defun make-url (base &rest parameters)
   (format NIL "~a?~{~a=~a~^&~}" base

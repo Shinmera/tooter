@@ -68,11 +68,15 @@
 
 (defmethod print-object ((account account) stream)
   (print-unreadable-object (account stream :type T)
-    (format stream "~a #~a" (username account) (id account))))
+    (format stream "~a #~a" (account account) (id account))))
 
 (define-entity application
   (name)
   (website :nullable T))
+
+(defmethod print-object ((application application) stream)
+  (print-unreadable-object (application stream :type T)
+    (format stream "~a" (name application))))
 
 (define-entity attachment
   (id)
@@ -83,6 +87,10 @@
   (text-url :nullable T)
   (metadata :field NIL :nullable T :translate-with #'%decode-metadata)
   (description :nullable T))
+
+(defmethod print-object ((attachment attachment) stream)
+  (print-unreadable-object (attachment stream :type T)
+    (format stream "~a #~a" (kind attachment) (id attachment))))
 
 (defvar *translator*)
 (defun %decode-metadata (data)
@@ -106,12 +114,21 @@
   (size :nullable T)
   (aspect :nullable T))
 
+(defmethod print-object ((image-metadata image-metadata) stream)
+  (print-unreadable-object (image-metadata stream :type T)
+    (format stream "~ax~a" (width image-metadata) (height image-metadata))))
+
 (define-entity video-metadata
   (width :nullable T)
   (height :nullable T)
   (frame-rate :nullable T)
   (duration :nullable T)
   (bitrate :nullable T))
+
+(defmethod print-object ((video-metadata video-metadata) stream)
+  (print-unreadable-object (video-metadata stream :type T)
+    (format stream "~ax~a~@[@~afps~]~@[ ~as~]" (width video-metadata) (height video-metadata)
+            (frame-rate video-metadata) (duration video-metadata))))
 
 (define-entity card
   (url)
@@ -127,6 +144,10 @@
   (width :nullable T)
   (height :nullable T))
 
+(defmethod print-object ((card card) stream)
+  (print-unreadable-object (card stream :type T)
+    (format stream "~a ~a" (kind card) (title card))))
+
 (define-entity context
   (ancestors :translate-with #'decode-status)
   (descendants :translate-with #'decode-status))
@@ -135,6 +156,10 @@
   (shortcode)
   (static-url)
   (url))
+
+(defmethod print-object ((emoji emoji) stream)
+  (print-unreadable-object (emoji stream :type T)
+    (format stream "~a" (shortcode emoji))))
 
 (define-entity instance
   (uri)
@@ -146,15 +171,27 @@
   (languages)
   (contact-account :translate-with #'decode-account))
 
+(defmethod print-object ((instance instance) stream)
+  (print-unreadable-object (instance stream :type T)
+    (format stream "~s ~a" (title instance) (uri instance))))
+
 (define-entity user-list
   (id)
   (title))
+
+(defmethod print-object ((user-list user-list) stream)
+  (print-unreadable-object (user-list stream :type T)
+    (format stream "~s #~a" (title user-list) (id user-list))))
 
 (define-entity mention
   (url)
   (username)
   (account :field "acct")
   (id))
+
+(defmethod print-object ((mention mention) stream)
+  (print-unreadable-object (mention stream :type T)
+    (format stream "~a #~a" (account mention) (id mention))))
 
 (define-entity notification
   (id)
@@ -163,11 +200,20 @@
   (account :translate-with #'decode-account)
   (status :translate-with #'decode-status :nullable T))
 
+(defmethod print-object ((notification notification) stream)
+  (print-unreadable-object (notification stream :type T)
+    (format stream "~a ~a #~a" (kind notification) (account (account notification))
+            (id notification))))
+
 (define-entity push-subscription
   (id)
   (endpoint)
   (server-key)
   (alerts :nullable T))
+
+(defmethod print-object ((push-subscription push-subscription) stream)
+  (print-unreadable-object (push-subscription stream :type T)
+    (format stream "~a #~a" (endpoint push-subscription) (id push-subscription))))
 
 (define-entity relationship
   (id)
@@ -179,9 +225,17 @@
   (requested)
   (domain-blocking))
 
+(defmethod print-object ((relationship relationship) stream)
+  (print-unreadable-object (relationship stream :type T)
+    (format stream "#~a" (id relationship))))
+
 (define-entity report
   (id)
   (action-taken))
+
+(defmethod print-object ((report report) stream)
+  (print-unreadable-object (report stream :type T)
+    (format stream "~a #~a" (action-taken report) (id report))))
 
 (define-entity results
   (accounts :translate-with #'decode-account)
@@ -214,10 +268,18 @@
   (language :nullable T)
   (pinned :nullable T))
 
+(defmethod print-object ((status status) stream)
+  (print-unreadable-object (status stream :type T)
+    (format stream "~a #~a" (account (account status)) (id status))))
+
 (define-entity tag
   (name)
   (url)
   (history :translate-with #'decode-tag-history :nullable T))
+
+(defmethod print-object ((tag tag) stream)
+  (print-unreadable-object (tag stream :type T)
+    (format stream "~a" (name tag))))
 
 (define-entity tag-history
   (day :translate-with #'convert-timestamp)
