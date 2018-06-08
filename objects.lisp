@@ -45,10 +45,14 @@
        (defun ,(intern (format NIL "~a-~a" 'decode name)) (,data)
          (decode-entity ',name ,data)))))
 
+(defun convert-fields (fields)
+  (loop for field in fields
+        collect (cons (getj field :name) (getj field :value))))
+
 (define-entity account
   (id)
   (username)
-  (account :field "acct")
+  (account-name :field "acct")
   (display-name)
   (locked)
   (created-at :translate-with #'convert-timestamp)
@@ -62,13 +66,13 @@
   (header)
   (header-static)
   (moved :nullable T)
-  (fields :nullable T)
+  (fields :nullable T :translate-with #'convert-fields)
   (bot :nullable T)
   (source :nullable T))
 
 (defmethod print-object ((account account) stream)
   (print-unreadable-object (account stream :type T)
-    (format stream "~a #~a" (account account) (id account))))
+    (format stream "~a #~a" (account-name account) (id account))))
 
 (define-entity application
   (name)
@@ -94,14 +98,18 @@
 
 (defvar *translator*)
 (defun %decode-metadata (data)
-  (ecase (to-keyword (getj data "type"))
-    (:image
-     (let ((*translator* (lambda (data) (decode-entity 'image-metadata data))))
-       (decode-entity 'metadata data)))
-    ((:video :gifv)
-     (let ((*translator* (lambda (data) (decode-entity 'video-metadata data))))
-       (decode-entity 'metadata data)))
-    (:unknown NIL)))
+  (let* ((metadata (getj data "metadata"))
+         (focus (getj metadata "focus")))
+    (when focus
+      (setf (getj metadata "focus") (cons (getj focus "x") (getj focus "y"))))
+    (ecase (to-keyword (getj data "type"))
+      (:image
+       (let ((*translator* (lambda (data) (decode-entity 'image-metadata data))))
+         (decode-entity 'metadata metadata)))
+      ((:video :gifv)
+       (let ((*translator* (lambda (data) (decode-entity 'video-metadata data))))
+         (decode-entity 'metadata metadata)))
+      (:unknown NIL))))
 
 (define-entity metadata
   (small :nullable T :translate-with *translator*)
@@ -161,6 +169,9 @@
   (print-unreadable-object (emoji stream :type T)
     (format stream "~a" (shortcode emoji))))
 
+(defun translate-languages (languages)
+  (mapcar #'to-keyword languages))
+
 (define-entity instance
   (uri)
   (title)
@@ -168,7 +179,7 @@
   (email)
   (version)
   (urls)
-  (languages)
+  (languages :translate-with #'translate-languages)
   (contact-account :translate-with #'decode-account))
 
 (defmethod print-object ((instance instance) stream)
@@ -186,12 +197,12 @@
 (define-entity mention
   (url)
   (username)
-  (account :field "acct")
+  (account-name :field "acct")
   (id))
 
 (defmethod print-object ((mention mention) stream)
   (print-unreadable-object (mention stream :type T)
-    (format stream "~a #~a" (account mention) (id mention))))
+    (format stream "~a #~a" (account-name mention) (id mention))))
 
 (define-entity notification
   (id)
@@ -202,7 +213,7 @@
 
 (defmethod print-object ((notification notification) stream)
   (print-unreadable-object (notification stream :type T)
-    (format stream "~a ~a #~a" (kind notification) (account (account notification))
+    (format stream "~a ~a #~a" (kind notification) (account-name (account notification))
             (id notification))))
 
 (define-entity push-subscription
@@ -218,7 +229,7 @@
 (define-entity relationship
   (id)
   (following)
-  (followers :field "followed_by")
+  (followed-by :field "followed_by")
   (blocking)
   (muting)
   (muting-notifications)
@@ -265,12 +276,12 @@
   (mentions :translate-with #'decode-mention)
   (tags :translate-with #'decode-tag)
   (application :translate-with #'decode-application :nullable T)
-  (language :nullable T)
+  (language :nullable T :translate-with #'to-keyword)
   (pinned :nullable T))
 
 (defmethod print-object ((status status) stream)
   (print-unreadable-object (status stream :type T)
-    (format stream "~a #~a" (account (account status)) (id status))))
+    (format stream "~a #~a" (account-name (account status)) (id status))))
 
 (defmethod describe-object ((status status) stream)
   (format stream "~s~%~%" status)
@@ -286,7 +297,7 @@
 ~v<~d♺ ~d❤~>"
               width
               (display-name account)
-              (account account)
+              (account-name account)
               y m d hh mm ss
               (line-wrap (plain-format (content status))
                          :prefix "| " :width width)
@@ -305,5 +316,5 @@
 
 (define-entity tag-history
   (day :translate-with #'convert-timestamp)
-  (uses)
-  (accounts))
+  (use-count :field "uses")
+  (account-count :field "accounts"))

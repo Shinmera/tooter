@@ -64,7 +64,7 @@
 (defmethod follow ((client client) (account account))
   (if (string= (username account) (account account))
       (follow client (id account))
-      (follow-remote client (account account))))
+      (follow-remote client (account-name account))))
 
 (defmethod unfollow ((client client) (id integer))
   (decode-relationship (submit client (format NIL "/api/v1/accounts/~a/unfollow" id))))
@@ -176,7 +176,7 @@
                           :uri uri)))
 
 (defmethod follow-remote ((client client) (account account))
-  (follow-remote client (account account)))
+  (follow-remote client (account-name account)))
 
 ;;; Instances
 

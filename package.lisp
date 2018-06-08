@@ -131,7 +131,7 @@
    #:relationship
    #:id
    #:following
-   #:followers
+   #:followed-by
    #:blocking
    #:muting
    #:muting-notifications
@@ -175,8 +175,8 @@
    #:history
    #:tag-history
    #:day
-   #:uses
-   #:accounts)
+   #:use-count
+   #:account-count)
   ;; queries.lisp
   (:export
    #:find-account

@@ -50,7 +50,7 @@
    :access-token NIL
    :name (error "NAME required.")
    :redirect "urn:ietf:wg:oauth:2.0:oob"
-   :scopes '("read" "write" "follow")
+   :scopes '(:read :write :follow)
    :website NIL))
 
 (defmethod print-object ((client client) stream)
@@ -79,7 +79,7 @@
     (request (format NIL "~a~a" (base client) endpoint)
              :parameters (param-plist->alist parameters)
              :method method
-             :content-type "client/x-www-form-urlencoded"
+             :content-type "application/x-www-form-urlencoded"
              :headers (default-headers client))))
 
 (defmethod submit ((client client) endpoint &rest parameters)
@@ -95,7 +95,7 @@
   (let ((data (submit client "/api/v1/apps"
                       :client-name (name client)
                       :redirect-uris (redirect client)
-                      :scopes (format NIL "~{~a~^ ~}" (scopes client))
+                      :scopes (format NIL "~{~(~a~)~^ ~}" (scopes client))
                       :website (website client))))
     (setf (key client) (getj data :client-id))
     (setf (secret client) (getj data :client-secret))
@@ -117,7 +117,7 @@
         (T
          (values NIL
                  (make-url (format NIL "~a/oauth/authorize" (base client))
-                           :scope (format NIL "~{~a~^ ~}" (scopes client))
+                           :scope (format NIL "~{~(~a~)~^ ~}" (scopes client))
                            :response-type "code"
                            :redirect-uri (redirect client)
                            :client-id (key client))))))
