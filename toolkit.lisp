@@ -157,3 +157,6 @@
                  do (when (string= key string :start2 (1+ ms) :end2 (1- me))
                       (return val)))
            (subseq string ms me))))))
+
+(defun coerce-boolean (boolean provided)
+  (when provided (if boolean "true" "false")))

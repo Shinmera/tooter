@@ -14,13 +14,18 @@
 (defmethod verify-credentials ((client client))
   (decode-account (query client "/api/v1/accounts/verify_credentials")))
 
-(defmethod update-credentials ((client client) &key display-name note avatar header locked fields)
+(defmethod update-credentials ((client client) &key display-name note avatar header (locked NIL l-p) fields)
+  (check-type display-name (or null string))
+  (check-type node (or null string))
+  (check-type avatar (or null pathname))
+  (check-type header (or null pathname))
+  (check-type fields list)
   (decode-account (apply #'submit client "/api/v1/accounts/update_credentials"
                          :display-name display-name
                          :note note
                          :avatar avatar
                          :header header
-                         :locked locked
+                         :locked (coerce-boolean locked l-p)
                          (loop for i from 0
                                for (key . val) in fields
                                collect (format NIL "fields_attributes[~a][name]" i)
@@ -29,6 +34,9 @@
                                collect val))))
 
 (defmethod get-followers ((client client) (id integer) &key max-id since-id limit)
+  (check-type max-id (or null (integer 0)))
+  (check-type since-id (or null (integer 0)))
+  (check-type limit (or null (integer 0)))
   (decode-account (query client (format NIL "/api/v1/accounts/~a/followers" id)
                          :max-id max-id
                          :since-id since-id
@@ -38,6 +46,9 @@
   (apply #'get-followers client (id account) args))
 
 (defmethod get-following ((client client) (id integer) &key max-id since-id limit)
+  (check-type max-id (or null (integer 0)))
+  (check-type since-id (or null (integer 0)))
+  (check-type limit (or null (integer 0)))
   (decode-account (query client (format NIL "/api/v1/accounts/~a/following" id)
                          :max-id max-id
                          :since-id since-id
@@ -46,11 +57,14 @@
 (defmethod get-following ((client client) (account account) &rest args)
   (apply #'get-following client (id account) args))
 
-(defmethod get-statuses ((client client) (id integer) &key only-media pinned exclude-replies max-id since-id limit)
+(defmethod get-statuses ((client client) (id integer) &key (only-media NIL o-p) (pinned NIL p-p) (exclude-replies NIL e-p) max-id since-id limit)
+  (check-type max-id (or null (integer 0)))
+  (check-type since-id (or null (integer 0)))
+  (check-type limit (or null (integer 0)))
   (decode-status (query client (format NIL "/api/v1/accounts/~a/statuses" id)
-                        :only-media only-media
-                        :pinned pinned
-                        :exclude-replies exclude-replies
+                        :only-media (coerce-boolean only-media o-p)
+                        :pinned (coerce-boolean pinned p-p)
+                        :exclude-replies (coerce-boolean exclude-replies e-p)
                         :max-id max-id
                         :since-id since-id
                         :limit limit)))
@@ -84,9 +98,9 @@
 (defmethod unblock ((client client) (account account))
   (unblock client (id account)))
 
-(defmethod mute ((client client) (id integer) &key (notifications T))
+(defmethod mute ((client client) (id integer) &key (notifications T n-p))
   (decode-relationship (submit client (format NIL "/api/v1/accounts/~a/mute" id)
-                               :notifications notifications)))
+                               :notifications (coerce-boolean notifications n-p))))
 
 (defmethod mute ((client client) (account account) &rest args)
   (apply #'mute client (id account) args))
@@ -97,34 +111,39 @@
 (defmethod unmute ((client client) (account account))
   (unblock client (id account)))
 
-(defmethod relationships ((client client) id)
+(defmethod relationships ((client client) (ids cons))
   (decode-relationship (query client "/api/v1/accounts/relationships"
-                              :id id)))
+                              :id (loop for id in ids
+                                        collect (typecase id
+                                                  (account (id id))
+                                                  (T id))))))
 
 (defmethod relationships ((client client) (account account))
   (relationships client (list (id account))))
 
-(defmethod relationships ((client client) (list cons))
-  (relationships client (loop for account in list
-                              collect (typecase account
-                                        (account (id account))
-                                        (T account)))))
-
-(defmethod search-accounts ((client client) query &key (limit 40) following)
+(defmethod search-accounts ((client client) query &key (limit 40) (following NIL f-p))
+  (check-type query string)
+  (check-type limit (or null (integer 0)))
   (decode-account (query client "/api/v1/accounts/search"
                          :q query
                          :limit limit
-                         :following following)))
+                         :following (coerce-boolean following f-p))))
 
 ;;; Blocks
 
 (defmethod blocks ((client client) &key max-id since-id (limit 40))
+  (check-type max-id (or null (integer 0)))
+  (check-type since-id (or null (integer 0)))
+  (check-type limit (or null (integer 0)))
   (decode-account (query client "/api/v1/blocks"
                          :max-id max-id
                          :since-id since-id
                          :limit limit)))
 
 (defmethod blocked-domains ((client client) &key max-id since-id (limit 40))
+  (check-type max-id (or null (integer 0)))
+  (check-type since-id (or null (integer 0)))
+  (check-type limit (or null (integer 0)))
   (query client "/api/v1/domain_blocks"
          :max-id max-id
          :since-id since-id
@@ -144,6 +163,9 @@
 ;;; Favourites
 
 (defmethod favourites ((client client) &key max-id since-id (limit 20))
+  (check-type max-id (or null (integer 0)))
+  (check-type since-id (or null (integer 0)))
+  (check-type limit (or null (integer 0)))
   (decode-status (query client "/api/v1/favourites"
                         :max-id max-id
                         :since-id since-id
@@ -152,6 +174,9 @@
 ;;; Follow Requests
 
 (defmethod follow-requests ((client client) &key max-id since-id (limit 40))
+  (check-type max-id (or null (integer 0)))
+  (check-type since-id (or null (integer 0)))
+  (check-type limit (or null (integer 0)))
   (decode-account (query client "/api/v1/follow_requests"
                          :max-id max-id
                          :since-id since-id
@@ -198,6 +223,9 @@
   (decode-user-list (query client "/api/v1/lists")))
 
 (defmethod user-list-accounts ((client client) (id integer) &key max-id since-id limit)
+  (check-type max-id (or null (integer 0)))
+  (check-type since-id (or null (integer 0)))
+  (check-type limit (or null (integer 0)))
   (decode-account (query client (format NIL "/api/v1/lists/~a/accounts" id
                                         :max-id max-id
                                         :since-id since-id
@@ -226,13 +254,14 @@
   (decode-user-list (submit client "/api/v1/lists"
                             :title title)))
 
-(defmethod update-user-list ((client client) (id integer) title)
+(defmethod update-user-list ((client client) (id integer) &key title)
+  (check-type title string)
   (decode-user-list (submit client (format NIL "/api/v1/lists/~a" id)
                             :http-method :put
                             :title title)))
 
-(defmethod update-user-list ((client client) (user-list user-list) title)
-  (update-user-list client (id user-list) title))
+(defmethod update-user-list ((client client) (user-list user-list) &rest args)
+  (apply #'update-user-list client (id user-list) args))
 
 (defmethod delete-user-list ((client client) (id integer))
   (submit client (format NIL "/api/v1/lists/~a" id)
@@ -264,12 +293,16 @@
 ;;; Media
 
 (defmethod make-media ((client client) file &key description focus)
+  (check-type description (or null string))
+  (check-type focus (or null cons))
   (decode-attachment (submit client "/api/v1/media"
                              :file file
                              :description description
                              :focus (when focus (format NIL "~f,~f" (car focus) (cdr focus))))))
 
 (defmethod update-media ((client client) id &key description focus)
+  (check-type description (or null string))
+  (check-type focus (or null cons))
   (decode-attachment (submit client (format NIL "/api/v1/media/~a" id)
                              :description description
                              :focus (when focus (format NIL "~f,~f" (car focus) (cdr focus))))))
@@ -280,6 +313,9 @@
 ;;; Mutes
 
 (defmethod mutes ((client client) &key max-id since-id (limit 40))
+  (check-type max-id (or null (integer 0)))
+  (check-type since-id (or null (integer 0)))
+  (check-type limit (or null (integer 0)))
   ;; FIXME Link headers
   (decode-account (query client "/api/v1/mutes"
                          :max-id max-id
@@ -289,6 +325,10 @@
 ;;; Notifications
 
 (defmethod notifications ((client client) &key max-id since-id (limit 15) exclude-types)
+  (check-type max-id (or null (integer 0)))
+  (check-type since-id (or null (integer 0)))
+  (check-type limit (or null (integer 0)))
+  (check-type exclude-types list)
   (decode-notification (query client "/api/v1/notifications"
                               :max-id max-id
                               :since-id since-id
@@ -316,6 +356,10 @@
   (delete-notification client (id notification)))
 
 (defmethod make-subscription ((client client) endpoint public-key secret &key alerts)
+  (check-type endpoint string)
+  (check-type public-key string)
+  (check-type secret string)
+  (check-type alerts list)
   (decode-push-subscription (apply #'submit client "/api/v1/push/subscription"
                                    "subscription[endpoint]" endpoint
                                    "subscription[keys][p256dh]" public-key
@@ -340,7 +384,9 @@
 (defmethod reports ((client client))
   (decode-report (query client "/api/v1/reports")))
 
-(defmethod report ((client client) (id integer) statuses comment)
+(defmethod report ((client client) (id integer) &key statuses comment)
+  (check-type statuses list)
+  (check-type comment string)
   (decode-report (submit client "/api/v1/reports"
                          :account-id id
                          :status-ids (loop for status in statuses
@@ -349,15 +395,15 @@
                                                      (status (id status))))
                          :comment comment)))
 
-(defmethod report ((client client) (account account) statuses comment)
-  (report client (id account) statuses comment))
+(defmethod report ((client client) (account account) &rest args)
+  (apply #'report client (id account) args))
 
 ;;; Search
 
-(defmethod results ((client client) query &key resolve)
+(defmethod results ((client client) query &key (resolve NIL r-p))
   (decode-results (query client "/api/v2/search"
                          :q query
-                         :resolve resolve)))
+                         :resolve (coerce-boolean resolve r-p))))
 
 ;;; Statuses
 
@@ -377,6 +423,9 @@
   (card client (id status)))
 
 (defmethod rebloggers ((client client) (id integer) &key max-id since-id (limit 40))
+  (check-type max-id (or null (integer 0)))
+  (check-type since-id (or null (integer 0)))
+  (check-type limit (or null (integer 0)))
   (decode-account (query client (format NIL "/api/v1/statuses/~a/reblogged_by" id)
                          :max-id max-id
                          :since-id since-id
@@ -386,6 +435,9 @@
   (apply #'rebloggers client (id status) args))
 
 (defmethod favouriters ((client client) (id integer) &key max-id since-id (limit 40))
+  (check-type max-id (or null (integer 0)))
+  (check-type since-id (or null (integer 0)))
+  (check-type limit (or null (integer 0)))
   (decode-account (query client (format NIL "/api/v1/statuses/~a/favourited_by" id)
                          :max-id max-id
                          :since-id since-id
@@ -394,7 +446,7 @@
 (defmethod favouriters ((client client) (status status) &rest args)
   (apply #'favouriters client (id status) args))
 
-(defmethod make-status ((client client) status &key in-reply-to media sensitive spoiler-text visibility language)
+(defmethod make-status ((client client) status &key in-reply-to media (sensitive NIL s-p) spoiler-text visibility language)
   ;; FIXME: Idempotency
   (flet ((ensure-media-id (media)
            (etypecase media
@@ -410,7 +462,7 @@
                                         (null NIL)
                                         (cons (mapcar #'ensure-media-id media))
                                         (T (list (ensure-media-id media))))
-                           :sensitive sensitive
+                           :sensitive (coerce-boolean sensitive s-p)
                            :spoiler-text spoiler-text
                            :visibility (ecase visibility
                                          ((NIL) NIL)
@@ -480,38 +532,30 @@
   (unmute client (id status)))
 
 ;;; Timelines
-
-(defmethod timeline ((client client) (kind (eql :home)) &key local only-media max-id since-id (limit 20))
-  (decode-status (query client "/api/v1/timelines/home"
-                        :local local
-                        :only-media only-media
+(defun %timeline (client url &key (local NIL l-p) (only-media NIL o-p) max-id since-id (limit 20))
+  (check-type max-id (or null (integer 0)))
+  (check-type since-id (or null (integer 0)))
+  (check-type limit (or null (integer 0)))
+  (decode-status (query client (format NIL "/api/v1/timelines/~a" url)
+                        :local (coerce-boolean local l-p)
+                        :only-media (coerce-boolean only-media o-p)
                         :max-id max-id
                         :since-id since-id
                         :limit limit)))
 
-(defmethod timeline ((client client) (kind (eql :public)) &key local only-media max-id since-id (limit 20))
-  (decode-status (query client "/api/v1/timelines/public"
-                        :local local
-                        :only-media only-media
-                        :max-id max-id
-                        :since-id since-id
-                        :limit limit)))
+(defgeneric timeline (client kind &key local only-media max-id since-id))
 
-(defmethod timeline ((client client) (tag string) &key local only-media max-id since-id (limit 20))
-  (decode-status (query client (format NIL "/api/v1/timelines/tag/~a" (name tag))
-                        :local local
-                        :only-media only-media
-                        :max-id max-id
-                        :since-id since-id
-                        :limit limit)))
+(defmethod timeline ((client client) (kind (eql :home)) &rest args)
+  (apply #'%timeline client "home" args))
 
-(defmethod timeline ((client client) (id integer) &key local only-media max-id since-id (limit 20))
-  (decode-status (query client (format NIL "/api/v1/timelines/list/~a" id)
-                        :local local
-                        :only-media only-media
-                        :max-id max-id
-                        :since-id since-id
-                        :limit limit)))
+(defmethod timeline ((client client) (kind (eql :public)) &rest args)
+  (apply #'%timeline client "public" args))
+
+(defmethod timeline ((client client) (tag string) &rest args)
+  (apply #'%timeline client (format NIL "tag/~a" tag) args))
+
+(defmethod timeline ((client client) (id integer) &rest args)
+  (apply #'%timeline client (format NIL "list/~a" id) args))
 
 (defmethod timeline ((client client) (tag tag) &rest args)
   (apply #'timeline client (name tag) args))
