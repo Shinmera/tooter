@@ -10,6 +10,7 @@
   :author "Nicolas Hafner <shinmera@tymoon.eu>"
   :maintainer "Nicolas Hafner <shinmera@tymoon.eu>"
   :description "A client library for Mastodon instances."
+  :homepage "https://github.com/Shinmera/tooter"
   :serial T
   :components ((:file "package")
                (:file "toolkit")
