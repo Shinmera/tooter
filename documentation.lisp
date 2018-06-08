@@ -1339,7 +1339,7 @@ See CLIENT")
 See REPORT
 See CLIENT")
 
-  (function report
+  (function make-report
     "Files a new report against the given account.
 
 The account can be an ACCOUNT instance, or an ID of one.
@@ -1352,7 +1352,7 @@ See ACCOUNT
 See STATUS
 See CLIENT")
 
-  (function results
+  (function find-results
     "Search the Mastodon instance for matching tags, accounts, or statuses.
 
 See RESULTS

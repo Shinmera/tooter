@@ -4,31 +4,8 @@
  Author: Nicolas Hafner <shinmera@tymoon.eu>
 |#
 
-(defpackage #:tooter
-  (:nicknames #:org.shirakumo.tooter)
-  (:use #:cl)
-  (:shadow #:block)
-  ;; client.lisp
-  (:export
-   #:request-failed
-   #:code
-   #:data
-   #:message
-   #:request
-   #:client
-   #:base
-   #:key
-   #:secret
-   #:access-token
-   #:name
-   #:redirect
-   #:scopes
-   #:website
-   #:default-headers
-   #:query
-   #:submit
-   #:register
-   #:authorize)
+(defpackage #:tooter-objects
+  (:nicknames #:org.shirakumo.tooter.objects)
   ;; objects.lisp
   (:export
    #:entity
@@ -176,7 +153,11 @@
    #:tag-history
    #:day
    #:use-count
-   #:account-count)
+   #:account-count))
+
+(defpackage #:tooter-queries
+  (:nicknames #:org.shirakumo.tooter.queries)
+  (:use #:org.shirakumo.tooter.objects)
   ;; queries.lisp
   (:export
    #:find-account
@@ -220,8 +201,8 @@
    #:subscription
    #:delete-subscription
    #:reports
-   #:report
-   #:results
+   #:make-report
+   #:find-results
    #:find-status
    #:context
    #:card
@@ -238,7 +219,41 @@
    #:mute-conversation
    #:unmute-conversation
    #:timeline
-   #:trends)
+   #:trends))
+
+(defpackage #:tooter-client
+  (:nicknames #:org.shirakumo.tooter.client)
+  (:use #:org.shirakumo.tooter.objects)
+  ;; client.lisp
+  (:export
+   #:request-failed
+   #:code
+   #:data
+   #:message
+   #:request
+   #:client
+   #:base
+   #:key
+   #:secret
+   #:access-token
+   #:name
+   #:redirect
+   #:scopes
+   #:website
+   #:default-headers
+   #:query
+   #:submit
+   #:register
+   #:authorize)
   ;; toolkit.lisp
   (:export
    #:plain-format-html))
+
+(defpackage #:tooter
+  (:nicknames #:org.shirakumo.tooter)
+  (:use #:cl #:tooter-objects #:tooter-queries #:tooter-client)
+  (:shadowing-import-from #:tooter-queries #:block))
+
+(dolist (package '(#:tooter-objects #:tooter-queries #:tooter-client))
+  (do-symbols (symbol package)
+    (export symbol '#:tooter)))

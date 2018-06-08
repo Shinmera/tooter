@@ -401,7 +401,7 @@
 (defmethod reports ((client client))
   (decode-report (query client "/api/v1/reports")))
 
-(defmethod report ((client client) (id integer) &key statuses comment)
+(defmethod make-report ((client client) (id integer) &key statuses comment)
   (check-type statuses list)
   (check-type comment string)
   (decode-report (submit client "/api/v1/reports"
@@ -412,12 +412,12 @@
                                                      (status (id status))))
                          :comment comment)))
 
-(defmethod report ((client client) (account account) &rest args)
+(defmethod make-report ((client client) (account account) &rest args)
   (apply #'report client (id account) args))
 
 ;;; Search
 
-(defmethod results ((client client) query &key (resolve NIL r-p))
+(defmethod find-results ((client client) query &key (resolve NIL r-p))
   (decode-results (query client "/api/v2/search"
                          :q query
                          :resolve (coerce-boolean resolve r-p))))
