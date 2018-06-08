@@ -42,7 +42,8 @@
    (name :initarg :name :accessor name)
    (redirect :initarg :redirect :accessor redirect)
    (scopes :initarg :scopes :accessor scopes)
-   (website :initarg :website :accessor website))
+   (website :initarg :website :accessor website)
+   (account :initform NIL :accessor account))
   (:default-initargs
    :base (error "BASE required.")
    :key NIL
@@ -56,6 +57,11 @@
 (defmethod print-object ((client client) stream)
   (print-unreadable-object (client stream :type T)
     (format stream "~a ~a" (name client) (base client))))
+
+(defmethod account ((client client))
+  (let ((account (slot-value client 'account)))
+    (or account
+        (verify-credentials client))))
 
 (defmethod make-load-form ((client client) &optional env)
   (declare (ignore env))

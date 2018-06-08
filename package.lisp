@@ -236,6 +236,7 @@
    #:pin
    #:unpin
    #:mute-conversation
+   #:unmute-conversation
    #:timeline
    #:trends)
   ;; toolkit.lisp
