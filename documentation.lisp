@@ -77,6 +77,7 @@ See NAME
 See REDIRECT
 See SCOPES
 See WEBSITE
+See ACCOUNT
 See REGISTER
 See AUTHORIZE
 See DEFAULT-HEADERS
@@ -136,6 +137,15 @@ defaults to a list of all three scopes.
 
 See CLIENT
 See REGISTER")
+
+  (function account
+    "Accessor to the account the client is authorised as.
+
+When reading, it will automatically try to fetch the account if it is
+not yet known. Any operation (verify-credentials, update-credentials)
+that returns your own user account will update this field automatically.
+
+See CLIENT")
 
   (function default-headers
     "Returns additional headers to be sent with requests from the client.
@@ -962,181 +972,580 @@ See TAG-HISTORY"))
 ;; queries.lisp
 (docs:define-docs
   (function find-account
-    "")
+    "Find an account with the specified ID.
+
+This only works for accounts that are local to the instance.
+
+See CLIENT
+See ACCOUNT")
 
   (function verify-credentials
-    "")
+    "Returns your own account.
+
+This updates the ACCOUNT field in the client.
+
+See CLIENT
+See ACCOUNT")
 
   (function update-credentials
-    "")
+    "Update some of the user's profile settings.
+
+FIELDS should be a plist of the desired fields, with alternating field
+names and field values. The keys can be strings to more easily control
+the look of the fields.
+
+Returns the updated account.
+This updates the ACCOUNT field in the client.
+
+See CLIENT
+See ACCOUNT")
 
   (function get-followers
-    "")
+    "Return a list of followers for the account.
+
+The account can be an ACCOUNT instance, an account ID, or T for 
+yourself.
+
+See CLIENT
+See ACCOUNT")
 
   (function get-following
-    "")
+    "Return a list of accounts the account is following.
+
+The account can be an ACCOUNT instance, an account ID, or T for 
+yourself.
+
+See CLIENT
+See ACCOUNT")
 
   (function get-statuses
-    "")
+    "Return a list of statuses for the account.
+
+The account can be an ACCOUNT instance, an account ID, or T for 
+yourself.
+
+See CLIENT
+See ACCOUNT
+See STATUS")
 
   (function follow
-    "")
+    "Follow a new account.
+
+The account can be either an account ID, or an ACCOUNT instance.
+It can also be a URI string for a remote account.
+
+Returns the resulting relationship if the account was local, and the
+local representation of the remote account if it was remote.
+
+See CLIENT
+See ACCOUNT
+See RELATIONSHIP")
 
   (function unfollow
-    "")
+    "Unfollow an account.
+
+The account can be either an account ID, or an ACCOUNT instance.
+
+Returns the resulting relationship.
+
+See CLIENT
+See ACCOUNT
+See RELATIONSHIP")
 
   (function block
-    "")
+    "Block a new account or domain.
+
+The account can be either an account ID, or an ACCOUNT instance.
+It can also be a string, in which case the corresponding domain is
+blocked.
+
+Returns the resulting relationship in the case of an account, or T
+in the case of a domain.
+
+See CLIENT
+See ACCOUNT
+See RELATIONSHIP")
 
   (function unblock
-    "")
+    "Unblock an account or domain.
+
+The account can be either an account ID, or an ACCOUNT instance.
+It can also be a string, in which case the corresponding domain is
+unblocked.
+
+Returns the resulting relationship in the case of an account, or T
+in the case of a domain.
+
+See CLIENT
+See ACCOUNT
+See RELATIONSHIP")
 
   (function mute
-    "")
+    "Mute a new account or conversation.
+
+The account can be either an account ID, or an ACCOUNT instance.
+It can also be a STATUS in which case that conversation is muted.
+
+Returns the resulting relationship for an account mute, or T for a
+conversation mute.
+
+See CLIENT
+See ACCOUNT
+See RELATIONSHIP")
 
   (function unmute
-    "")
+    "Unmute a new account or conversation.
+
+The account can be either an account ID, or an ACCOUNT instance.
+It can also be a STATUS in which case that conversation is unmuted.
+
+Returns the resulting relationship for an account unmute, or T for a
+conversation unmute.
+
+See CLIENT
+See ACCOUNT
+See RELATIONSHIP")
 
   (function relationships
-    "")
+    "Returns a list of relationships for the given accounts.
+
+The accounts can be a list of IDs or ACCOUNT instances.
+
+See CLIENT
+See ACCOUNT
+See RELATIONSHIP")
 
   (function search-accounts
-    "")
+    "Search for accounts on the Mastodon network.
+
+This is the only way of retrieving accounts outside of the local
+instance.
+
+Returns a list of matching accounts.
+
+See CLIENT
+See ACCOUNT")
 
   (function blocks
-    "")
+    "Retrieve a list of blocked accounts.
+
+See CLIENT
+See ACCOUNT")
 
   (function blocked-domains
-    "")
+    "Retrieve a list of blocked domains.
+
+See CLIENT")
 
   (function favourites
-    "")
+    "Retrieve a list of favourited statuses.
+
+See CLIENT
+See STATUS")
 
   (function follow-requests
-    "")
+    "Retrieve a list of accounts that requested to follow you.
+
+See ACCOUNT
+See CLIENT")
 
   (function accept-request
-    "")
+    "Accept the follow request of the given account.
+
+See ACCOUNT
+See CLIENT")
 
   (function reject-request
-    "")
+    "Reject the follow request of the given account.
+
+See CLIENT
+See ACCOUNT")
 
   (function follow-remote
-    "")
+    "Follow a remote account.
+
+Typically you do not need to use this function, as FOLLOW automatically
+performs the correct action.
+
+Returns the local representation of the followed account.
+
+See FOLLOW
+See CLIENT
+See ACCOUNT")
 
   (function instance
-    "")
+    "Retrieve the instance information that the client is connected to.
+
+See INSTANCE
+See CLIENT")
 
   (function emojis
-    "")
+    "Retrieve a list of custom emojis present on the instance.
+
+See CLIENT
+See EOMJI")
 
   (function user-lists
-    "")
+    "Retrieve a list of up to twenty of the account's user lists.
+
+The account can be an ACCOUNT instance, an account ID, or T for
+yourself.
+
+See USER-LIST
+See CLIENT")
 
   (function user-list-accounts
-    "")
+    "Retrieve a list of accounts in the user list.
+
+The user list can be either a USER-LIST instance, or an ID of one.
+This is SETFable for convenience, though it will usually be much more
+efficient to simply use ADD/REMOVE-USER-LIST-ACCOUNTS instead.
+
+See USER-LIST
+See CLIENT")
 
   (function find-list
-    "")
+    "Retrieve the user list with the given ID.
+
+See USER-LIST
+See CLIENT")
 
   (function make-user-list
-    "")
+    "Create a new user list with the given title.
+
+See USER-LIST
+See CLIENT")
 
   (function update-user-list
-    "")
+    "Update the user list's properties.
+
+The list can be either a USER-LIST instance, or an ID of one.
+
+This is not used to add or remove accounts from the list. See
+ADD/REMOVE-USER-LIST-ACCOUNTS for that.
+
+See USER-LIST
+See CLIENT")
 
   (function delete-user-list
-    "")
+    "Delete an existing user list.
+
+The list can be either a USER-LIST instance, or an ID of one.
+
+Returns T.
+
+See USER-LIST
+See CLIENT")
 
   (function add-user-list-accounts
-    "")
+    "Add new accounts to the user-list.
+
+The list can be either a USER-LIST instance, or an ID of one.
+The accounts in the list can be either account instances, or IDs of
+accounts.
+
+See ACCOUNT
+See CLIENT
+See USER-LIST")
 
   (function remove-user-list-accounts
-    "")
+    "Remove existing accounts from the user-list.
+
+The list can be either a USER-LIST instance, or an ID of one.
+The accounts in the list can be either account instances, or IDs of
+accounts.
+
+See ACCOUNT
+See CLIENT
+See USER-LIST")
 
   (function make-media
-    "")
+    "Create a new media attachment.
+
+FILE must be a pathname. FOCUS should be, if given, a cons of X and Y
+coordinates on which the focus should be put in the media.
+
+Returns the new media ATTACHMENT instance.
+
+See ATTACHMENT
+See CLIENT")
 
   (function update-media
-    "")
+    "Updates the media attachment's metadata.
+
+This can only be performed before the attachment is used in a status.
+
+Returns the new media ATTACHMENT instance.
+
+See CLIENT
+See ATTACHMENT")
 
   (function mutes
-    "")
+    "Returns a list of accounts that you have muted.
+
+See ACCOUNT
+See CLIENT")
 
   (function notifications
-    "")
+    "Returns a list of notifications about status updates.
+
+See NOTIFICATION
+See CLIENT")
 
   (function find-notification
-    "")
+    "Retrieve the notification of the given ID.
+
+See NOTIFICATION
+See CLIENT")
 
   (function delete-notification
-    "")
+    "Delete or dismiss the notification.
+
+The notification can either be a NOTIFICATION instance, an ID of one,
+or T for all notifications.
+
+Returns T.
+
+See NOTIFICATION
+See CLIENT")
 
   (function make-subscription
-    "")
+    "Create or update a push notification subscription.
+
+ALERTS should be a list of desired alerts:
+  :FOLLOWS :FAVOURITES :REBLOGS :MENTIONS
+
+Returns the resulting PUSH-SUBSCRIPTION instance.
+
+See CLIENT
+See PUSH-SUBSCRIPTION")
 
   (function subscription
-    "")
+    "Retrieve the current push subscription settings.
+
+See CLIENT
+See PUSH-SUBSCRIPTION")
 
   (function delete-subscription
-    "")
+    "Delete the existing push subscription.
+
+Returns T.
+
+See CLIENT")
 
   (function reports
-    "")
+    "Returns a list of submitted reports.
+
+See REPORT
+See CLIENT")
 
   (function report
-    "")
+    "Files a new report against the given account.
+
+The account can be an ACCOUNT instance, or an ID of one.
+
+STATUSES must be a list of either STATUS instances or IDs of such that
+refer to the offending statuses. COMMENT must be a string describing
+the offence.
+
+See ACCOUNT
+See STATUS
+See CLIENT")
 
   (function results
-    "")
+    "Search the Mastodon instance for matching tags, accounts, or statuses.
+
+See RESULTS
+See CLIENT")
 
   (function find-status
-    "")
+    "Retrieve the status with the given ID.
+
+See CLIENT
+See STATUS")
 
   (function context
-    "")
+    "Retrieve the context of a status.
+
+The status can either be a STATUS instance, or an ID of one.
+
+See CLIENT
+See STATUS
+See CONTEXT")
 
   (function card
-    "")
+    "Retrieve the card of a status.
+
+The status can either be a STATUS instance, or an ID of one.
+
+See STATUS
+See CLIENT
+See CARD")
 
   (function rebloggers
-    "")
+    "Retrieve the list of accounts that reblogged the status.
+
+The status can either be a STATUS instance, or an ID of one.
+
+See STATUS
+See CLIENT
+See ACCOUNT")
 
   (function favouriters
-    "")
+    "Retrieve the list of accounts that favourited the status.
+
+The status can either be a STATUS instance, or an ID of one.
+
+See STATUS
+See CLIENT
+See ACCOUNT")
 
   (function make-status
-    "")
+    "Create a new status.
+
+The arguments should be seen as follows:
+  STATUS       --- The content of the status update. Should be plain
+                   text.
+  IN-REPLY-TO  --- May be a STATUS instance or ID to which this status
+                   should reply to.
+  MEDIA        --- May be an attachment, or a list of up to four
+                   attachments. See below for the handling of media
+                   attachments.
+  SENSITIVE    --- Whether the content contains sensitive material.
+  SPOILER-TEXT --- Denotes the text to show in place of the content
+                   before the content is revealed. Forces sensitive.
+  VISIBILITY   --- May denote how visible the status should be. Can be
+                   one of the following:
+                    :DIRECT    The status can only be seen by mentions
+                    :PRIVATE   The status can only be seen by you
+                    :UNLISTED  The status can only be seen by link
+                    :PUBLIC    The status appears publicly on timelines
+  LANGUAGE     --- May be an ISO-639 code of the language the status
+                   text is in.
+
+Media attachments can be one of the following types:
+  INTEGER      --- The referenced attachment is used.
+  ATTACHMENT   --- The referenced attachment is used.
+  PATHNAME     --- A new media attachment is created automatically and
+                   its new ID is used.
+
+Returns the newly created status instance.
+
+See CLIENT
+See STATUS
+See ATTACHMENT")
 
   (function delete-status
-    "")
+    "Delete the given status.
+
+The status can either be a STATUS instance, or an ID of one.
+
+Returns T.
+
+See STATUS
+See CLIENT")
 
   (function reblog
-    "")
+    "Reblog the given status.
+
+The status can either be a STATUS instance, or an ID of one.
+
+Returns the new status which is a reblog of the given status.
+
+See STATUS
+See CLIENT")
 
   (function unreblog
-    "")
+    "Remove the reblog of the given status.
+
+The status can either be a STATUS instance, or an ID of one.
+
+Returns the original status that was given as a fresh instance.
+
+See STATUS
+See CLIENT")
 
   (function favourite
-    "")
+    "Favourite the given status.
+
+The status can either be a STATUS instance, or an ID of one.
+
+Returns the referenced status.
+
+See STATUS
+See CLIENT")
 
   (function unfavourite
-    "")
+    "Unfavourite the given status.
+
+The status can either be a STATUS instance, or an ID of one.
+
+Returns the referenced status.
+
+See STATUS
+See CLIENT")
 
   (function pin
-    "")
+    "Pin the given status to your profile.
+
+The status can either be a STATUS instance, or an ID of one.
+
+Returns the referenced status.
+
+See STATUS
+See CLIENT")
 
   (function unpin
-    "")
+    "Unpin the given status from your profile.
+
+The status can either be a STATUS instance, or an ID of one.
+
+Returns the referenced status.
+
+See STATUS
+See CLIENT")
 
   (function mute-conversation
-    "")
+    "Mute the conversation of the given status.
+
+This means you will no longer receive mention notifications for the
+given status' conversation thread.
+
+Returns the referenced status.
+
+See STATUS
+See CLIENT")
+  
+  (function unmute-conversation
+    "Unmute the conversation of the given status.
+
+This means you will receive mention notifications for the given status'
+conversation thread again.
+
+Returns the referenced status.
+
+See STATUS
+See CLIENT")
 
   (function timeline
-    "")
+    "Return statuses for the specified timeline.
+
+The KIND can be one of the following:
+  :HOME      --- Return statuses for your home timeline. This includes
+                 your own and statuses of all accounts you follow.
+  :PUBLIC    --- Return statuses for your instance's public timeline.
+  STRING     --- Return statuses for the given hashtag.
+  INTEGER    --- Return statuses for the given user-list's accounts.
+  USER-LIST  --- Return statuses for the given user-list's accounts.
+
+See STATUS
+See CLIENT
+See USER-LIST")
 
   (function trends
-    ""))
+    "Return a list of trending hashtags.
+
+See CLIENT"))
 
 ;; toolkit.lisp
 (docs:define-docs
