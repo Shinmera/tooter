@@ -35,8 +35,8 @@
                  collect `(let ((,value ,(cond ((null field) data)
                                                ((eq field #1#) `(getj ,data ,(translate-key slot)))
                                                (T `(getj ,data ,field)))))
-                            (when ,value
-                              (setf (slot-value ,name ',slot)
+                            (setf (slot-value ,name ',slot)
+                                  (when ,value
                                     (funcall ,(or (getf options :translate-with)
                                                   '#'identity)
                                              ,value)))))
