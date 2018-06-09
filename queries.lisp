@@ -17,7 +17,7 @@
 
 (defmethod update-credentials ((client client) &key display-name note avatar header (locked NIL l-p) fields)
   (check-type display-name (or null string))
-  (check-type node (or null string))
+  (check-type note (or null string))
   (check-type avatar (or null pathname))
   (check-type header (or null pathname))
   (check-type fields list)
@@ -240,10 +240,10 @@
   (check-type max-id (or null (integer 0)))
   (check-type since-id (or null (integer 0)))
   (check-type limit (or null (integer 0)))
-  (decode-account (query client (format NIL "/api/v1/lists/~a/accounts" id
-                                        :max-id max-id
-                                        :since-id since-id
-                                        :limit (or limit 0)))))
+  (decode-account (query client (format NIL "/api/v1/lists/~a/accounts" id)
+                         :max-id max-id
+                         :since-id since-id
+                         :limit (or limit 0))))
 
 (defmethod user-list-accounts ((client client) (user-list user-list) &rest args)
   (apply #'user-list-accounts client (id user-list) args))
@@ -413,7 +413,7 @@
                          :comment comment)))
 
 (defmethod make-report ((client client) (account account) &rest args)
-  (apply #'report client (id account) args))
+  (apply #'make-report client (id account) args))
 
 ;;; Search
 

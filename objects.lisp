@@ -98,18 +98,19 @@
 
 (defvar *translator*)
 (defun %decode-metadata (data)
-  (let* ((metadata (getj data "metadata"))
-         (focus (getj metadata "focus")))
-    (when focus
-      (setf (getj metadata "focus") (cons (getj focus "x") (getj focus "y"))))
-    (ecase (to-keyword (getj data "type"))
-      (:image
-       (let ((*translator* (lambda (data) (decode-entity 'image-metadata data))))
-         (decode-entity 'metadata metadata)))
-      ((:video :gifv)
-       (let ((*translator* (lambda (data) (decode-entity 'video-metadata data))))
-         (decode-entity 'metadata metadata)))
-      (:unknown NIL))))
+  (let ((metadata (getj data "meta")))
+    (when metadata
+      (let ((focus (getj metadata "focus")))
+        (when focus
+          (setf (gethash "focus" metadata) (cons (getj focus "x") (getj focus "y"))))
+        (ecase (to-keyword (getj data "type"))
+          (:image
+           (let ((*translator* (lambda (data) (decode-entity 'image-metadata data))))
+             (decode-entity 'metadata metadata)))
+          ((:video :gifv)
+           (let ((*translator* (lambda (data) (decode-entity 'video-metadata data))))
+             (decode-entity 'metadata metadata)))
+          (:unknown NIL))))))
 
 (define-entity metadata
   (small :nullable T :translate-with *translator*)
@@ -299,7 +300,7 @@
               (display-name account)
               (account-name account)
               y m d hh mm ss
-              (line-wrap (plain-format (content status))
+              (line-wrap (plain-format-html (content status))
                          :prefix "| " :width width)
               width
               (reblogs-count status)
