@@ -78,7 +78,7 @@
                         :limit limit)))
 
 (defmethod get-statuses ((client client) (account account) &rest args)
-  (apply #'statuses client (id account) args))
+  (apply #'get-statuses client (id account) args))
 
 (defmethod get-statuses ((client client) (self (eql T)) &rest args)
   (apply #'get-statuses client (id (account client)) args))
