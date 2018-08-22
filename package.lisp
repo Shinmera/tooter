@@ -6,6 +6,7 @@
 
 (defpackage #:tooter-objects
   (:nicknames #:org.shirakumo.tooter.objects)
+  (:use)
   ;; objects.lisp
   (:export
    #:entity
