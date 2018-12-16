@@ -19,7 +19,8 @@
         collect (decode-entity type entry)))
 
 (defmacro define-entity (name &body slots)
-  (let ((data (gensym "DATA"))
+  (let ((*print-case* (readtable-case *readtable*))
+        (data (gensym "DATA"))
         (value (gensym "VALUE")))
     `(progn
        (defclass ,name (entity)
