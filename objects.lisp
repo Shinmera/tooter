@@ -256,7 +256,7 @@
   (hashtags))
 
 (define-entity status
-  (id :translate-with #'parse-integer)
+  (id)
   (uri)
   (url :nullable T)
   (account :translate-with #'decode-account)

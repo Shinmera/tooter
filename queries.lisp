@@ -8,7 +8,7 @@
 
 ;;; Accounts
 
-(defmethod find-account ((client client) (id integer))
+(defmethod find-account ((client client) (id string))
   (decode-account (query client (format NIL "/api/v1/accounts/~a" id))))
 
 (defmethod verify-credentials ((client client))
@@ -35,9 +35,9 @@
                                      collect (format NIL "fields_attributes[~a][value]" i)
                                      collect val)))))
 
-(defmethod get-followers ((client client) (id integer) &key max-id since-id limit)
-  (check-type max-id (or null (integer 0)))
-  (check-type since-id (or null (integer 0)))
+(defmethod get-followers ((client client) (id string) &key max-id since-id limit)
+  (check-type max-id (or null string))
+  (check-type since-id (or null string))
   (check-type limit (or null (integer 0)))
   (decode-account (query client (format NIL "/api/v1/accounts/~a/followers" id)
                          :max-id max-id
@@ -50,9 +50,9 @@
 (defmethod get-followers ((client client) (self (eql T)) &rest args)
   (apply #'get-followers client (id (account client)) args))
 
-(defmethod get-following ((client client) (id integer) &key max-id since-id limit)
-  (check-type max-id (or null (integer 0)))
-  (check-type since-id (or null (integer 0)))
+(defmethod get-following ((client client) (id string) &key max-id since-id limit)
+  (check-type max-id (or null string))
+  (check-type since-id (or null string))
   (check-type limit (or null (integer 0)))
   (decode-account (query client (format NIL "/api/v1/accounts/~a/following" id)
                          :max-id max-id
@@ -65,9 +65,9 @@
 (defmethod get-following ((client client) (self (eql T)) &rest args)
   (apply #'get-following client (id (account client)) args))
 
-(defmethod get-statuses ((client client) (id integer) &key (only-media NIL o-p) (pinned NIL p-p) (exclude-replies NIL e-p) max-id since-id limit)
-  (check-type max-id (or null (integer 0)))
-  (check-type since-id (or null (integer 0)))
+(defmethod get-statuses ((client client) (id string) &key (only-media NIL o-p) (pinned NIL p-p) (exclude-replies NIL e-p) max-id since-id limit)
+  (check-type max-id (or null string))
+  (check-type since-id (or null string))
   (check-type limit (or null (integer 0)))
   (decode-status (query client (format NIL "/api/v1/accounts/~a/statuses" id)
                         :only-media (coerce-boolean only-media o-p)
@@ -83,7 +83,7 @@
 (defmethod get-statuses ((client client) (self (eql T)) &rest args)
   (apply #'get-statuses client (id (account client)) args))
 
-(defmethod follow ((client client) (id integer))
+(defmethod follow ((client client) (id string))
   (decode-relationship (submit client (format NIL "/api/v1/accounts/~a/follow" id))))
 
 (defmethod follow ((client client) (account account))
@@ -91,32 +91,32 @@
       (follow client (id account))
       (follow-remote client (account-name account))))
 
-(defmethod unfollow ((client client) (id integer))
+(defmethod unfollow ((client client) (id string))
   (decode-relationship (submit client (format NIL "/api/v1/accounts/~a/unfollow" id))))
 
 (defmethod unfollow ((client client) (account account))
   (unfollow client (id account)))
 
-(defmethod block ((client client) (id integer))
+(defmethod block ((client client) (id string))
   (decode-relationship (submit client (format NIL "/api/v1/accounts/~a/block" id))))
 
 (defmethod block ((client client) (account account))
   (block client (id account)))
 
-(defmethod unblock ((client client) (id integer))
+(defmethod unblock ((client client) (id string))
   (decode-relationship (submit client (format NIL "/api/v1/accounts/~a/unblock" id))))
 
 (defmethod unblock ((client client) (account account))
   (unblock client (id account)))
 
-(defmethod mute ((client client) (id integer) &key (notifications T n-p))
+(defmethod mute ((client client) (id string) &key (notifications T n-p))
   (decode-relationship (submit client (format NIL "/api/v1/accounts/~a/mute" id)
                                :notifications (coerce-boolean notifications n-p))))
 
 (defmethod mute ((client client) (account account) &rest args)
   (apply #'mute client (id account) args))
 
-(defmethod unmute ((client client) (id integer))
+(defmethod unmute ((client client) (id string))
   (decode-relationship (submit client (format NIL "/api/v1/accounts/~a/unmute" id))))
 
 (defmethod unmute ((client client) (account account))
@@ -125,9 +125,9 @@
 (defmethod relationships ((client client) (ids cons))
   (decode-relationship (query client "/api/v1/accounts/relationships"
                               :id (loop for id in ids
-                                        collect (typecase id
+                                        collect (etypecase id
                                                   (account (id id))
-                                                  (T id))))))
+                                                  (string id))))))
 
 (defmethod relationships ((client client) (account account))
   (relationships client (list (id account))))
@@ -143,8 +143,8 @@
 ;;; Blocks
 
 (defmethod blocks ((client client) &key max-id since-id (limit 40))
-  (check-type max-id (or null (integer 0)))
-  (check-type since-id (or null (integer 0)))
+  (check-type max-id (or null string))
+  (check-type since-id (or null string))
   (check-type limit (or null (integer 0)))
   (decode-account (query client "/api/v1/blocks"
                          :max-id max-id
@@ -152,8 +152,8 @@
                          :limit limit)))
 
 (defmethod blocked-domains ((client client) &key max-id since-id (limit 40))
-  (check-type max-id (or null (integer 0)))
-  (check-type since-id (or null (integer 0)))
+  (check-type max-id (or null string))
+  (check-type since-id (or null string))
   (check-type limit (or null (integer 0)))
   (query client "/api/v1/domain_blocks"
          :max-id max-id
@@ -174,8 +174,8 @@
 ;;; Favourites
 
 (defmethod favourites ((client client) &key max-id since-id (limit 20))
-  (check-type max-id (or null (integer 0)))
-  (check-type since-id (or null (integer 0)))
+  (check-type max-id (or null string))
+  (check-type since-id (or null string))
   (check-type limit (or null (integer 0)))
   (decode-status (query client "/api/v1/favourites"
                         :max-id max-id
@@ -185,21 +185,21 @@
 ;;; Follow Requests
 
 (defmethod follow-requests ((client client) &key max-id since-id (limit 40))
-  (check-type max-id (or null (integer 0)))
-  (check-type since-id (or null (integer 0)))
+  (check-type max-id (or null string))
+  (check-type since-id (or null string))
   (check-type limit (or null (integer 0)))
   (decode-account (query client "/api/v1/follow_requests"
                          :max-id max-id
                          :since-id since-id
                          :limit limit)))
 
-(defmethod accept-request ((client client) (id integer))
+(defmethod accept-request ((client client) (id string))
   (submit client (format NIL "/api/v1/follow_requests/~a/authorize" id)))
 
 (defmethod accept-request ((client client) (account account))
   (accept-request client (id account)))
 
-(defmethod reject-request ((client client) (id integer))
+(defmethod reject-request ((client client) (id string))
   (submit client (format NIL "/api/v1/follow_requests/~a/reject" id)))
 
 (defmethod reject-request ((client client) (account account))
@@ -227,7 +227,7 @@
 
 ;;; Lists
 
-(defmethod user-lists ((client client) (id integer))
+(defmethod user-lists ((client client) (id string))
   (decode-user-list (query client (format NIL "/api/v1/accounts/~a/lists" id))))
 
 (defmethod user-lists ((client client) (account account))
@@ -236,9 +236,9 @@
 (defmethod user-lists ((client client) (id (eql T)))
   (decode-user-list (query client "/api/v1/lists")))
 
-(defmethod user-list-accounts ((client client) (id integer) &key max-id since-id limit)
-  (check-type max-id (or null (integer 0)))
-  (check-type since-id (or null (integer 0)))
+(defmethod user-list-accounts ((client client) (id string) &key max-id since-id limit)
+  (check-type max-id (or null string))
+  (check-type since-id (or null string))
   (check-type limit (or null (integer 0)))
   (decode-account (query client (format NIL "/api/v1/lists/~a/accounts" id)
                          :max-id max-id
@@ -249,10 +249,10 @@
   (apply #'user-list-accounts client (id user-list) args))
 
 ;; Convenience.
-(defmethod (setf user-list-accounts) (accounts (client client) (id integer))
+(defmethod (setf user-list-accounts) (accounts (client client) (id string))
   (let* ((accounts (loop for account in accounts
                          collect (etypecase account
-                                   (integer account)
+                                   (string account)
                                    (account (id account)))))
          (existing (mapcar #'id (user-list-accounts client id)))
          (to-remove (set-difference existing accounts))
@@ -261,14 +261,14 @@
     (when to-add (add-user-list-accounts client id to-add))
     accounts))
 
-(defmethod find-list ((client client) (id integer))
+(defmethod find-list ((client client) (id string))
   (decode-user-list (query client (format NIL "/api/v1/lists/~a" id))))
 
 (defmethod make-user-list ((client client) title)
   (decode-user-list (submit client "/api/v1/lists"
                             :title title)))
 
-(defmethod update-user-list ((client client) (id integer) &key title)
+(defmethod update-user-list ((client client) (id string) &key title)
   (check-type title string)
   (decode-user-list (submit client (format NIL "/api/v1/lists/~a" id)
                             :http-method :put
@@ -277,28 +277,28 @@
 (defmethod update-user-list ((client client) (user-list user-list) &rest args)
   (apply #'update-user-list client (id user-list) args))
 
-(defmethod delete-user-list ((client client) (id integer))
+(defmethod delete-user-list ((client client) (id string))
   (submit client (format NIL "/api/v1/lists/~a" id)
           :http-method :delete)
   T)
 
-(defmethod add-user-list-accounts ((client client) (id integer) accounts)
+(defmethod add-user-list-accounts ((client client) (id string) accounts)
   (submit client (format NIL "/api/v1/lists/~a/accounts" id)
           :account-ids (loop for account in accounts
                              collect (etypecase account
-                                       (integer account)
+                                       (string account)
                                        (account (id account)))))
   T)
 
 (defmethod add-user-list-accounts ((client client) (user-list user-list) accounts)
   (add-user-list-accounts client (id user-list) accounts))
 
-(defmethod remove-user-list-accounts ((client client) (id integer) accounts)
+(defmethod remove-user-list-accounts ((client client) (id string) accounts)
   (submit client (format NIL "/api/v1/lists/~a/accounts" id)
           :http-method :delete
           :account-ids (loop for account in accounts
                              collect (etypecase account
-                                       (integer account)
+                                       (string account)
                                        (account (id account)))))
   T)
 
@@ -329,8 +329,8 @@
 ;;; Mutes
 
 (defmethod mutes ((client client) &key max-id since-id (limit 40))
-  (check-type max-id (or null (integer 0)))
-  (check-type since-id (or null (integer 0)))
+  (check-type max-id (or null string))
+  (check-type since-id (or null string))
   (check-type limit (or null (integer 0)))
   ;; FIXME Link headers
   (decode-account (query client "/api/v1/mutes"
@@ -341,8 +341,8 @@
 ;;; Notifications
 
 (defmethod notifications ((client client) &key max-id since-id (limit 15) exclude-types)
-  (check-type max-id (or null (integer 0)))
-  (check-type since-id (or null (integer 0)))
+  (check-type max-id (or null string))
+  (check-type since-id (or null string))
   (check-type limit (or null (integer 0)))
   (check-type exclude-types list)
   (decode-notification (query client "/api/v1/notifications"
@@ -356,14 +356,14 @@
                                                              (:reblog "reblog")
                                                              (:mention "mention"))))))
 
-(defmethod find-notification ((client client) (id integer))
+(defmethod find-notification ((client client) (id string))
   (decode-notification (query client (format NIL "/api/v1/notifications/~a" id))))
 
 (defmethod delete-notification ((client client) (all (eql T)))
   (submit client "/api/v1/notifications/clear")
   T)
 
-(defmethod delete-notification ((client client) (id integer))
+(defmethod delete-notification ((client client) (id string))
   (submit client "/api/v1/notifications/dismiss"
           :id id)
   T)
@@ -401,14 +401,14 @@
 (defmethod reports ((client client))
   (decode-report (query client "/api/v1/reports")))
 
-(defmethod make-report ((client client) (id integer) &key statuses comment)
+(defmethod make-report ((client client) (id string) &key statuses comment)
   (check-type statuses list)
   (check-type comment string)
   (decode-report (submit client "/api/v1/reports"
                          :account-id id
                          :status-ids (loop for status in statuses
                                            collect (etypecase status
-                                                     (integer status)
+                                                     (string status)
                                                      (status (id status))))
                          :comment comment)))
 
@@ -424,24 +424,24 @@
 
 ;;; Statuses
 
-(defmethod find-status ((client client) (id integer))
+(defmethod find-status ((client client) (id string))
   (decode-status (query client (format NIL "/api/v1/statuses/~a" id))))
 
-(defmethod context ((client client) (id integer))
+(defmethod context ((client client) (id string))
   (decode-context (query client (format NIL "/api/v1/statuses/~a/context" id))))
 
 (defmethod context ((client client) (status status))
   (context client (id status)))
 
-(defmethod card ((client client) (id integer))
+(defmethod card ((client client) (id string))
   (decode-card (query client (format NIL "/api/v1/statuses/~a/context" id))))
 
 (defmethod card ((client client) (status status))
   (card client (id status)))
 
-(defmethod rebloggers ((client client) (id integer) &key max-id since-id (limit 40))
-  (check-type max-id (or null (integer 0)))
-  (check-type since-id (or null (integer 0)))
+(defmethod rebloggers ((client client) (id string) &key max-id since-id (limit 40))
+  (check-type max-id (or null string))
+  (check-type since-id (or null string))
   (check-type limit (or null (integer 0)))
   (decode-account (query client (format NIL "/api/v1/statuses/~a/reblogged_by" id)
                          :max-id max-id
@@ -451,9 +451,9 @@
 (defmethod rebloggers ((client client) (status status) &rest args)
   (apply #'rebloggers client (id status) args))
 
-(defmethod favouriters ((client client) (id integer) &key max-id since-id (limit 40))
-  (check-type max-id (or null (integer 0)))
-  (check-type since-id (or null (integer 0)))
+(defmethod favouriters ((client client) (id string) &key max-id since-id (limit 40))
+  (check-type max-id (or null string))
+  (check-type since-id (or null string))
   (check-type limit (or null (integer 0)))
   (decode-account (query client (format NIL "/api/v1/statuses/~a/favourited_by" id)
                          :max-id max-id
@@ -467,13 +467,13 @@
   ;; FIXME: Idempotency
   (flet ((ensure-media-id (media)
            (etypecase media
-             (integer media)
+             (string media)
              (attachment (id media))
              (pathname (id (make-media client media))))))
     (decode-status (submit client "/api/v1/statuses"
                            :status status
                            :in-reply-to-id (etypecase in-reply-to
-                                             (integer in-reply-to)
+                                             (string in-reply-to)
                                              (status (id in-reply-to))
                                              (null NIL))
                            :media-ids (typecase media
@@ -490,7 +490,7 @@
                                          (:public "public"))
                            :language (when language (string language))))))
 
-(defmethod delete-status ((client client) (id integer))
+(defmethod delete-status ((client client) (id string))
   (submit client (format NIL "/api/v1/statuses/~a" id)
           :http-method :delete)
   T)
@@ -498,49 +498,49 @@
 (defmethod delete-status ((client client) (status status))
   (delete-status client (id status)))
 
-(defmethod reblog ((client client) (id integer))
+(defmethod reblog ((client client) (id string))
   (decode-status (submit client (format NIL "/api/v1/statuses/~a/reblog" id))))
 
 (defmethod reblog ((client client) (status status))
   (reblog client (id status)))
 
-(defmethod unreblog ((client client) (id integer))
+(defmethod unreblog ((client client) (id string))
   (decode-status (submit client (format NIL "/api/v1/statuses/~a/unreblog" id))))
 
 (defmethod unreblog ((client client) (status status))
   (unreblog client (id status)))
 
-(defmethod favourite ((client client) (id integer))
+(defmethod favourite ((client client) (id string))
   (decode-status (submit client (format NIL "/api/v1/statuses/~a/favourite" id))))
 
 (defmethod favourite ((client client) (status status))
   (favourite client (id status)))
 
-(defmethod unfavourite ((client client) (id integer))
+(defmethod unfavourite ((client client) (id string))
   (decode-status (submit client (format NIL "/api/v1/statuses/~a/unfavourite" id))))
 
 (defmethod unfavourite ((client client) (status status))
   (unfavourite client (id status)))
 
-(defmethod pin ((client client) (id integer))
+(defmethod pin ((client client) (id string))
   (decode-status (submit client (format NIL "/api/v1/statuses/~a/pin" id))))
 
 (defmethod pin ((client client) (status status))
   (pin client (id status)))
 
-(defmethod unpin ((client client) (id integer))
+(defmethod unpin ((client client) (id string))
   (decode-status (submit client (format NIL "/api/v1/statuses/~a/unpin" id))))
 
 (defmethod unpin ((client client) (status status))
   (unpin client (id status)))
 
-(defmethod mute-conversation ((client client) (id integer))
+(defmethod mute-conversation ((client client) (id string))
   (decode-status (submit client (format NIL "/api/v1/statuses/~a/mute" id))))
 
 (defmethod mute-conversation ((client client) (status status))
   (mute-conversation client (id status)))
 
-(defmethod unmute-conversation ((client client) (id integer))
+(defmethod unmute-conversation ((client client) (id string))
   (decode-status (submit client (format NIL "/api/v1/statuses/~a/unmute" id))))
 
 (defmethod unmute-conversation ((client client) (status status))
@@ -554,8 +554,8 @@
 
 ;;; Timelines
 (defun %timeline (client url &key (local NIL l-p) (only-media NIL o-p) max-id since-id (limit 20))
-  (check-type max-id (or null (integer 0)))
-  (check-type since-id (or null (integer 0)))
+  (check-type max-id (or null string))
+  (check-type since-id (or null string))
   (check-type limit (or null (integer 0)))
   (decode-status (query client (format NIL "/api/v1/timelines/~a" url)
                         :local (coerce-boolean local l-p)
@@ -575,7 +575,7 @@
 (defmethod timeline ((client client) (tag string) &rest args)
   (apply #'%timeline client (format NIL "tag/~a" tag) args))
 
-(defmethod timeline ((client client) (id integer) &rest args)
+(defmethod timeline ((client client) (id string) &rest args)
   (apply #'%timeline client (format NIL "list/~a" id) args))
 
 (defmethod timeline ((client client) (tag tag) &rest args)

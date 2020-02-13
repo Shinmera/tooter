@@ -260,10 +260,14 @@ See BOT
 See SOURCE")
 
   (function id
-    "Returns the numerical ID of the object.
+    "Returns the ID of the object as a string.
 
 This ID is used in the API to query the object itself, or properties
-related to it.
+related to it. The ID may be an integer, or some other structure encoded
+as a string, depending on the instance the object stems from.
+
+About the only thing you can portably do with an ID is determine identity
+via STRING=.
 
 See ACCOUNT
 See ATTACHMENT
