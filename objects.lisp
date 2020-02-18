@@ -262,7 +262,7 @@
   (account :translate-with #'decode-account)
   (in-reply-to-id :nullable T)
   (in-reply-to-account-id :nullable T)
-  (parent :field "reblog" :nullable T)
+  (parent :field "reblog" :nullable T :translate-with #'decode-status)
   (content)
   (created-at :translate-with #'convert-timestamp)
   (emojis :translate-with #'decode-emoji)
