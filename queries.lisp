@@ -564,7 +564,7 @@
                         :since-id since-id
                         :limit limit)))
 
-(defgeneric timeline (client kind &key local only-media max-id since-id))
+(defgeneric timeline (client kind &key local only-media max-id since-id limit))
 
 (defmethod timeline ((client client) (kind (eql :home)) &rest args)
   (apply #'%timeline client "home" args))
