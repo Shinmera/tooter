@@ -66,7 +66,7 @@
   (avatar-static)
   (header)
   (header-static)
-  (moved :nullable T)
+  (moved  :nullable T :translate-with #'decode-account)
   (fields :nullable T :translate-with #'convert-fields)
   (bot :nullable T)
   (source :nullable T))
