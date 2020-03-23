@@ -553,18 +553,20 @@
   (unmute-conversation client (id status)))
 
 ;;; Timelines
-(defun %timeline (client url &key (local NIL l-p) (only-media NIL o-p) max-id since-id (limit 20))
+(defun %timeline (client url &key (local NIL l-p) (only-media NIL o-p) max-id since-id min-id (limit 20))
   (check-type max-id (or null string))
   (check-type since-id (or null string))
+  (check-type min-id (or null string))
   (check-type limit (or null (integer 0)))
   (decode-status (query client (format NIL "/api/v1/timelines/~a" url)
                         :local (coerce-boolean local l-p)
                         :only-media (coerce-boolean only-media o-p)
                         :max-id max-id
                         :since-id since-id
+                        :min-id min-id
                         :limit limit)))
 
-(defgeneric timeline (client kind &key local only-media max-id since-id limit))
+(defgeneric timeline (client kind &key local only-media max-id since-id limit min-id))
 
 (defmethod timeline ((client client) (kind (eql :home)) &rest args)
   (apply #'%timeline client "home" args))
