@@ -207,8 +207,8 @@
 
 ;;; Follows
 
-(defmethod follow ((client client) (uri string))
-  (follow-remote client uri))
+;; (defmethod follow ((client client) (uri string))
+;;   (follow-remote client uri))
 
 (defmethod follow-remote ((client client) (uri string))
   (decode-account (submit client "/api/v1/follows"
@@ -574,14 +574,14 @@
 (defmethod timeline ((client client) (kind (eql :public)) &rest args)
   (apply #'%timeline client "public" args))
 
-(defmethod timeline ((client client) (tag string) &rest args)
+(defmethod timeline-tag ((client client) (tag string) &rest args)
   (apply #'%timeline client (format NIL "tag/~a" tag) args))
 
 (defmethod timeline ((client client) (id string) &rest args)
   (apply #'%timeline client (format NIL "list/~a" id) args))
 
 (defmethod timeline ((client client) (tag tag) &rest args)
-  (apply #'timeline client (name tag) args))
+  (apply #'timeline-tag client (name tag) args))
 
 (defmethod timeline ((client client) (user-list user-list) &rest args)
   (apply #'timeline client (id user-list) args))
