@@ -56,6 +56,7 @@
   (account-name :field "acct")
   (display-name)
   (locked)
+  (discoverable)
   (created-at :translate-with #'convert-timestamp)
   (followers-count)
   (following-count)
