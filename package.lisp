@@ -17,6 +17,7 @@
    #:account-name
    #:display-name
    #:locked
+   #:discoverable
    #:created-at
    #:followers-count
    #:following-count
