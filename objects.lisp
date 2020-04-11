@@ -321,3 +321,17 @@
   (day :translate-with #'convert-timestamp)
   (use-count :field "uses")
   (account-count :field "accounts"))
+
+(define-entity conversation
+  (id)
+  (accounts :translate-with #'decode-account)
+  (unread)
+  (last-status :field "last_status"))
+
+(defmethod print-object ((conversation conversation) stream)
+  (print-unreadable-object (conversation stream :type T)
+    (with-accessors ((id id)
+                     (accounts accounts)
+                     (last-status last-status)
+                     (unread unread)) conversation
+      (format stream "~a unread? ~a ~a ~a" id unread accounts last-status))))

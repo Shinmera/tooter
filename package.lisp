@@ -155,7 +155,12 @@
    #:tag-history
    #:day
    #:use-count
-   #:account-count))
+   #:account-count
+   #:conversation
+   #:id
+   #:accounts
+   #:unread
+   #:last-status))
 
 (defpackage #:tooter-queries
   (:nicknames #:org.shirakumo.tooter.queries)
@@ -222,7 +227,8 @@
    #:unmute-conversation
    #:timeline-tag
    #:timeline
-   #:trends))
+   #:trends
+   #:conversation))
 
 (defpackage #:tooter-client
   (:nicknames #:org.shirakumo.tooter.client)
