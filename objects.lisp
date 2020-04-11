@@ -326,7 +326,7 @@
   (id)
   (accounts :translate-with #'decode-account)
   (unread)
-  (last-status :field "last_status"))
+  (last-status :field "last_status" :translate-with #'decode-status))
 
 (defmethod print-object ((conversation conversation) stream)
   (print-unreadable-object (conversation stream :type T)

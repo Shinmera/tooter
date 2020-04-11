@@ -156,7 +156,7 @@
    #:day
    #:use-count
    #:account-count
-   #:conversation
+   #:conversations
    #:id
    #:accounts
    #:unread

@@ -596,8 +596,8 @@
 (defgeneric conversations (client &key limit max-id since-id min-id))
 
 (defmethod conversations (client &key (limit 20) max-id since-id min-id)
-  (decode-conversation (submit client (format NIL "/api/v1/conversations")
-                               :max-id max-id
-                               :since-id since-id
-                               :min-id min-id
-                               :limit limit)))
+  (decode-conversation (query client (format NIL "/api/v1/conversations")
+                              :max-id max-id
+                              :since-id since-id
+                              :min-id min-id
+                              :limit limit)))
