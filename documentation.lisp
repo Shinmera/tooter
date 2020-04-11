@@ -971,7 +971,24 @@ See TAG-HISTORY")
   (function account-count
     "Returns the number of accounts that made use of the hashtag on that day.
 
-See TAG-HISTORY"))
+See TAG-HISTORY")
+
+  (type conversation
+    "Representation of a private conversation (currently a conversation is private if
+visibility of a status is :DIRECT)
+
+See ID
+See ACCOUNTS
+See UNREAD
+See LAST-STATUS
+See VISIBILITY
+See STATUS")
+
+  (function unread
+    "Returns non nil if this converation has been marked not red")
+
+  (function last-status
+    "Returns the last STATUS of the conversation"))
 
 ;; queries.lisp
 (docs:define-docs
@@ -1007,7 +1024,7 @@ See ACCOUNT")
   (function get-followers
     "Return a list of followers for the account.
 
-The account can be an ACCOUNT instance, an account ID, or T for 
+The account can be an ACCOUNT instance, an account ID, or T for
 yourself.
 
 See CLIENT
@@ -1016,7 +1033,7 @@ See ACCOUNT")
   (function get-following
     "Return a list of accounts the account is following.
 
-The account can be an ACCOUNT instance, an account ID, or T for 
+The account can be an ACCOUNT instance, an account ID, or T for
 yourself.
 
 See CLIENT
@@ -1025,7 +1042,7 @@ See ACCOUNT")
   (function get-statuses
     "Return a list of statuses for the account.
 
-The account can be an ACCOUNT instance, an account ID, or T for 
+The account can be an ACCOUNT instance, an account ID, or T for
 yourself.
 
 See CLIENT
@@ -1519,7 +1536,7 @@ Returns the referenced status.
 
 See STATUS
 See CLIENT")
-  
+
   (function unmute-conversation
     "Unmute the conversation of the given status.
 
@@ -1549,6 +1566,12 @@ See USER-LIST")
   (function trends
     "Return a list of trending hashtags.
 
+See CLIENT")
+
+  (function conversations
+    "Return a list of conversation.
+
+See CONVERSATION
 See CLIENT"))
 
 ;; toolkit.lisp
