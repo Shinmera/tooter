@@ -974,8 +974,7 @@ See TAG-HISTORY")
 See TAG-HISTORY")
 
   (type conversation
-    "Representation of a private conversation (currently a conversation is private if
-visibility of a status is :DIRECT)
+    "Representation of a private conversation (currently a conversation is private if visibility of a status is :DIRECT)
 
 See ID
 See ACCOUNTS
