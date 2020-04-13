@@ -122,6 +122,9 @@
 (defmethod unmute ((client client) (account account))
   (unblock client (id account)))
 
+(defmethod get-activity ((client client))
+  (decode-activity (query client "/api/v1/instance/activity")))
+
 (defmethod relationships ((client client) (ids cons))
   (decode-relationship (query client "/api/v1/accounts/relationships"
                               :id (loop for id in ids
@@ -401,7 +404,7 @@
 (defmethod reports ((client client))
   (decode-report (query client "/api/v1/reports")))
 
-(defmethod make-report ((client client) (id string) &key statuses comment)
+(defmethod make-report ((client client) (id string) &key statuses comment forward)
   (check-type statuses list)
   (check-type comment string)
   (decode-report (submit client "/api/v1/reports"
@@ -410,7 +413,8 @@
                                            collect (etypecase status
                                                      (string status)
                                                      (status (id status))))
-                         :comment comment)))
+                         :comment comment
+                         :forward (coerce-boolean forward t))))
 
 (defmethod make-report ((client client) (account account) &rest args)
   (apply #'make-report client (id account) args))

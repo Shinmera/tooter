@@ -179,6 +179,7 @@
    #:unblock
    #:mute
    #:unmute
+   #:get-activity
    #:relationships
    #:search-accounts
    #:blocks
