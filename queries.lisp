@@ -411,7 +411,7 @@
                                                      (string status)
                                                      (status (id status))))
                          :comment comment
-                         :forward (coerce-boolean forward t)))
+                         :forward (coerce-boolean forward t))))
 
 (defmethod make-report ((client client) (account account) &rest args)
   (apply #'make-report client (id account) args))
