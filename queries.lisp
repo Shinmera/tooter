@@ -122,6 +122,9 @@
 (defmethod unmute ((client client) (account account))
   (unblock client (id account)))
 
+(defmethod get-activity ((client client))
+  (decode-activity (query client "/api/v1/instance/activity")))
+
 (defmethod relationships ((client client) (ids cons))
   (decode-relationship (query client "/api/v1/accounts/relationships"
                               :id (loop for id in ids
