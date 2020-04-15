@@ -46,10 +46,6 @@
        (defun ,(intern (format NIL "~a-~a" 'decode name)) (,data)
          (decode-entity ',name ,data)))))
 
-;; (defun convert-fields (fields)
-;;   (loop for field in fields
-;;         collect (cons (getj field :name) (getj field :value))))
-
 (define-entity field
   (name)
   (value)
