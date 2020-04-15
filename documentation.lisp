@@ -233,6 +233,28 @@ If the type is a symbol, a new instance of the given type is allocated
 and then filled in via DECODE-ENTITY. If the data is a list, a new
 instance is created and decoded for each entry in the list.")
 
+  (type field
+    "Represents a profile element as key value pair.
+
+See NAME
+See VALUE
+See VERIFIED-AT
+")
+
+  (function name
+    "Key value of the field.
+See FIELD")
+
+  (function value
+    "Value of the field.
+
+See FIELD")
+
+  (function verified-at
+    "Timesatmp when the server verified the url in the value of this field
+
+See FIELD")
+
   (type account
     "Represents a user account on the mastodon instance.
 
@@ -393,6 +415,35 @@ See ACCOUNT")
 This is only set for accounts retrieved through verify-credentials.
 
 See ACCOUNT")
+
+  (type activity
+    "Representation of statistsics about an instance activity.
+
+See WEEK
+See STATUSES
+See LOGINS
+See REGISTRATION")
+
+
+  (function week
+    "Timestamp for the first day of this week stats.
+
+See ACTIVITY")
+
+  (function statuses
+   "Number of statuses for this week
+
+See ACTIVITY")
+
+  (function logins
+   "Number of users login for this week
+
+See ACTIVITY")
+
+  (function registrations
+    "Number of registration for this week
+
+See ACTIVITY")
 
   (type application
     "Representation of an application as registered on a Mastodon instance.
@@ -821,6 +872,7 @@ See PARENT
 See CONTENT
 See CREATED-AT
 See EMOJIS
+See DISCOVERABLE
 See REBLOGS-COUNT
 See FAVOURITES-COUNT
 See REBLOGGED
@@ -834,6 +886,7 @@ See MENTIONS
 See TAGS
 See APPLICATION
 See LANGUAGE
+See BOT
 See PINNED")
 
   (function in-reply-to-id
@@ -861,6 +914,11 @@ See STATUS")
 
 See STATUS
 See EMOJI")
+
+  (function discoverable
+    "Return non nil if the status could be displayed in a public directory of the instance.
+
+See STATUS")
 
   (function reblogs-count
     "Returns the number of reblogs this status has received.
@@ -930,6 +988,11 @@ See APPLICATION")
 
   (function language
     "Returns the ISO-6391 code for the language this status is in.
+
+See STATUS")
+
+  (function bot
+    "Returns non nil if thids account is a bot.
 
 See STATUS")
 
@@ -1125,6 +1188,12 @@ conversation unmute.
 See CLIENT
 See ACCOUNT
 See RELATIONSHIP")
+
+  (function get-activity
+    "Get statistics from an instance
+
+See CLIENT
+See ACTIVITY")
 
   (function relationships
     "Returns a list of relationships for the given accounts.

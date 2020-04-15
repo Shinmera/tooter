@@ -46,9 +46,14 @@
        (defun ,(intern (format NIL "~a-~a" 'decode name)) (,data)
          (decode-entity ',name ,data)))))
 
-(defun convert-fields (fields)
-  (loop for field in fields
-        collect (cons (getj field :name) (getj field :value))))
+(define-entity field
+  (name)
+  (value)
+  (verified-at :field "verified_at" :translate-with #'convert-timestamp :nullable T))
+
+(defmethod print-object ((field field) stream)
+  (print-unreadable-object (field stream :type T)
+    (format stream "~a -> ~a verified-at ~a" (name field) (value field) (verified-at field))))
 
 (define-entity account
   (id)
@@ -56,6 +61,7 @@
   (account-name :field "acct")
   (display-name)
   (locked)
+  (emojis :translate-with #'decode-emoji)
   (discoverable)
   (created-at :translate-with #'convert-timestamp)
   (followers-count)
@@ -68,13 +74,28 @@
   (header)
   (header-static)
   (moved  :nullable T :translate-with #'decode-account)
-  (fields :nullable T :translate-with #'convert-fields)
+  (fields :nullable T :translate-with #'decode-field)
   (bot :nullable T)
   (source :nullable T))
 
 (defmethod print-object ((account account) stream)
   (print-unreadable-object (account stream :type T)
     (format stream "~a #~a" (account-name account) (id account))))
+
+(define-entity activity
+  (week :translate-with #'convert-timestamp)
+  (statuses)
+  (logins)
+  (registrations))
+
+(defmethod print-object ((activity activity) stream)
+  (with-accessors ((week week)
+                   (statuses statuses)
+                   (logins logins)
+                   (registrations registrations)) activity
+    (print-unreadable-object (activity stream :type T)
+      (format stream "week ~a statuses ~a logins ~a registrations ~a"
+              week statuses logins registrations))))
 
 (define-entity application
   (name)
