@@ -558,6 +558,11 @@
                         :min-id min-id
                         :limit limit)))
 
+(defgeneric timeline-tag (client tag &rest args))
+
+(defmethod timeline-tag ((client client) (tag string) &rest args)
+  (apply #'%timeline client (format NIL "tag/~a" tag) args))
+
 (defgeneric timeline (client kind &key local only-media max-id since-id limit min-id))
 
 (defmethod timeline ((client client) (kind (eql :home)) &rest args)
@@ -565,9 +570,6 @@
 
 (defmethod timeline ((client client) (kind (eql :public)) &rest args)
   (apply #'%timeline client "public" args))
-
-(defmethod timeline-tag ((client client) (tag string) &rest args)
-  (apply #'%timeline client (format NIL "tag/~a" tag) args))
 
 (defmethod timeline ((client client) (id string) &rest args)
   (apply #'%timeline client (format NIL "list/~a" id) args))
