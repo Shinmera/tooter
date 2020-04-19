@@ -83,13 +83,13 @@
 (defmethod get-statuses ((client client) (self (eql T)) &rest args)
   (apply #'get-statuses client (id (account client)) args))
 
+;;; Follows
+
 (defmethod follow ((client client) (id string))
   (decode-relationship (submit client (format NIL "/api/v1/accounts/~a/follow" id))))
 
 (defmethod follow ((client client) (account account))
-  (if (string= (username account) (account account))
-      (follow client (id account))
-      (follow-remote client (account-name account))))
+  (follow client (id account)))
 
 (defmethod unfollow ((client client) (id string))
   (decode-relationship (submit client (format NIL "/api/v1/accounts/~a/unfollow" id))))
@@ -207,18 +207,6 @@
 
 (defmethod reject-request ((client client) (account account))
   (reject-request client (id account)))
-
-;;; Follows
-
-;; (defmethod follow ((client client) (uri string))
-;;   (follow-remote client uri))
-
-(defmethod follow-remote ((client client) (uri string))
-  (decode-account (submit client "/api/v1/follows"
-                          :uri uri)))
-
-(defmethod follow-remote ((client client) (account account))
-  (follow-remote client (account-name account)))
 
 ;;; Instances
 
