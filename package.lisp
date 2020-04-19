@@ -226,6 +226,7 @@
    #:unpin
    #:mute-conversation
    #:unmute-conversation
+   #:timeline-tag
    #:timeline
    #:trends
    #:conversation))

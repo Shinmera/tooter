@@ -916,7 +916,7 @@ See STATUS
 See EMOJI")
 
   (function discoverable
-    "Return non nil if the status could be displayed in a public directory of the instance.
+    "Returns non nil if the status could be displayed in a public directory of the instance.
 
 See STATUS")
 
@@ -1084,7 +1084,7 @@ See CLIENT
 See ACCOUNT")
 
   (function get-followers
-    "Return a list of followers for the account.
+    "Returns a list of followers for the account.
 
 The account can be an ACCOUNT instance, an account ID, or T for
 yourself.
@@ -1093,7 +1093,7 @@ See CLIENT
 See ACCOUNT")
 
   (function get-following
-    "Return a list of accounts the account is following.
+    "Returns a list of accounts the account is following.
 
 The account can be an ACCOUNT instance, an account ID, or T for
 yourself.
@@ -1102,7 +1102,7 @@ See CLIENT
 See ACCOUNT")
 
   (function get-statuses
-    "Return a list of statuses for the account.
+    "Returns a list of statuses for the account.
 
 The account can be an ACCOUNT instance, an account ID, or T for
 yourself.
@@ -1617,27 +1617,30 @@ See STATUS
 See CLIENT")
 
   (function timeline
-    "Return statuses for the specified timeline.
+    "Returns statuses for the specified timeline.
 
 The KIND can be one of the following:
-  :HOME      --- Return statuses for your home timeline. This includes
+  :HOME      --- Returns statuses for your home timeline. This includes
                  your own and statuses of all accounts you follow.
-  :PUBLIC    --- Return statuses for your instance's public timeline.
-  STRING     --- Return statuses for the given hashtag.
-  INTEGER    --- Return statuses for the given user-list's accounts.
-  USER-LIST  --- Return statuses for the given user-list's accounts.
+  :PUBLIC    --- Returns statuses for your instance's public timeline.
+  STRING     --- Returns statuses for the given user-list's accounts.
+  USER-LIST  --- Returns statuses for the given user-list's accounts.
+  TAG        --- Returns statuses for the given hashtag.
 
 See STATUS
 See CLIENT
 See USER-LIST")
 
+  (function timeline-tag
+   "Returns statuses for the given hashtag.")
+
   (function trends
-    "Return a list of trending hashtags.
+    "Returns a list of trending hashtags.
 
 See CLIENT")
 
   (function conversations
-    "Return a list of conversation.
+    "Returns a list of conversation.
 
 See CONVERSATION
 See CLIENT"))
