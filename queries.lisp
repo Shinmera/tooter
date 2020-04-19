@@ -83,13 +83,13 @@
 (defmethod get-statuses ((client client) (self (eql T)) &rest args)
   (apply #'get-statuses client (id (account client)) args))
 
+;;; Follows
+
 (defmethod follow ((client client) (id string))
   (decode-relationship (submit client (format NIL "/api/v1/accounts/~a/follow" id))))
 
 (defmethod follow ((client client) (account account))
-  (if (string= (username account) (account account))
-      (follow client (id account))
-      (follow-remote client (account-name account))))
+  (follow client (id account)))
 
 (defmethod unfollow ((client client) (id string))
   (decode-relationship (submit client (format NIL "/api/v1/accounts/~a/unfollow" id))))
@@ -207,18 +207,6 @@
 
 (defmethod reject-request ((client client) (account account))
   (reject-request client (id account)))
-
-;;; Follows
-
-(defmethod follow ((client client) (uri string))
-  (follow-remote client uri))
-
-(defmethod follow-remote ((client client) (uri string))
-  (decode-account (submit client "/api/v1/follows"
-                          :uri uri)))
-
-(defmethod follow-remote ((client client) (account account))
-  (follow-remote client (account-name account)))
 
 ;;; Instances
 
@@ -570,6 +558,11 @@
                         :min-id min-id
                         :limit limit)))
 
+(defgeneric timeline-tag (client tag &rest args))
+
+(defmethod timeline-tag ((client client) (tag string) &rest args)
+  (apply #'%timeline client (format NIL "tag/~a" tag) args))
+
 (defgeneric timeline (client kind &key local only-media max-id since-id limit min-id))
 
 (defmethod timeline ((client client) (kind (eql :home)) &rest args)
@@ -578,14 +571,11 @@
 (defmethod timeline ((client client) (kind (eql :public)) &rest args)
   (apply #'%timeline client "public" args))
 
-(defmethod timeline ((client client) (tag string) &rest args)
-  (apply #'%timeline client (format NIL "tag/~a" tag) args))
-
 (defmethod timeline ((client client) (id string) &rest args)
   (apply #'%timeline client (format NIL "list/~a" id) args))
 
 (defmethod timeline ((client client) (tag tag) &rest args)
-  (apply #'timeline client (name tag) args))
+  (apply #'timeline-tag client (name tag) args))
 
 (defmethod timeline ((client client) (user-list user-list) &rest args)
   (apply #'timeline client (id user-list) args))
