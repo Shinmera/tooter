@@ -343,6 +343,15 @@
   (use-count :field "uses")
   (account-count :field "accounts"))
 
+(defmethod print-object ((tag-history tag-history) stream)
+  (print-unreadable-object (tag-history stream :type T)
+    (with-accessors ((day day)
+                     (use-count use-count)
+                     (account-count account-count)) tag-history
+      (format stream
+              "day: ~a use-count: ~a account-count: ~a"
+              day use-count account-count))))
+
 (define-entity conversation
   (id)
   (accounts :translate-with #'decode-account)
