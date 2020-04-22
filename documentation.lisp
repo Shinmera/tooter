@@ -622,7 +622,9 @@ See PROVIDER-NAME
 See PROVIDER-URL
 See HTML
 See WIDTH
-See HEIGHT")
+See HEIGHT
+See IMAGE
+See EMBED-URL")
 
   (function title
     "Returns the title of the object.
@@ -661,6 +663,16 @@ See CARD")
 
 See CARD")
 
+  (function image
+    "Preview (URL)
+
+See CARD")
+
+  (function embed-url
+    "photo embedding (URL)
+
+See CARD")
+
   (type context
     "An object representing a status' context.
 
@@ -683,8 +695,9 @@ See CONTEXT")
     "Representation of a custom emoticon on the instance.
 
 See SHORTCODE
+See URL
 See STATIC-URL
-See URL")
+See VISIBLE-IN-PICKER")
 
   (function shortcode
     "Returns the short code to display the emoji.
@@ -1064,7 +1077,49 @@ See STATUS")
     "Returns non nil if this converation has been marked not red")
 
   (function last-status
-    "Returns the last STATUS of the conversation"))
+    "Returns the last STATUS of the conversation")
+
+  (type featured-tag
+    "Representation of tags most visited by a profile
+
+See ID
+See NAME
+See STATUSES-COUNT
+See LAST-STATUS-AT")
+
+  (function last-status-at
+    "Timestamp of the last status mentioning the tag")
+
+  (type filter
+    "Representation of a filter (defined by the user) to make invisible unwanted statuses
+
+See PHRASE
+See FILTER-CONTEXT
+See EXPIRES-AT
+See IRREVERSIBLE
+See WHOLE-WORD")
+
+  (function phrase
+    "Returns the filter's text")
+
+  (function filter-context
+    "Returns Where the filter is applied.
+
+Possible values are:
+
+\"home\"          --- home timeline
+\"notifications\" --- notifications
+\"public\"        --- public timeline
+\"thread\"        --- message's thread")
+
+  (function expires-at
+    "Returns the expiration date of the filter")
+
+  (function irreversible
+    "Returns if the server should drop the matching entities")
+
+  (function whole-word
+    "Returns if the filter take into account word limit") )
 
 ;; queries.lisp
 (docs:define-docs

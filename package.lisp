@@ -74,13 +74,16 @@
    #:html
    #:width
    #:height
+   #:image
+   #:embed-url
    #:context
    #:ancestors
    #:descendants
    #:emoji
    #:shortcode
-   #:static-url
    #:url
+   #:static-url
+   #:visible-in-picker
    #:instance
    #:uri
    #:title
@@ -162,7 +165,19 @@
    #:id
    #:accounts
    #:unread
-   #:last-status))
+   #:last-status
+   #:featured-tag
+   #:id
+   #:name
+   #:statuses-count
+   #:last-status-at
+   #:filter
+   #:id
+   #:phrase
+   #:context
+   #:expires-at
+   #:irreversible
+   #:whole-word))
 
 (defpackage #:tooter-queries
   (:nicknames #:org.shirakumo.tooter.queries)

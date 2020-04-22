@@ -168,7 +168,6 @@
   (url)
   (title)
   (description)
-  (image :nullable T)
   (kind :field "type" :translate-with #'to-keyword)
   (author-name :nullable T)
   (author-url :nullable T)
@@ -176,7 +175,9 @@
   (provider-url :nullable T)
   (html :nullable T)
   (width :nullable T)
-  (height :nullable T))
+  (height :nullable T)
+  (image :nullable T)
+  (embed-url :field "embed_url" :nullable T))
 
 (defmethod print-object ((card card) stream)
   (print-unreadable-object (card stream :type T)
@@ -188,8 +189,9 @@
 
 (define-entity emoji
   (shortcode)
+  (url)
   (static-url)
-  (url))
+  (visible-in-picker :field "visible_in_picker"))
 
 (defmethod print-object ((emoji emoji) stream)
   (print-unreadable-object (emoji stream :type T)
@@ -367,3 +369,39 @@
                      (last-status last-status)
                      (unread unread)) conversation
       (format stream "~a unread? ~a ~a ~a" id unread accounts last-status))))
+
+(define-entity featured-tag
+  (id)
+  (name)
+  (statuses-count :field "statuses_count" :translate-with #'parse-integer)
+  (last-status-at :field "last_status_at" :translate-with #'convert-timestamp))
+
+(defmethod print-object ((featured-tag featured-tag) stream)
+  (print-unreadable-object (featured-tag stream :type T)
+    (with-accessors ((id id)
+                     (name name)
+                     (statuses-count statuses-count)
+                     (last-status-at last-status-at)) featured-tag
+      (format stream
+              "~a name ~a  count ~a last status at ~a"
+              id name statuses-count last-status-at))))
+
+(define-entity filter
+  (id)
+  (phrase)
+  (filter-context)
+  (expires-at :field "expires_at" :translate-with #'convert-timestamp)
+  (irreversible)
+  (whole-word :field "whole_word"))
+
+(defmethod print-object ((filter filter) stream)
+  (print-unreadable-object (filter stream :type T)
+    (with-accessors ((id id)
+                     (phrase phrase)
+                     (filter-context filter-context)
+                     (expires-at expires-at)
+                     (irreversible irreversible)
+                     (whole-word whole-word)) filter
+      (format stream
+              "~a phrase ~a context ~a expires at ~a irreversible? ~a whole word? ~a"
+              id phrase filter-context expires-at irreversible whole-word))))
