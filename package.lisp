@@ -35,6 +35,7 @@
    #:application
    #:name
    #:website
+   #:vapid-key
    #:attachment
    #:id
    #:kind
@@ -44,6 +45,7 @@
    #:text-url
    #:metadata
    #:description
+   #:blurhash
    #:metadata
    #:small
    #:original
