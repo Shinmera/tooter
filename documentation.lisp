@@ -449,7 +449,8 @@ See ACTIVITY")
     "Representation of an application as registered on a Mastodon instance.
 
 See NAME
-See WEBSITE")
+See WEBSITE
+See VAPID-KEY")
 
   (function name
     "Returns the name of the object.
@@ -464,6 +465,13 @@ See TAG")
 See APPLICATION
 See CLIENT")
 
+  (function VAPID-KEY
+    "Returns the key for PUSH streaming API.
+
+See APPLICATION
+See CLIENT")
+
+
   (type attachment
     "Representation of a media attachment for a status.
 
@@ -474,7 +482,8 @@ See REMOTE-URL
 See PREVIEW-URL
 See TEXT-URL
 See METADATA
-See DESCRIPTION")
+See DESCRIPTION
+See BLURHASH")
 
   (function kind
     "Returns the type/kind of object this instance is representing.
@@ -509,6 +518,11 @@ See ATTACHMENT")
 See ATTACHMENT
 See CARD
 See INSTANCE")
+
+(function description
+    "Returns the hash of the attachment as computed by blurhash algorithm. This is actually a very small preview of the attachment
+
+See ATTACHMENT")
 
   (type metadata
     "This object holds metadata information for media objects.

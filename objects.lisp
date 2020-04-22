@@ -99,7 +99,8 @@
 
 (define-entity application
   (name)
-  (website :nullable T))
+  (website :nullable T)
+  (vapid-key :field "vapid_key" :nullable T))
 
 (defmethod print-object ((application application) stream)
   (print-unreadable-object (application stream :type T)
@@ -109,11 +110,12 @@
   (id)
   (kind :field "type" :translate-with #'to-keyword)
   (url)
-  (remote-url :nullable T)
   (preview-url)
+  (remote-url :nullable T)
   (text-url :nullable T)
   (metadata :field NIL :nullable T :translate-with #'%decode-metadata)
-  (description :nullable T))
+  (description :nullable T)
+  (blurhash :nullable T))
 
 (defmethod print-object ((attachment attachment) stream)
   (print-unreadable-object (attachment stream :type T)
@@ -342,6 +344,15 @@
   (day :translate-with #'convert-timestamp)
   (use-count :field "uses")
   (account-count :field "accounts"))
+
+(defmethod print-object ((tag-history tag-history) stream)
+  (print-unreadable-object (tag-history stream :type T)
+    (with-accessors ((day day)
+                     (use-count use-count)
+                     (account-count account-count)) tag-history
+      (format stream
+              "day: ~a use-count: ~a account-count: ~a"
+              day use-count account-count))))
 
 (define-entity conversation
   (id)
