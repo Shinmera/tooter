@@ -805,7 +805,6 @@ See MARKER")
 
 See MARKER")
 
-
   (type mention
     "Representation of an account mention in a status.
 
@@ -827,6 +826,53 @@ See STATUS")
     "Returns the status the notification is about.
 
 See NOTIFICATION")
+
+
+  (type poll
+    "Representation of a users poll
+
+See EXPIRES-AT
+See EXPIRED
+See MULTIPLE
+See VOTERS-COUNT
+See VOTED
+See OWN-VOTES
+See EMOJIS")
+
+  (function expires-at
+    "Returns the expiration date of the poll.
+
+See POLL")
+
+  (function expired
+    "Returns if the poll has expired
+
+See POLL")
+
+  (function multiple
+    "Returns if the poll admits multiple choices
+
+See POLL")
+
+  (function voters-count
+    "Returns the number of votes collected so far
+
+See POLL")
+
+  (function voted
+    "Returns if an user has voted (requires to be called with a valid user token.
+
+See POLL")
+
+  (function own-votes
+    "Returns the choice of an user (requires to be called with a valid user token.
+
+See POLL")
+
+  (defun poll-options
+    "Returns the possible choiches for this poll.
+
+See POLL")
 
   (type push-subscription
     "Representation of a push notification subscription.

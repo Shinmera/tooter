@@ -228,8 +228,8 @@
     (format stream "~s #~a" (title user-list) (id user-list))))
 
 (define-entity marker
-  (marked-home)
-  (marked-notifications))
+  (marked-home :field "home")
+  (marked-notifications :filed "notifications"))
 
 (defmethod print-object ((marker marker) stream)
   (print-unreadable-object (marker stream :type T)
@@ -256,6 +256,21 @@
   (print-unreadable-object (notification stream :type T)
     (format stream "~a ~a #~a" (kind notification) (account-name (account notification))
             (id notification))))
+
+(define-entity poll
+  (id)
+  (expires-at :field "expires_at" :translate-with #'convert-timestamp)
+  (expired)
+  (multiple)
+  (voters-count :field "voters_count")
+  (voted :nullable T)
+  (own-votes :field "own_votes")
+  (poll-options :field "options")
+  (emojis :translate-with #'decode-emoji))
+
+(defmethod print-object ((poll poll) stream)
+  (print-unreadable-object (poll stream :type T)
+    (format stream "~a" (id poll))))
 
 (define-entity push-subscription
   (id)

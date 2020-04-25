@@ -115,6 +115,16 @@
    #:created-at
    #:account
    #:status
+   #:poll
+   #:id
+   #:expires-at
+   #:expired
+   #:multiple
+   #:voters-count
+   #:voted
+   #:own-votes
+   #:poll-options
+   #:emojis
    #:push-subscription
    #:id
    #:endpoint
