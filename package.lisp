@@ -102,8 +102,8 @@
    #:id
    #:title
    #:marker
-   #:home
-   #:notifications
+   #:marked-home
+   #:marked-notifications
    #:mention
    #:url
    #:username

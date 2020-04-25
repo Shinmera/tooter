@@ -792,13 +792,19 @@ See TITLE")
   (type marker
     "Representation of the user last read position in a timeline.
 
-See HOME
-See NOTIFICATION")
+See MARKED-HOME
+See MARKED-NOTIFICATION")
 
-  (function home
-    "Returns the position in home timeline
+  (function marked-home
+    "Returns information about last position in home timeline
 
 See MARKER")
+
+  (function marked-notification
+    "Returns information about last position in user's notification
+
+See MARKER")
+
 
   (type mention
     "Representation of an account mention in a status.

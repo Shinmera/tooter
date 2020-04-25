@@ -228,12 +228,12 @@
     (format stream "~s #~a" (title user-list) (id user-list))))
 
 (define-entity marker
-  (home)
-  (notifications))
+  (marked-home)
+  (marked-notifications))
 
 (defmethod print-object ((marker marker) stream)
   (print-unreadable-object (marker stream :type T)
-    (format stream "home ~s #~a" (home marker) (notifications marker))))
+    (format stream "home ~s #~a" (marked-home marker) (notifications marker))))
 
 (define-entity mention
   (url)
