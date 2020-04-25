@@ -76,7 +76,7 @@
   (moved  :nullable T :translate-with #'decode-account)
   (fields :nullable T :translate-with #'decode-field)
   (bot :nullable T)
-  (source :nullable T))
+  (source :nullable T :translate-with #'decode-source))
 
 (defmethod print-object ((account account) stream)
   (print-unreadable-object (account stream :type T)
@@ -275,7 +275,7 @@
 (define-entity preferences
   (posting-default-visibility :field "posting:default:visibility")
   (posting-default-sensitive :field "posting:default:sensitive")
-  (posting-default-language :field "posting:default:language" :translate-with #'translate-languages)
+  (posting-default-language :field "posting:default:language" :translate-with #'to-keyword)
   (reading-expand-media :field "reading:expand:media")
   (reading-expand-spoilers :field "reading:expand:spoilers"))
 
@@ -403,6 +403,18 @@
               (reblogs-count status)
               (favourites-count status)))))
 
+(define-entity source
+  (note)
+  (fields :translate-with #'decode-field)
+  (privacy)
+  (sensitive)
+  (language :translate-with #'to-keyword)
+  (follow-requests-count :fields "follow_requests_count" :translate-with #'parse-integer))
+
+(defmethod print-object ((source source) stream)
+  (print-unreadable-object (source stream :type T)
+    (format stream "~a" (note source))))
+
 (define-entity tag
   (name)
   (url)
@@ -495,3 +507,19 @@
       (format stream
               "provider ~a provider username ~a profile url ~a proof url ~a  updated at ~a"
               provider provider-username profile-url proof-url updated-at))))
+
+(define-entity token
+  (access-token :field "access_token")
+  (token-type :field "token_type")
+  (scope)
+  (created-at :field "created_at" :translate-with #'convert-timestamp))
+
+(defmethod print-object ((token token) stream)
+  (print-unreadable-object (token stream :type T)
+    (with-accessors ((access-token access-token)
+                     (token-type token-type)
+                     (scope scope)
+                     (created-at created-at)) token
+      (format stream
+              "access token ~a type ~a scope ~a created at ~a"
+              access-token token-type scope created-at))))

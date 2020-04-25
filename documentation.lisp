@@ -1204,6 +1204,41 @@ See STATUS")
 
 See STATUS")
 
+  (type source
+    "Representation account preferences
+
+See NOTE
+See FIELDS
+See PRIVACY
+See SENSITIVE
+See LANGUAGE
+See FOLLOW-REQUESTS-COUNT")
+
+  (function note
+    "Returns the user biography.
+
+See SOURCE")
+
+  (function fields
+    "Returns the user metadata.
+
+See SOURCE")
+
+  (function privacy
+    "Returns the default privacy mode for the statuses.
+
+See SOURCE")
+
+  (function sensitive
+    "Returns if the the user biography.
+
+See SOURCE")
+
+  (function follow-requests-count
+    "Returns the number of follow requests.
+
+See SOURCE")
+
   (type tag
     "Representation of a hashtag used in a status.
 
@@ -1335,7 +1370,36 @@ See IDENTITY-PROOF")
   (function updated-at
     "Update time
 
-See IDENTITY-PROOF"))
+See IDENTITY-PROOF")
+
+  (type token
+    "Representation of autorization credentials
+
+See ACCESS-TOKEN
+See TOKEN-TYPE
+See SCOPE
+See CREATED-AT")
+
+  (function access-token
+   "Returns the oauth access token.
+
+See TOKEN
+")
+
+  (function token-type
+   "Returns the oauth access token type ('Bearer' for mastodon).
+
+See TOKEN")
+
+  (function scope
+   "Returns the oauth access token scope (space separated fields).
+
+See TOKEN")
+
+(function created-at
+   "Returns the time when the token was created.
+
+See TOKEN"))
 
 ;; queries.lisp
 (docs:define-docs

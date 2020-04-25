@@ -184,6 +184,13 @@
    #:application
    #:language
    #:pinned
+   #:source
+   #:note
+   #:fields
+   #:privacy
+   #:sensitive
+   #:language
+   #:follow-requests-count
    #:tag
    #:name
    #:url
@@ -214,7 +221,12 @@
    #:provider-username
    #:profile-url
    #:proof-url
-   #:updated-at))
+   #:updated-at
+   #:token
+   #:access-token
+   #:token-type
+   #:scope
+   #:created-at))
 
 (defpackage #:tooter-queries
   (:nicknames #:org.shirakumo.tooter.queries)
