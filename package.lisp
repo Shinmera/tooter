@@ -88,10 +88,15 @@
    #:uri
    #:title
    #:description
+   #:short-description
    #:email
    #:version
-   #:urls
    #:languages
+   #:registrations
+   #:approval-required
+   #:urls
+   #:stats
+   #:thumbnail
    #:contact-account
    #:user-list
    #:id
