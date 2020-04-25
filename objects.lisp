@@ -272,6 +272,27 @@
   (print-unreadable-object (poll stream :type T)
     (format stream "~a" (id poll))))
 
+(define-entity preferences
+  (posting-default-visibility :field "posting:default:visibility")
+  (posting-default-sensitive :field "posting:default:sensitive")
+  (posting-default-language :field "posting:default:language" :translate-with #'translate-languages)
+  (reading-expand-media :field "reading:expand:media")
+  (reading-expand-spoilers :field "reading:expand:spoilers"))
+
+(defmethod print-object ((preferences preferences) stream)
+  (print-unreadable-object (preferences stream :type T)
+    (with-accessors ((posting-default-visibility posting-default-visibility)
+                     (posting-default-sensitive posting-default-sensitive)
+                     (posting-default-language posting-default-language)
+                     (reading-expand-media reading-expand-media)
+                     (reading-expand-spoilers reading-expand-spoilers)) preferences
+      (format stream "posting default visibility ~a posting default sensitive ~a posting default language ~a reading expand media ~a reading expand spoilers ~a"
+              posting-default-visibility
+              posting-default-sensitive
+              posting-default-language
+              reading-expand-media
+              reading-expand-spoilers))))
+
 (define-entity push-subscription
   (id)
   (endpoint)

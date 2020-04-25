@@ -125,6 +125,12 @@
    #:own-votes
    #:poll-options
    #:emojis
+   #:preferences
+   #:posting-default-visibility
+   #:posting-default-sensitive
+   #:posting-default-language
+   #:reading-expand-media
+   #:reading-expand-spoilers
    #:push-subscription
    #:id
    #:endpoint

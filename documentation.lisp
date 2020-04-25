@@ -869,10 +869,44 @@ See POLL")
 
 See POLL")
 
-  (defun poll-options
+  (function poll-options
     "Returns the possible choiches for this poll.
 
 See POLL")
+
+  (type preferences
+    "Representation of the user preferences.
+
+See POSTING-DEFAULT-VISIBILITY
+See POSTING-DEFAULT-SENSITIVE
+See POSTING-DEFAULT-LANGUAGE
+See READING-EXPAND-MEDIA
+See READING-EXPAND-SPOILERS")
+
+  (function posting-default-visibility
+    "Returns the default visibility for post.
+
+See PREFERENCES")
+
+  (function posting-default-sensitive
+    "Returns if flag post as 'sensible' by default.
+
+See PREFERENCES")
+
+  (function posting-default-language
+     "Return the default language for post.
+
+See PREFERENCES")
+
+  (function reading-expand-media
+    "Returns if blur media of the post.
+
+See PREFERENCES")
+
+   (function reading-expand-spoilers
+    "Returns if expands posts marked as 'sensible'.
+
+See PREFERENCES")
 
   (type push-subscription
     "Representation of a push notification subscription.
