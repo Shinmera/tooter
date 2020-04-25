@@ -265,7 +265,7 @@
   (voters-count :field "voters_count")
   (voted :nullable T)
   (own-votes :field "own_votes")
-  (poll-options :field "options")
+  (options)
   (emojis :translate-with #'decode-emoji))
 
 (defmethod print-object ((poll poll) stream)
@@ -320,6 +320,7 @@
   (print-unreadable-object (relationship stream :type T)
     (format stream "#~a" (id relationship))))
 
+;; TODO check official documentation because currently is WIP 2020-08-25
 (define-entity report
   (id)
   (action-taken))
@@ -329,9 +330,26 @@
     (format stream "~a #~a" (action-taken report) (id report))))
 
 (define-entity results
-  (accounts :translate-with #'decode-account)
-  (statuses :translate-with #'decode-status)
+  (results-accounts :field "accounts" :translate-with #'decode-account)
+  (results-statuses :field "statuses" :translate-with #'decode-status)
   (hashtags))
+
+(defmethod print-object ((results results) stream)
+  (print-unreadable-object (results stream :type T)
+    (format stream
+            "account ~a statuses ~a"
+            (results-accounts results)
+            (results-statuses results))))
+
+;; TODO check official documentation because currently is WIP 2020-08-25
+(define-entity scheduled-status
+  (id)
+  (scheduled-at :field "scheduled_at" :translate-with #'convert-timestamp)
+  (params))
+
+(defmethod print-object ((scheduled-status scheduled-status) stream)
+  (print-unreadable-object (scheduled-status stream :type T)
+    (format stream "~a" (id scheduled-status))))
 
 (define-entity status
   (id)

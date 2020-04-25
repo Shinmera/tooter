@@ -424,16 +424,16 @@ See STATUSES
 See LOGINS
 See REGISTRATION")
 
-
   (function week
     "Timestamp for the first day of this week stats.
 
 See ACTIVITY")
 
   (function statuses
-   "Number of statuses for this week
+   "Number of statuses
 
-See ACTIVITY")
+See ACTIVITY
+See RESULTS")
 
   (function logins
    "Number of users login for this week
@@ -837,6 +837,7 @@ See MULTIPLE
 See VOTERS-COUNT
 See VOTED
 See OWN-VOTES
+See OPTIONS
 See EMOJIS")
 
   (function expires-at
@@ -869,7 +870,7 @@ See POLL")
 
 See POLL")
 
-  (function poll-options
+  (function options
     "Returns the possible choiches for this poll.
 
 See POLL")
@@ -1015,17 +1016,17 @@ See REPORT")
   (type results
     "Representation of a search result.
 
-See ACCOUNTS
-See STATUSES
+See RESULTS-ACCOUNTS
+See RESULTS-STATUSES
 See HASHTAGS")
 
-  (function accounts
-    "Returns a list of matching accounts.
+  (function results-statuses
+    "Returns a list of matching status.
 
 See RESULTS")
 
-  (function statuses
-    "Returns a list of matching statuses.
+  (function results-accounts
+    "Returns a list of matching accounts.
 
 See RESULTS")
 
@@ -1033,6 +1034,30 @@ See RESULTS")
     "Returns a list of matching hashtags as strings.
 
 See RESULTS")
+
+  (type scheduled-status
+    "Representation of a status programmed to be sent in the future.
+
+See ID
+See SCHEDULED-AT
+See PARAMS")
+
+  (function scheduled-status
+    "Returns a list of matching hashtags as strings.
+
+See ID
+See SCHEDULED-STATUS
+See PARAMS")
+
+  (function scheduled-at
+    "Returns ...
+
+See SCHEDULED-STATUS")
+
+  (function params
+    "Returns ...
+
+See SCHEDULED-STATUS")
 
   (type status
     "Representation of a status update.

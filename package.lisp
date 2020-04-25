@@ -123,7 +123,7 @@
    #:voters-count
    #:voted
    #:own-votes
-   #:poll-options
+   #:options
    #:emojis
    #:preferences
    #:posting-default-visibility
@@ -152,9 +152,13 @@
    #:id
    #:action-taken
    #:results
-   #:accounts
-   #:statuses
+   #:results-accounts
+   #:results-statuses
    #:hashtags
+   #:scheduled-status
+   #:id
+   #:scheduled-at
+   #:params
    #:status
    #:id
    #:uri
