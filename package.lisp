@@ -177,7 +177,13 @@
    #:context
    #:expires-at
    #:irreversible
-   #:whole-word))
+   #:whole-word
+   #:identity-proof
+   #:provider
+   #:provider-username
+   #:profile-url
+   #:proof-url
+   #:updated-at))
 
 (defpackage #:tooter-queries
   (:nicknames #:org.shirakumo.tooter.queries)

@@ -405,3 +405,23 @@
       (format stream
               "~a phrase ~a context ~a expires at ~a irreversible? ~a whole word? ~a"
               id phrase filter-context expires-at irreversible whole-word))))
+
+(define-entity identity-proof
+  (provider)
+  (provider-username :field "provider_username")
+  (profile-url :field "profile_url")
+  (proof-url :field "proof_url")
+  (updated-at :field "updated_at" :translate-with #'convert-timestamp))
+
+(defmethod print-object ((identity-proof identity-proof) stream)
+  (print-unreadable-object (identity-proof stream :type T)
+    (with-accessors ((provider provider)
+                     (provider-username provider-username)
+                     (profile-url profile-url)
+                     (proof-url proof-url)
+                     (updated-at updated-at)
+                     (irreversible irreversible)
+                     (whole-word whole-word)) identity-proof
+      (format stream
+              "provider ~a provider username ~a profile url ~a proof url ~a  updated at ~a"
+              provider provider-username profile-url proof-url updated-at))))

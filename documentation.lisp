@@ -1113,13 +1113,53 @@ Possible values are:
 \"thread\"        --- message's thread")
 
   (function expires-at
-    "Returns the expiration date of the filter")
+    "Returns the expiration date of the filter
+
+See FILTER")
 
   (function irreversible
-    "Returns if the server should drop the matching entities")
+    "Returns if the server should drop the matching entities
+
+See FILTER")
 
   (function whole-word
-    "Returns if the filter take into account word limit") )
+    "Returns if the filter take into account word limit
+
+See FILTER")
+
+  (type identity-proof
+    "Representation of an identity provider
+
+See PROVIDER
+See PROVIDER-USERNAME
+See PROFILE-URl
+See PROOF-URL
+See UPDATED-AT")
+
+  (function provider
+    "Returns the name of the identity provider
+
+See IDENTITY-PROOF")
+
+  (function provider-username
+    "Returns the username on the identity provider
+
+See IDENTITY-PROOF")
+
+  (function profile-url
+    "Returns the URL of the profile on the identity provider
+
+See IDENTITY-PROOF")
+
+  (function proof-url
+    "Returns the URL of the proof of identity on the identity provider
+
+See IDENTITY-PROOF")
+
+  (function updated-at
+    "Update time
+
+See IDENTITY-PROOF"))
 
 ;; queries.lisp
 (docs:define-docs
