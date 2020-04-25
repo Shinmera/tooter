@@ -789,6 +789,17 @@ See INSTANCE")
 See ID
 See TITLE")
 
+  (type marker
+    "Representation of the user last read position in a timeline.
+
+See HOME
+See NOTIFICATION")
+
+  (function home
+    "Returns the position in home timeline
+
+See MARKER")
+
   (type mention
     "Representation of an account mention in a status.
 
@@ -1518,6 +1529,7 @@ See CLIENT")
   (function notifications
     "Returns a list of notifications about status updates.
 
+See MARKER
 See NOTIFICATION
 See CLIENT")
 

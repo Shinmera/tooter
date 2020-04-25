@@ -101,6 +101,9 @@
    #:user-list
    #:id
    #:title
+   #:marker
+   #:home
+   #:notifications
    #:mention
    #:url
    #:username

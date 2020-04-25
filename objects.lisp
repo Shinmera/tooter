@@ -227,6 +227,14 @@
   (print-unreadable-object (user-list stream :type T)
     (format stream "~s #~a" (title user-list) (id user-list))))
 
+(define-entity marker
+  (home)
+  (notifications))
+
+(defmethod print-object ((marker marker) stream)
+  (print-unreadable-object (marker stream :type T)
+    (format stream "home ~s #~a" (home marker) (notifications marker))))
+
 (define-entity mention
   (url)
   (username)
