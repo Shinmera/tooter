@@ -515,6 +515,7 @@ See ATTACHMENT")
   (function description
     "Returns a textual description of the contents of the object.
 
+See INSTANCE
 See ATTACHMENT
 See CARD
 See INSTANCE")
@@ -715,10 +716,15 @@ See EMOJI")
 See URI
 See TITLE
 See DESCRIPTION
+See SHORT-DESCRIPTION
 See EMAIL
 See VERSION
-See URLS
 See LANGUAGES
+See REGISTRATIONS
+See APPROVAL-REQUIRED
+See URLS
+See STATS
+See THUMBNAIL
 See CONTACT-ACCOUNT")
 
   (function uri
@@ -732,8 +738,28 @@ See STATUS")
 
 See INSTANCE")
 
+  (function short-description
+    "Returns a short description of the object.
+
+See INSTANCE")
+
   (function version
     "Returns the instance's Mastodon version.
+
+See INSTANCE")
+
+  (function languages
+    "A list of ISO-6391 language codes that the instance advertises.
+
+See INSTANCE")
+
+  (function registrations
+    "Returns if is possible to register an user with this instance.
+
+See INSTANCE")
+
+  (function approval-required
+    "Returns if approval from moderator is required to register to this instance.
 
 See INSTANCE")
 
@@ -742,8 +768,13 @@ See INSTANCE")
 
 See INSTANCE")
 
-  (function languages
-    "A list of ISO-6391 language codes that the instance advertises.
+  (function stats
+    "Statistics about this instance (hashmap with legal keys: 'user-count', 'status-count', 'domain-count'.
+
+See INSTANCE")
+
+  (function thumbnail
+    "banner of this instance.
 
 See INSTANCE")
 
