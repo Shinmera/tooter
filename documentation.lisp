@@ -936,15 +936,28 @@ See PUSH-SUBSCRIPTION")
 
 See ID
 See FOLLOWING
+See REQUESTED
 See FOLLOWED-BY
 See BLOCKING
 See MUTING
 See MUTING-NOTIFICATIONS
+See SHOWING-REBLOGS
 See REQUESTED
-See DOMAIN-BLOCKING")
+See DOMAIN-BLOCKING
+See BLOCKED-BY")
 
   (function following
     "Returns whether you are following this account.
+
+See RELATIONSHIP")
+
+  (function requested
+    "Returns if this user has requested to follow you.
+
+See RELATIONSHIP")
+
+  (function requested
+    "Returns if you are referencing this user on your profile.
 
 See RELATIONSHIP")
 
@@ -968,6 +981,11 @@ See RELATIONSHIP")
 
 See RELATIONSHIP")
 
+  (function showing-reblogs
+    "Returns if this user has boosted your toots.
+
+See RELATIONSHIP")
+
   (function requested
     "Returns whether you have requested a follow to the account.
 
@@ -975,6 +993,11 @@ See RELATIONSHIP")
 
   (function domain-blocking
     "Returns whether you are blocking the account's domain.
+
+See RELATIONSHIP")
+
+  (function blocked-by
+    "Returns if this user has blocking you.
 
 See RELATIONSHIP")
 

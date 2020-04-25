@@ -306,12 +306,15 @@
 (define-entity relationship
   (id)
   (following)
+  (requested)
+  (endorsed)
   (followed-by :field "followed_by")
-  (blocking)
   (muting)
   (muting-notifications)
-  (requested)
-  (domain-blocking))
+  (showing-reblogs :field "showing_reblogs")
+  (blocking)
+  (domain-blocking)
+  (blocked-by :field "blocked_by"))
 
 (defmethod print-object ((relationship relationship) stream)
   (print-unreadable-object (relationship stream :type T)

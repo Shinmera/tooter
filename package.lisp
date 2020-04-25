@@ -139,12 +139,15 @@
    #:relationship
    #:id
    #:following
+   #:requested
+   #:endorsed
    #:followed-by
-   #:blocking
    #:muting
    #:muting-notifications
-   #:requested
+   #:showing-reblogs
+   #:blocking
    #:domain-blocking
+   #:blocked-by
    #:report
    #:id
    #:action-taken
