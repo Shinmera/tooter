@@ -856,6 +856,16 @@ See STATUS")
 
 See NOTIFICATION")
 
+  (type poll-option
+    "Representation of a poll option.
+
+See: TITLE
+See: VOTES-COUNT")
+
+  (function votes-count
+    "Returns the number of votes attributed to this option
+
+See POLL-OPTION")
 
   (type poll
     "Representation of a users poll

@@ -119,6 +119,9 @@
    #:created-at
    #:account
    #:status
+   #:poll-option
+   #:title
+   #:votes-count
    #:poll
    #:id
    #:expires-at

@@ -272,6 +272,14 @@
     (format stream "~a ~a #~a" (kind notification) (account-name (account notification))
             (id notification))))
 
+(define-entity poll-option
+  (title)
+  (votes-count :field "votes_count"))
+
+(defmethod print-object ((poll-option poll-option) stream)
+  (print-unreadable-object (poll-option stream :type T)
+    (format stream "title ~a count ~a" (title poll-option) (votes-count poll-option))))
+
 (define-entity poll
   (id)
   (expires-at :field "expires_at" :translate-with #'convert-timestamp)
@@ -280,7 +288,7 @@
   (voters-count :field "voters_count")
   (voted :nullable T)
   (own-votes :field "own_votes")
-  (options)
+  (options :translate-with #'decode-poll-option)
   (emojis :translate-with #'decode-emoji))
 
 (defmethod print-object ((poll poll) stream)
