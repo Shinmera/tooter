@@ -76,7 +76,7 @@
   (moved  :nullable T :translate-with #'decode-account)
   (fields :nullable T :translate-with #'decode-field)
   (bot :nullable T)
-  (source :nullable T))
+  (source :nullable T :translate-with #'decode-source))
 
 (defmethod print-object ((account account) stream)
   (print-unreadable-object (account stream :type T)
@@ -168,7 +168,6 @@
   (url)
   (title)
   (description)
-  (image :nullable T)
   (kind :field "type" :translate-with #'to-keyword)
   (author-name :nullable T)
   (author-url :nullable T)
@@ -176,7 +175,9 @@
   (provider-url :nullable T)
   (html :nullable T)
   (width :nullable T)
-  (height :nullable T))
+  (height :nullable T)
+  (image :nullable T)
+  (embed-url :field "embed_url" :nullable T))
 
 (defmethod print-object ((card card) stream)
   (print-unreadable-object (card stream :type T)
@@ -188,8 +189,10 @@
 
 (define-entity emoji
   (shortcode)
+  (url)
   (static-url)
-  (url))
+  (visible-in-picker :field "visible_in_picker")
+  (category :nullable T))
 
 (defmethod print-object ((emoji emoji) stream)
   (print-unreadable-object (emoji stream :type T)
@@ -198,19 +201,38 @@
 (defun translate-languages (languages)
   (mapcar #'to-keyword languages))
 
+;; according to  documentation the fields  of this entity  are numbers
+;; (and integer, given the description)
+(define-entity instance-stats
+  (user-count :field "user_count")
+  (status-count :field "status_count")
+  (domain-count :field "domain_count"))
+
+(defmethod print-object ((instance-stats instance-stats) stream)
+  (print-unreadable-object (instance-stats stream :type T)
+    (format stream "user count ~a status count ~a domain count ~a"
+            (user-count instance-stats)
+            (status-count instance-stats)
+            (domain-count instance-stats))))
+
 (define-entity instance
   (uri)
   (title)
   (description)
+  (short-description :field "short_description")
   (email)
   (version)
-  (urls)
   (languages :translate-with #'translate-languages)
-  (contact-account :translate-with #'decode-account))
+  (registrations)
+  (approval-required :field "approval_required")
+  (urls)
+  (stats :translate-with #'decode-instance-stats)
+  (thumbnail :nullable T)
+  (contact-account :translate-with #'decode-account :nullable T))
 
 (defmethod print-object ((instance instance) stream)
   (print-unreadable-object (instance stream :type T)
-    (format stream "~s ~a" (title instance) (uri instance))))
+    (format stream "~s ~a stats ~a" (title instance) (uri instance) (stats instance))))
 
 (define-entity user-list
   (id)
@@ -219,6 +241,14 @@
 (defmethod print-object ((user-list user-list) stream)
   (print-unreadable-object (user-list stream :type T)
     (format stream "~s #~a" (title user-list) (id user-list))))
+
+(define-entity marker
+  (marked-home :field "home")
+  (marked-notifications :filed "notifications"))
+
+(defmethod print-object ((marker marker) stream)
+  (print-unreadable-object (marker stream :type T)
+    (format stream "home ~s #~a" (marked-home marker) (notifications marker))))
 
 (define-entity mention
   (url)
@@ -242,11 +272,72 @@
     (format stream "~a ~a #~a" (kind notification) (account-name (account notification))
             (id notification))))
 
+(define-entity poll-option
+  (title)
+  (votes-count :field "votes_count"))
+
+(defmethod print-object ((poll-option poll-option) stream)
+  (print-unreadable-object (poll-option stream :type T)
+    (format stream "title ~a count ~a" (title poll-option) (votes-count poll-option))))
+
+(define-entity poll
+  (id)
+  (expires-at :field "expires_at" :translate-with #'convert-timestamp)
+  (expired)
+  (multiple)
+  (voters-count :field "voters_count")
+  (voted :nullable T)
+  (own-votes :field "own_votes")
+  (options :translate-with #'decode-poll-option)
+  (emojis :translate-with #'decode-emoji))
+
+(defmethod print-object ((poll poll) stream)
+  (print-unreadable-object (poll stream :type T)
+    (format stream "~a" (id poll))))
+
+(define-entity preferences
+  (posting-default-visibility :field "posting:default:visibility" :translate-with #'to-keyword)
+  (posting-default-sensitive :field "posting:default:sensitive")
+  (posting-default-language :field "posting:default:language" :translate-with #'to-keyword :nullable T)
+  (reading-expand-media :field "reading:expand:media" :translate-with #'to-keyword)
+  (reading-expand-spoilers :field "reading:expand:spoilers"))
+
+(defmethod print-object ((preferences preferences) stream)
+  (print-unreadable-object (preferences stream :type T)
+    (with-accessors ((posting-default-visibility posting-default-visibility)
+                     (posting-default-sensitive posting-default-sensitive)
+                     (posting-default-language posting-default-language)
+                     (reading-expand-media reading-expand-media)
+                     (reading-expand-spoilers reading-expand-spoilers)) preferences
+      (format stream "posting default visibility ~a posting default sensitive ~a posting default language ~a reading expand media ~a reading expand spoilers ~a"
+              posting-default-visibility
+              posting-default-sensitive
+              posting-default-language
+              reading-expand-media
+              reading-expand-spoilers))))
+
+(define-entity push-subscription-alerts
+  (alert-follow)
+  (alert-favourite)
+  (alert-mention)
+  (alert-reblog)
+  (alert-poll))
+
+(defmethod print-object ((push-subscription-alerts push-subscription-alerts) stream)
+  (print-unreadable-object (push-subscription-alerts stream :type T)
+    (with-accessors ((alert-follow alert-follow)
+                     (alert-favourite alert-favourite)
+                     (alert-mention alert-mention)
+                     (alert-reblog alert-reblog)
+                     (alert-poll alert-poll)) push-subscription-alerts
+      (format stream "when follow? ~a when favourite ~a when mention? ~a when reblog? ~a when poll? ~a"
+              alert-follow alert-favourite alert-mention alert-reblog alert-poll))))
+
 (define-entity push-subscription
   (id)
   (endpoint)
   (server-key)
-  (alerts :nullable T))
+  (alerts :nullable T :translate-with #'decode-push-subscription-alerts))
 
 (defmethod print-object ((push-subscription push-subscription) stream)
   (print-unreadable-object (push-subscription stream :type T)
@@ -255,17 +346,21 @@
 (define-entity relationship
   (id)
   (following)
+  (requested)
+  (endorsed)
   (followed-by :field "followed_by")
-  (blocking)
   (muting)
   (muting-notifications)
-  (requested)
-  (domain-blocking))
+  (showing-reblogs :field "showing_reblogs")
+  (blocking)
+  (domain-blocking)
+  (blocked-by :field "blocked_by"))
 
 (defmethod print-object ((relationship relationship) stream)
   (print-unreadable-object (relationship stream :type T)
     (format stream "#~a" (id relationship))))
 
+;; TODO check official documentation because currently is WIP 2020-08-25
 (define-entity report
   (id)
   (action-taken))
@@ -275,9 +370,36 @@
     (format stream "~a #~a" (action-taken report) (id report))))
 
 (define-entity results
-  (accounts :translate-with #'decode-account)
-  (statuses :translate-with #'decode-status)
+  (results-accounts :field "accounts" :translate-with #'decode-account)
+  (results-statuses :field "statuses" :translate-with #'decode-status)
   (hashtags))
+
+(defmethod print-object ((results results) stream)
+  (print-unreadable-object (results stream :type T)
+    (format stream
+            "account ~a statuses ~a"
+            (results-accounts results)
+            (results-statuses results))))
+
+(define-entity status-params
+  (text)
+  (in-reply-to-id :field "in_rein_reply_to_id" :nullable T)
+  (media-ids :field "media_ids" :nullable T)
+  (sensitive :nullable T)
+  (spoiler-text :field "spoiler_text" :nullable T)
+  (visibility :translate-with #'to-keyword)
+  (scheduled-at :field "scheduled_at" :nullable T :translate-with #'convert-timestamp)
+  (application-id :field "application_id"))
+
+;; TODO check official documentation because currently is WIP 2020-08-25
+(define-entity scheduled-status
+  (id)
+  (scheduled-at :field "scheduled_at" :translate-with #'convert-timestamp)
+  (params :translate-with #'decode-status-params))
+
+(defmethod print-object ((scheduled-status scheduled-status) stream)
+  (print-unreadable-object (scheduled-status stream :type T)
+    (format stream "~a" (id scheduled-status))))
 
 (define-entity status
   (id)
@@ -331,6 +453,18 @@
               (reblogs-count status)
               (favourites-count status)))))
 
+(define-entity source
+  (note)
+  (fields :translate-with #'decode-field)
+  (privacy :translate-with #'to-keyword)
+  (sensitive)
+  (language :translate-with #'to-keyword)
+  (follow-requests-count :fields "follow_requests_count" :translate-with #'parse-integer))
+
+(defmethod print-object ((source source) stream)
+  (print-unreadable-object (source stream :type T)
+    (format stream "~a" (note source))))
+
 (define-entity tag
   (name)
   (url)
@@ -367,3 +501,75 @@
                      (last-status last-status)
                      (unread unread)) conversation
       (format stream "~a unread? ~a ~a ~a" id unread accounts last-status))))
+
+(define-entity featured-tag
+  (id)
+  (name)
+  (statuses-count :field "statuses_count" :translate-with #'parse-integer)
+  (last-status-at :field "last_status_at" :translate-with #'convert-timestamp))
+
+(defmethod print-object ((featured-tag featured-tag) stream)
+  (print-unreadable-object (featured-tag stream :type T)
+    (with-accessors ((id id)
+                     (name name)
+                     (statuses-count statuses-count)
+                     (last-status-at last-status-at)) featured-tag
+      (format stream
+              "~a name ~a  count ~a last status at ~a"
+              id name statuses-count last-status-at))))
+
+(define-entity filter
+  (id)
+  (phrase)
+  (filter-context :translate-with #'to-keyword)
+  (expires-at :field "expires_at" :translate-with #'convert-timestamp)
+  (irreversible)
+  (whole-word :field "whole_word"))
+
+(defmethod print-object ((filter filter) stream)
+  (print-unreadable-object (filter stream :type T)
+    (with-accessors ((id id)
+                     (phrase phrase)
+                     (filter-context filter-context)
+                     (expires-at expires-at)
+                     (irreversible irreversible)
+                     (whole-word whole-word)) filter
+      (format stream
+              "~a phrase ~a context ~a expires at ~a irreversible? ~a whole word? ~a"
+              id phrase filter-context expires-at irreversible whole-word))))
+
+(define-entity identity-proof
+  (provider)
+  (provider-username :field "provider_username")
+  (profile-url :field "profile_url")
+  (proof-url :field "proof_url")
+  (updated-at :field "updated_at" :translate-with #'convert-timestamp))
+
+(defmethod print-object ((identity-proof identity-proof) stream)
+  (print-unreadable-object (identity-proof stream :type T)
+    (with-accessors ((provider provider)
+                     (provider-username provider-username)
+                     (profile-url profile-url)
+                     (proof-url proof-url)
+                     (updated-at updated-at)
+                     (irreversible irreversible)
+                     (whole-word whole-word)) identity-proof
+      (format stream
+              "provider ~a provider username ~a profile url ~a proof url ~a  updated at ~a"
+              provider provider-username profile-url proof-url updated-at))))
+
+(define-entity token
+  (access-token :field "access_token")
+  (token-type :field "token_type")
+  (scope)
+  (created-at :field "created_at" :translate-with #'convert-timestamp))
+
+(defmethod print-object ((token token) stream)
+  (print-unreadable-object (token stream :type T)
+    (with-accessors ((access-token access-token)
+                     (token-type token-type)
+                     (scope scope)
+                     (created-at created-at)) token
+      (format stream
+              "access token ~a type ~a scope ~a created at ~a"
+              access-token token-type scope created-at))))

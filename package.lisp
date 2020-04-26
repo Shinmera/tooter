@@ -74,25 +74,40 @@
    #:html
    #:width
    #:height
+   #:image
+   #:embed-url
    #:context
    #:ancestors
    #:descendants
    #:emoji
    #:shortcode
-   #:static-url
    #:url
+   #:static-url
+   #:visible-in-picker
    #:instance
    #:uri
    #:title
    #:description
+   #:short-description
    #:email
    #:version
-   #:urls
    #:languages
+   #:registrations
+   #:approval-required
+   #:urls
+   #:stats
+   #:thumbnail
    #:contact-account
+   #:instance-stats
+   #:user-count
+   #:status-count
+   #:domain-count
    #:user-list
    #:id
    #:title
+   #:marker
+   #:marked-home
+   #:marked-notifications
    #:mention
    #:url
    #:username
@@ -104,6 +119,31 @@
    #:created-at
    #:account
    #:status
+   #:poll-option
+   #:title
+   #:votes-count
+   #:poll
+   #:id
+   #:expires-at
+   #:expired
+   #:multiple
+   #:voters-count
+   #:voted
+   #:own-votes
+   #:options
+   #:emojis
+   #:preferences
+   #:posting-default-visibility
+   #:posting-default-sensitive
+   #:posting-default-language
+   #:reading-expand-media
+   #:reading-expand-spoilers
+   #:push-subscription-alerts
+   #:alert-follow
+   #:alert-favourite
+   #:alert-mention
+   #:alert-reblog
+   #:alert-poll
    #:push-subscription
    #:id
    #:endpoint
@@ -112,19 +152,35 @@
    #:relationship
    #:id
    #:following
+   #:requested
+   #:endorsed
    #:followed-by
-   #:blocking
    #:muting
    #:muting-notifications
-   #:requested
+   #:showing-reblogs
+   #:blocking
    #:domain-blocking
+   #:blocked-by
    #:report
    #:id
    #:action-taken
    #:results
-   #:accounts
-   #:statuses
+   #:results-accounts
+   #:results-statuses
    #:hashtags
+   #:status-params
+   #:text
+   #:in-reply-to-id
+   #:media-ids
+   #:sensitive
+   #:spoiler-text
+   #:visibility
+   #:scheduled-at
+   #:application-id
+   #:scheduled-status
+   #:id
+   #:scheduled-at
+   #:params
    #:status
    #:id
    #:uri
@@ -150,6 +206,13 @@
    #:application
    #:language
    #:pinned
+   #:source
+   #:note
+   #:fields
+   #:privacy
+   #:sensitive
+   #:language
+   #:follow-requests-count
    #:tag
    #:name
    #:url
@@ -162,7 +225,30 @@
    #:id
    #:accounts
    #:unread
-   #:last-status))
+   #:last-status
+   #:featured-tag
+   #:id
+   #:name
+   #:statuses-count
+   #:last-status-at
+   #:filter
+   #:id
+   #:phrase
+   #:context
+   #:expires-at
+   #:irreversible
+   #:whole-word
+   #:identity-proof
+   #:provider
+   #:provider-username
+   #:profile-url
+   #:proof-url
+   #:updated-at
+   #:token
+   #:access-token
+   #:token-type
+   #:scope
+   #:created-at))
 
 (defpackage #:tooter-queries
   (:nicknames #:org.shirakumo.tooter.queries)
