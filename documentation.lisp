@@ -1307,7 +1307,12 @@ See SOURCE")
 See SOURCE")
 
   (function privacy
-    "Returns the default privacy mode for the statuses.
+    "Returns the default privacy mode for the statuses. possible values are:
+
+:PUBLIC   -- visible by all
+:UNLISTED -- visible by all mat not shown in timeline
+:PRIVATE  -- visible by followers only
+:DIRECT   -- visible as conversation
 
 See SOURCE")
 

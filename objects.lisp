@@ -446,7 +446,7 @@
 (define-entity source
   (note)
   (fields :translate-with #'decode-field)
-  (privacy)
+  (privacy :translate-with #'to-keyword))
   (sensitive)
   (language :translate-with #'to-keyword)
   (follow-requests-count :fields "follow_requests_count" :translate-with #'parse-integer))
