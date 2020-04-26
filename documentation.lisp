@@ -698,7 +698,8 @@ See CONTEXT")
 See SHORTCODE
 See URL
 See STATIC-URL
-See VISIBLE-IN-PICKER")
+See VISIBLE-IN-PICKER
+See CATEGORY")
 
   (function shortcode
     "Returns the short code to display the emoji.
@@ -707,6 +708,11 @@ See EMOJI")
 
   (function static-url
     "Returns the static image of the emoji.
+
+See EMOJI")
+
+  (function category
+    "Returns a criteria to sort the emoji.
 
 See EMOJI")
 
@@ -769,8 +775,9 @@ See INSTANCE")
 See INSTANCE")
 
   (function stats
-    "Statistics about this instance (hashmap with legal keys: 'user-count', 'status-count', 'domain-count'.
+    "Statistics about this instance.
 
+See INSTANCE-STATS
 See INSTANCE")
 
   (function thumbnail
@@ -782,6 +789,28 @@ See INSTANCE")
     "Returns the account instance that represents the contact person for this instance.
 
 See INSTANCE")
+
+  (type instance-stats
+    "Representation of statistics abount a single instance.
+
+See USER-COUNT
+See STATUS-COUNT
+See DOMAIN-COUNT")
+
+  (function user-count
+    "Returns the user counts for this instance.
+
+See INSTANCE-STATS")
+
+  (function status-count
+    "Returns the status counts for this instance.
+
+See INSTANCE-STATS")
+
+  (function domain-count
+    "Returns the count of domains this instance is federated with.
+
+See INSTANCE-STATS")
 
   (type user-list
     "Represents a list of users.
@@ -1318,10 +1347,10 @@ See WHOLE-WORD")
 
 Possible values are:
 
-\"home\"          --- home timeline
-\"notifications\" --- notifications
-\"public\"        --- public timeline
-\"thread\"        --- message's thread")
+:HOME          --- HOME TIMELINE
+:NOTIFICATIONS --- NOTIFICATIONS
+:PUBLIC        --- PUBLIC TIMELINE
+:THREAD        --- message's thread")
 
   (function expires-at
     "Returns the expiration date of the filter
@@ -1387,7 +1416,7 @@ See TOKEN
 ")
 
   (function token-type
-   "Returns the oauth access token type ('Bearer' for mastodon).
+   "Returns the oauth access token type (\"Bearer\" for mastodon).
 
 See TOKEN")
 

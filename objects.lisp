@@ -191,7 +191,8 @@
   (shortcode)
   (url)
   (static-url)
-  (visible-in-picker :field "visible_in_picker"))
+  (visible-in-picker :field "visible_in_picker")
+  (category :nullable T))
 
 (defmethod print-object ((emoji emoji) stream)
   (print-unreadable-object (emoji stream :type T)
@@ -199,6 +200,20 @@
 
 (defun translate-languages (languages)
   (mapcar #'to-keyword languages))
+
+;; according to  documentation the fields  of this entity  are numbers
+;; (and integer, given the description)
+(define-entity instance-stats
+  (user-count :field "user_count")
+  (status-count :field "status_count")
+  (domain-count :field "domain_count"))
+
+(defmethod print-object ((instance-stats instance-stats) stream)
+  (print-unreadable-object (instance-stats stream :type T)
+    (format stream "user count ~a status count ~a domain count ~a"
+            (user-count instance-stats)
+            (status-count instance-stats)
+            (domain-count instance-stats))))
 
 (define-entity instance
   (uri)
@@ -211,13 +226,13 @@
   (registrations)
   (approval-required :field "approval_required")
   (urls)
-  (stats)
+  (stats :translate-with #'decode-instance-stats)
   (thumbnail :nullable T)
   (contact-account :translate-with #'decode-account :nullable T))
 
 (defmethod print-object ((instance instance) stream)
   (print-unreadable-object (instance stream :type T)
-    (format stream "~s ~a" (title instance) (uri instance))))
+    (format stream "~s ~a stats ~a" (title instance) (uri instance) (stats instance))))
 
 (define-entity user-list
   (id)
@@ -471,7 +486,7 @@
 (define-entity filter
   (id)
   (phrase)
-  (filter-context)
+  (filter-context :translate-with #'to-keyword)
   (expires-at :field "expires_at" :translate-with #'convert-timestamp)
   (irreversible)
   (whole-word :field "whole_word"))

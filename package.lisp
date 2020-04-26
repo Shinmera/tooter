@@ -98,6 +98,10 @@
    #:stats
    #:thumbnail
    #:contact-account
+   #:instance-stats
+   #:user-count
+   #:status-count
+   #:domain-count
    #:user-list
    #:id
    #:title
