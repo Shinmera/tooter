@@ -381,11 +381,21 @@
             (results-accounts results)
             (results-statuses results))))
 
+(define-entity status-params
+  (text)
+  (in-reply-to-id :field "in_rein_reply_to_id" :nullable T)
+  (media-ids :field "media_ids" :nullable T)
+  (sensitive :nullable T)
+  (spoiler-text :field "spoiler_text" :nullable T)
+  (visibility :translate-with #'to-keyword)
+  (scheduled-at :field "scheduled_at" :nullable T :translate-with #'convert-timestamp)
+  (application-id :field "application_id"))
+
 ;; TODO check official documentation because currently is WIP 2020-08-25
 (define-entity scheduled-status
   (id)
   (scheduled-at :field "scheduled_at" :translate-with #'convert-timestamp)
-  (params))
+  (params :translate-with #'decode-status-params))
 
 (defmethod print-object ((scheduled-status scheduled-status) stream)
   (print-unreadable-object (scheduled-status stream :type T)
@@ -446,7 +456,7 @@
 (define-entity source
   (note)
   (fields :translate-with #'decode-field)
-  (privacy :translate-with #'to-keyword))
+  (privacy :translate-with #'to-keyword)
   (sensitive)
   (language :translate-with #'to-keyword)
   (follow-requests-count :fields "follow_requests_count" :translate-with #'parse-integer))

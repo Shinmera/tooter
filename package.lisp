@@ -168,6 +168,15 @@
    #:results-accounts
    #:results-statuses
    #:hashtags
+   #:status-params
+   #:text
+   #:in-reply-to-id
+   #:media-ids
+   #:sensitive
+   #:spoiler-text
+   #:visibility
+   #:scheduled-at
+   #:application-id
    #:scheduled-status
    #:id
    #:scheduled-at

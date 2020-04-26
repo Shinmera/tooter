@@ -1117,6 +1117,59 @@ See RESULTS")
 
 See RESULTS")
 
+  (type status-params
+     "Representation of parameters for a SCHEDULED-STATUS.
+
+See SCHEDULED-STATUS
+See TEXT
+See IN-REPLY-TO-ID
+See MEDIA-IDS
+See SENSITIVE
+See SPOILER-TEXT
+See VISIBILITY
+See SCHEDULED-AT
+See APPLICATION-ID")
+
+  (function text
+    "WIP
+
+See status-params")
+
+  (function in-reply-to-id
+    "WIP
+
+See status-params")
+
+  (function media-ids
+    "WIP
+
+See status-params")
+
+  (function sensitive
+    "WIP
+
+See status-params")
+
+  (function spoiler-text
+    "WIP
+
+See status-params")
+
+  (function visibility
+    "WIP
+
+See status-params")
+
+  (function scheduled-at
+    "WIP
+
+See status-params")
+
+  (function application-id
+    "WIP
+
+See status-params")
+
   (type scheduled-status
     "Representation of a status programmed to be sent in the future.
 
