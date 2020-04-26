@@ -298,7 +298,7 @@
 (define-entity preferences
   (posting-default-visibility :field "posting:default:visibility" :translate-with #'to-keyword)
   (posting-default-sensitive :field "posting:default:sensitive")
-  (posting-default-language :field "posting:default:language" :translate-with #'to-keyword)
+  (posting-default-language :field "posting:default:language" :translate-with #'to-keyword :nullable T)
   (reading-expand-media :field "reading:expand:media" :translate-with #'to-keyword)
   (reading-expand-spoilers :field "reading:expand:spoilers"))
 
