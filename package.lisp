@@ -138,6 +138,12 @@
    #:posting-default-language
    #:reading-expand-media
    #:reading-expand-spoilers
+   #:push-subscription-alerts
+   #:alert-follow
+   #:alert-favourite
+   #:alert-mention
+   #:alert-reblog
+   #:alert-poll
    #:push-subscription
    #:id
    #:endpoint

@@ -857,7 +857,7 @@ See STATUS")
 See NOTIFICATION")
 
   (type poll-option
-    "Representation of a poll option.
+    "Representation of a POLL option.
 
 See: TITLE
 See: VOTES-COUNT")
@@ -956,6 +956,40 @@ See PREFERENCES")
     "Returns if expands posts marked as 'sensible'.
 
 See PREFERENCES")
+
+   (type push-subscription-alerts
+     "Representation of alerts for PUSH-SUBSCRIPTION.
+
+See ALERT-FOLLOW
+See ALERT-FAVOURITE
+See ALERT-MENTION
+See ALERT-REBLOG
+See ALERT-POLL")
+
+   (function alert-follow
+     "Returns if get an alert when someone follows the user.
+
+See PUSH-SUBSCRIPTION-ALERTS.")
+
+   (function alert-favourite
+     "Returns if get an alert when someone favourite a status posted by the user.
+
+See PUSH-SUBSCRIPTION-ALERTS.")
+   (function alert-mention
+     "Returns if get an alert when someone mentioned the user.
+
+See PUSH-SUBSCRIPTION-ALERTS.")
+
+   (function alert-reblog
+     "Returns if get an alert when someone boosted a status posted by the user.
+
+See PUSH-SUBSCRIPTION-ALERTS.")
+
+   (function alert-poll
+     "Returns if get an alert when a poll the user voted or created has expired.
+
+See POLL
+See PUSH-SUBSCRIPTION-ALERTS.")
 
   (type push-subscription
     "Representation of a push notification subscription.

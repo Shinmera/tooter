@@ -316,11 +316,28 @@
               reading-expand-media
               reading-expand-spoilers))))
 
+(define-entity push-subscription-alerts
+  (alert-follow)
+  (alert-favourite)
+  (alert-mention)
+  (alert-reblog)
+  (alert-poll))
+
+(defmethod print-object ((push-subscription-alerts push-subscription-alerts) stream)
+  (print-unreadable-object (push-subscription-alerts stream :type T)
+    (with-accessors ((alert-follow alert-follow)
+                     (alert-favourite alert-favourite)
+                     (alert-mention alert-mention)
+                     (alert-reblog alert-reblog)
+                     (alert-poll alert-poll)) push-subscription-alerts
+      (format stream "when follow? ~a when favourite ~a when mention? ~a when reblog? ~a when poll? ~a"
+              alert-follow alert-favourite alert-mention alert-reblog alert-poll))))
+
 (define-entity push-subscription
   (id)
   (endpoint)
   (server-key)
-  (alerts :nullable T))
+  (alerts :nullable T :translate-with #'decode-push-subscription-alerts))
 
 (defmethod print-object ((push-subscription push-subscription) stream)
   (print-unreadable-object (push-subscription stream :type T)
