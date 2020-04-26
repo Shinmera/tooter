@@ -924,12 +924,17 @@ See READING-EXPAND-MEDIA
 See READING-EXPAND-SPOILERS")
 
   (function posting-default-visibility
-    "Returns the default visibility for post.
+    "Returns the default visibility for post. Possible values are:
+
+:PUBLIC   -- visible by all
+:UNLISTED -- visible by all mat not shown in timeline
+:PRIVATE  -- visible by followers only
+:DIRECT   -- visible as conversation
 
 See PREFERENCES")
 
   (function posting-default-sensitive
-    "Returns if flag post as 'sensible' by default.
+    "Returns if flag post as \"sensible\" by default.
 
 See PREFERENCES")
 
@@ -939,7 +944,11 @@ See PREFERENCES")
 See PREFERENCES")
 
   (function reading-expand-media
-    "Returns if blur media of the post.
+    "Returns if blur media of the post possible values are:
+
+:DEFAULT  -- Hide if marked as "sensitive"
+:SHOW-ALL -- show all media
+:HIDE-ALL -- hide all media
 
 See PREFERENCES")
 
