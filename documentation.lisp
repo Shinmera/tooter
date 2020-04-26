@@ -927,7 +927,7 @@ See READING-EXPAND-SPOILERS")
     "Returns the default visibility for post. Possible values are:
 
 :PUBLIC   -- visible by all
-:UNLISTED -- visible by all mat not shown in timeline
+:UNLISTED -- visible by all but not shown in timeline
 :PRIVATE  -- visible by followers only
 :DIRECT   -- visible as conversation
 
@@ -1310,7 +1310,7 @@ See SOURCE")
     "Returns the default privacy mode for the statuses. possible values are:
 
 :PUBLIC   -- visible by all
-:UNLISTED -- visible by all mat not shown in timeline
+:UNLISTED -- visible by all but not shown in timeline
 :PRIVATE  -- visible by followers only
 :DIRECT   -- visible as conversation
 
