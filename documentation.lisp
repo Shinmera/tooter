@@ -424,16 +424,16 @@ See STATUSES
 See LOGINS
 See REGISTRATION")
 
-
   (function week
     "Timestamp for the first day of this week stats.
 
 See ACTIVITY")
 
   (function statuses
-   "Number of statuses for this week
+   "Number of statuses
 
-See ACTIVITY")
+See ACTIVITY
+See RESULTS")
 
   (function logins
    "Number of users login for this week
@@ -515,6 +515,7 @@ See ATTACHMENT")
   (function description
     "Returns a textual description of the contents of the object.
 
+See INSTANCE
 See ATTACHMENT
 See CARD
 See INSTANCE")
@@ -622,7 +623,9 @@ See PROVIDER-NAME
 See PROVIDER-URL
 See HTML
 See WIDTH
-See HEIGHT")
+See HEIGHT
+See IMAGE
+See EMBED-URL")
 
   (function title
     "Returns the title of the object.
@@ -661,6 +664,16 @@ See CARD")
 
 See CARD")
 
+  (function image
+    "Preview (URL)
+
+See CARD")
+
+  (function embed-url
+    "photo embedding (URL)
+
+See CARD")
+
   (type context
     "An object representing a status' context.
 
@@ -683,8 +696,10 @@ See CONTEXT")
     "Representation of a custom emoticon on the instance.
 
 See SHORTCODE
+See URL
 See STATIC-URL
-See URL")
+See VISIBLE-IN-PICKER
+See CATEGORY")
 
   (function shortcode
     "Returns the short code to display the emoji.
@@ -696,16 +711,26 @@ See EMOJI")
 
 See EMOJI")
 
+  (function category
+    "Returns a criteria to sort the emoji.
+
+See EMOJI")
+
   (type instance
     "Representation of a Mastodon server instance.
 
 See URI
 See TITLE
 See DESCRIPTION
+See SHORT-DESCRIPTION
 See EMAIL
 See VERSION
-See URLS
 See LANGUAGES
+See REGISTRATIONS
+See APPROVAL-REQUIRED
+See URLS
+See STATS
+See THUMBNAIL
 See CONTACT-ACCOUNT")
 
   (function uri
@@ -719,13 +744,13 @@ See STATUS")
 
 See INSTANCE")
 
-  (function version
-    "Returns the instance's Mastodon version.
+  (function short-description
+    "Returns a short description of the object.
 
 See INSTANCE")
 
-  (function urls
-    "Returns a list of URLs for the streaming API.
+  (function version
+    "Returns the instance's Mastodon version.
 
 See INSTANCE")
 
@@ -734,16 +759,80 @@ See INSTANCE")
 
 See INSTANCE")
 
+  (function registrations
+    "Returns if is possible to register an user with this instance.
+
+See INSTANCE")
+
+  (function approval-required
+    "Returns if approval from moderator is required to register to this instance.
+
+See INSTANCE")
+
+  (function urls
+    "Returns a list of URLs for the streaming API.
+
+See INSTANCE")
+
+  (function stats
+    "Statistics about this instance.
+
+See INSTANCE-STATS
+See INSTANCE")
+
+  (function thumbnail
+    "banner of this instance.
+
+See INSTANCE")
+
   (function contact-account
     "Returns the account instance that represents the contact person for this instance.
 
 See INSTANCE")
+
+  (type instance-stats
+    "Representation of statistics abount a single instance.
+
+See USER-COUNT
+See STATUS-COUNT
+See DOMAIN-COUNT")
+
+  (function user-count
+    "Returns the user counts for this instance.
+
+See INSTANCE-STATS")
+
+  (function status-count
+    "Returns the status counts for this instance.
+
+See INSTANCE-STATS")
+
+  (function domain-count
+    "Returns the count of domains this instance is federated with.
+
+See INSTANCE-STATS")
 
   (type user-list
     "Represents a list of users.
 
 See ID
 See TITLE")
+
+  (type marker
+    "Representation of the user last read position in a timeline.
+
+See MARKED-HOME
+See MARKED-NOTIFICATION")
+
+  (function marked-home
+    "Returns information about last position in home timeline
+
+See MARKER")
+
+  (function marked-notification
+    "Returns information about last position in user's notification
+
+See MARKER")
 
   (type mention
     "Representation of an account mention in a status.
@@ -766,6 +855,141 @@ See STATUS")
     "Returns the status the notification is about.
 
 See NOTIFICATION")
+
+  (type poll-option
+    "Representation of a POLL option.
+
+See: TITLE
+See: VOTES-COUNT")
+
+  (function votes-count
+    "Returns the number of votes attributed to this option
+
+See POLL-OPTION")
+
+  (type poll
+    "Representation of a users poll
+
+See EXPIRES-AT
+See EXPIRED
+See MULTIPLE
+See VOTERS-COUNT
+See VOTED
+See OWN-VOTES
+See OPTIONS
+See EMOJIS")
+
+  (function expires-at
+    "Returns the expiration date of the poll.
+
+See POLL")
+
+  (function expired
+    "Returns if the poll has expired
+
+See POLL")
+
+  (function multiple
+    "Returns if the poll admits multiple choices
+
+See POLL")
+
+  (function voters-count
+    "Returns the number of votes collected so far
+
+See POLL")
+
+  (function voted
+    "Returns if an user has voted (requires to be called with a valid user token.
+
+See POLL")
+
+  (function own-votes
+    "Returns the choice of an user (requires to be called with a valid user token.
+
+See POLL")
+
+  (function options
+    "Returns the possible choiches for this poll.
+
+See POLL")
+
+  (type preferences
+    "Representation of the user preferences.
+
+See POSTING-DEFAULT-VISIBILITY
+See POSTING-DEFAULT-SENSITIVE
+See POSTING-DEFAULT-LANGUAGE
+See READING-EXPAND-MEDIA
+See READING-EXPAND-SPOILERS")
+
+  (function posting-default-visibility
+    "Returns the default visibility for post. Possible values are:
+
+:PUBLIC   -- visible by all
+:UNLISTED -- visible by all but not shown in timeline
+:PRIVATE  -- visible by followers only
+:DIRECT   -- visible as conversation
+
+See PREFERENCES")
+
+  (function posting-default-sensitive
+    "Returns if flag post as \"sensible\" by default.
+
+See PREFERENCES")
+
+  (function posting-default-language
+     "Return the default language for post.
+
+See PREFERENCES")
+
+  (function reading-expand-media
+    "Returns if blur media of the post possible values are:
+
+:DEFAULT  -- Hide if marked as "sensitive"
+:SHOW-ALL -- show all media
+:HIDE-ALL -- hide all media
+
+See PREFERENCES")
+
+   (function reading-expand-spoilers
+    "Returns if expands posts marked as 'sensible'.
+
+See PREFERENCES")
+
+   (type push-subscription-alerts
+     "Representation of alerts for PUSH-SUBSCRIPTION.
+
+See ALERT-FOLLOW
+See ALERT-FAVOURITE
+See ALERT-MENTION
+See ALERT-REBLOG
+See ALERT-POLL")
+
+   (function alert-follow
+     "Returns if get an alert when someone follows the user.
+
+See PUSH-SUBSCRIPTION-ALERTS.")
+
+   (function alert-favourite
+     "Returns if get an alert when someone favourite a status posted by the user.
+
+See PUSH-SUBSCRIPTION-ALERTS.")
+   (function alert-mention
+     "Returns if get an alert when someone mentioned the user.
+
+See PUSH-SUBSCRIPTION-ALERTS.")
+
+   (function alert-reblog
+     "Returns if get an alert when someone boosted a status posted by the user.
+
+See PUSH-SUBSCRIPTION-ALERTS.")
+
+   (function alert-poll
+     "Returns if get an alert when a poll the user voted or created has expired.
+
+See POLL
+See PUSH-SUBSCRIPTION-ALERTS.")
 
   (type push-subscription
     "Representation of a push notification subscription.
@@ -795,15 +1019,28 @@ See PUSH-SUBSCRIPTION")
 
 See ID
 See FOLLOWING
+See REQUESTED
 See FOLLOWED-BY
 See BLOCKING
 See MUTING
 See MUTING-NOTIFICATIONS
+See SHOWING-REBLOGS
 See REQUESTED
-See DOMAIN-BLOCKING")
+See DOMAIN-BLOCKING
+See BLOCKED-BY")
 
   (function following
     "Returns whether you are following this account.
+
+See RELATIONSHIP")
+
+  (function requested
+    "Returns if this user has requested to follow you.
+
+See RELATIONSHIP")
+
+  (function requested
+    "Returns if you are referencing this user on your profile.
 
 See RELATIONSHIP")
 
@@ -827,6 +1064,11 @@ See RELATIONSHIP")
 
 See RELATIONSHIP")
 
+  (function showing-reblogs
+    "Returns if this user has boosted your toots.
+
+See RELATIONSHIP")
+
   (function requested
     "Returns whether you have requested a follow to the account.
 
@@ -834,6 +1076,11 @@ See RELATIONSHIP")
 
   (function domain-blocking
     "Returns whether you are blocking the account's domain.
+
+See RELATIONSHIP")
+
+  (function blocked-by
+    "Returns if this user has blocking you.
 
 See RELATIONSHIP")
 
@@ -851,17 +1098,17 @@ See REPORT")
   (type results
     "Representation of a search result.
 
-See ACCOUNTS
-See STATUSES
+See RESULTS-ACCOUNTS
+See RESULTS-STATUSES
 See HASHTAGS")
 
-  (function accounts
-    "Returns a list of matching accounts.
+  (function results-statuses
+    "Returns a list of matching status.
 
 See RESULTS")
 
-  (function statuses
-    "Returns a list of matching statuses.
+  (function results-accounts
+    "Returns a list of matching accounts.
 
 See RESULTS")
 
@@ -869,6 +1116,83 @@ See RESULTS")
     "Returns a list of matching hashtags as strings.
 
 See RESULTS")
+
+  (type status-params
+     "Representation of parameters for a SCHEDULED-STATUS.
+
+See SCHEDULED-STATUS
+See TEXT
+See IN-REPLY-TO-ID
+See MEDIA-IDS
+See SENSITIVE
+See SPOILER-TEXT
+See VISIBILITY
+See SCHEDULED-AT
+See APPLICATION-ID")
+
+  (function text
+    "WIP
+
+See status-params")
+
+  (function in-reply-to-id
+    "WIP
+
+See status-params")
+
+  (function media-ids
+    "WIP
+
+See status-params")
+
+  (function sensitive
+    "WIP
+
+See status-params")
+
+  (function spoiler-text
+    "WIP
+
+See status-params")
+
+  (function visibility
+    "WIP
+
+See status-params")
+
+  (function scheduled-at
+    "WIP
+
+See status-params")
+
+  (function application-id
+    "WIP
+
+See status-params")
+
+  (type scheduled-status
+    "Representation of a status programmed to be sent in the future.
+
+See ID
+See SCHEDULED-AT
+See PARAMS")
+
+  (function scheduled-status
+    "Returns a list of matching hashtags as strings.
+
+See ID
+See SCHEDULED-STATUS
+See PARAMS")
+
+  (function scheduled-at
+    "Returns ...
+
+See SCHEDULED-STATUS")
+
+  (function params
+    "Returns ...
+
+See SCHEDULED-STATUS")
 
   (type status
     "Representation of a status update.
@@ -1015,6 +1339,46 @@ See STATUS")
 
 See STATUS")
 
+  (type source
+    "Representation account preferences
+
+See NOTE
+See FIELDS
+See PRIVACY
+See SENSITIVE
+See LANGUAGE
+See FOLLOW-REQUESTS-COUNT")
+
+  (function note
+    "Returns the user biography.
+
+See SOURCE")
+
+  (function fields
+    "Returns the user metadata.
+
+See SOURCE")
+
+  (function privacy
+    "Returns the default privacy mode for the statuses. possible values are:
+
+:PUBLIC   -- visible by all
+:UNLISTED -- visible by all but not shown in timeline
+:PRIVATE  -- visible by followers only
+:DIRECT   -- visible as conversation
+
+See SOURCE")
+
+  (function sensitive
+    "Returns if the the user biography.
+
+See SOURCE")
+
+  (function follow-requests-count
+    "Returns the number of follow requests.
+
+See SOURCE")
+
   (type tag
     "Representation of a hashtag used in a status.
 
@@ -1064,7 +1428,118 @@ See STATUS")
     "Returns non nil if this converation has been marked not red")
 
   (function last-status
-    "Returns the last STATUS of the conversation"))
+    "Returns the last STATUS of the conversation")
+
+  (type featured-tag
+    "Representation of tags most visited by a profile
+
+See ID
+See NAME
+See STATUSES-COUNT
+See LAST-STATUS-AT")
+
+  (function last-status-at
+    "Timestamp of the last status mentioning the tag")
+
+  (type filter
+    "Representation of a filter (defined by the user) to make invisible unwanted statuses
+
+See PHRASE
+See FILTER-CONTEXT
+See EXPIRES-AT
+See IRREVERSIBLE
+See WHOLE-WORD")
+
+  (function phrase
+    "Returns the filter's text")
+
+  (function filter-context
+    "Returns Where the filter is applied.
+
+Possible values are:
+
+:HOME          --- HOME TIMELINE
+:NOTIFICATIONS --- NOTIFICATIONS
+:PUBLIC        --- PUBLIC TIMELINE
+:THREAD        --- message's thread")
+
+  (function expires-at
+    "Returns the expiration date of the filter
+
+See FILTER")
+
+  (function irreversible
+    "Returns if the server should drop the matching entities
+
+See FILTER")
+
+  (function whole-word
+    "Returns if the filter take into account word limit
+
+See FILTER")
+
+  (type identity-proof
+    "Representation of an identity provider
+
+See PROVIDER
+See PROVIDER-USERNAME
+See PROFILE-URl
+See PROOF-URL
+See UPDATED-AT")
+
+  (function provider
+    "Returns the name of the identity provider
+
+See IDENTITY-PROOF")
+
+  (function provider-username
+    "Returns the username on the identity provider
+
+See IDENTITY-PROOF")
+
+  (function profile-url
+    "Returns the URL of the profile on the identity provider
+
+See IDENTITY-PROOF")
+
+  (function proof-url
+    "Returns the URL of the proof of identity on the identity provider
+
+See IDENTITY-PROOF")
+
+  (function updated-at
+    "Update time
+
+See IDENTITY-PROOF")
+
+  (type token
+    "Representation of autorization credentials
+
+See ACCESS-TOKEN
+See TOKEN-TYPE
+See SCOPE
+See CREATED-AT")
+
+  (function access-token
+   "Returns the oauth access token.
+
+See TOKEN
+")
+
+  (function token-type
+   "Returns the oauth access token type (\"Bearer\" for mastodon).
+
+See TOKEN")
+
+  (function scope
+   "Returns the oauth access token scope (space separated fields).
+
+See TOKEN")
+
+(function created-at
+   "Returns the time when the token was created.
+
+See TOKEN"))
 
 ;; queries.lisp
 (docs:define-docs
@@ -1392,6 +1867,7 @@ See CLIENT")
   (function notifications
     "Returns a list of notifications about status updates.
 
+See MARKER
 See NOTIFICATION
 See CLIENT")
 
