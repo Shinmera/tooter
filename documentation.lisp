@@ -1607,6 +1607,30 @@ See CLIENT
 See ACCOUNT
 See STATUS")
 
+  (function bookmarks
+    "Returns a list of statuses bookmarked by the user.
+
+See CLIENT
+See STATUS")
+
+  (function bookmarks
+    "Returns a list of bookmarked STATUS.
+
+See CLIENT
+See STATUS")
+
+  (function bookmark
+    "Add a STATUS to user'sbookmark.
+
+See CLIENT
+See STATUS")
+
+(function unbookmark
+    "Remove a STATUS to user'sbookmark.
+
+See CLIENT
+See STATUS")
+
   (function follow
     "Follow a new account.
 

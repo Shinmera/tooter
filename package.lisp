@@ -262,6 +262,9 @@
    #:get-followers
    #:get-following
    #:get-statuses
+   #:bookmarks
+   #:bookmark
+   #:unbookmark
    #:follow
    #:unfollow
    #:block
