@@ -6,6 +6,11 @@
 
 (in-package #:org.shirakumo.tooter)
 
+;; application
+
+(defmethod verify-app-credentials ((client client))
+  (decode-application (query client "/api/v1/apps/verify_credentials")))
+
 ;;; Accounts
 
 (defmethod find-account ((client client) (id string))

@@ -1543,6 +1543,13 @@ See TOKEN"))
 
 ;; queries.lisp
 (docs:define-docs
+
+  (function verify-app-credentials
+    "Checks and returns the Oauth credentials for this application.
+
+See CLIENT
+See APPLICATION")
+
   (function find-account
     "Find an account with the specified ID.
 

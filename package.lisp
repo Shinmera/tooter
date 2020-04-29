@@ -255,6 +255,7 @@
   (:use #:org.shirakumo.tooter.objects)
   ;; queries.lisp
   (:export
+   #:verify-app-credentials
    #:find-account
    #:verify-credentials
    #:update-credentials
