@@ -1608,13 +1608,7 @@ See ACCOUNT
 See STATUS")
 
   (function bookmarks
-    "Returns a list of statuses bookmarked by the user.
-
-See CLIENT
-See STATUS")
-
-  (function bookmarks
-    "Returns a list of bookmarked STATUS.
+    "Returns a list of STATUS bookmarked by the user.
 
 See CLIENT
 See STATUS")
