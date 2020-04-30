@@ -1543,6 +1543,13 @@ See TOKEN"))
 
 ;; queries.lisp
 (docs:define-docs
+
+  (function verify-app-credentials
+    "Checks and returns the Oauth credentials for this application.
+
+See CLIENT
+See APPLICATION")
+
   (function find-account
     "Find an account with the specified ID.
 
@@ -1598,6 +1605,24 @@ yourself.
 
 See CLIENT
 See ACCOUNT
+See STATUS")
+
+  (function bookmarks
+    "Returns a list of STATUS bookmarked by the user.
+
+See CLIENT
+See STATUS")
+
+  (function bookmark
+    "Add a STATUS to user'sbookmark.
+
+See CLIENT
+See STATUS")
+
+(function unbookmark
+    "Remove a STATUS to user'sbookmark.
+
+See CLIENT
 See STATUS")
 
   (function follow

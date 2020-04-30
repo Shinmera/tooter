@@ -6,6 +6,11 @@
 
 (in-package #:org.shirakumo.tooter)
 
+;; application
+
+(defmethod verify-app-credentials ((client client))
+  (decode-application (query client "/api/v1/apps/verify_credentials")))
+
 ;;; Accounts
 
 (defmethod find-account ((client client) (id string))
@@ -82,6 +87,33 @@
 
 (defmethod get-statuses ((client client) (self (eql T)) &rest args)
   (apply #'get-statuses client (id (account client)) args))
+
+;;; Bookmarks
+
+(defmethod bookmarks ((client client) &key max-id since-id min-id (limit 20))
+  (check-type max-id (or null string))
+  (check-type since-id (or null string))
+  (check-type min-id (or null string))
+  (check-type limit (or null (integer 0)))
+  (decode-status (query client "/api/v1/bookmarks"
+                        :max-id max-id
+                        :since-id since-id
+                        :min-id min-id
+                        :limit limit)))
+
+(defmethod bookmark ((client client) (id string))
+  (check-type id string)
+  (decode-status (submit client (format NIL "/api/v1/statuses/~a/bookmark" id))))
+
+(defmethod bookmark ((client client) (status status))
+  (bookmark (id status)))
+
+(defmethod unbookmark ((client client) (id string))
+  (check-type id string)
+  (decode-status (submit client (format NIL "/api/v1/statuses/~a/unbookmark" id))))
+
+(defmethod unbookmark ((client client) (status status))
+  (unbookmark (id status)))
 
 ;;; Follows
 
