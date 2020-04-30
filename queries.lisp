@@ -115,6 +115,45 @@
 (defmethod unbookmark ((client client) (status status))
   (unbookmark (id status)))
 
+;; filters
+
+(defmethod filters ((client client))
+  (decode-filter (query client "/api/v1/filters")))
+
+(defmethod filter ((client client) (id string))
+  (decode-filter (query client (format NIL "/api/v1/filters/~a" id))))
+
+(defmethod filter ((client client) (filter filter))
+  (filter client (id filter)))
+
+(defmethod create-filter ((client client) phrase context &key irreversible whole-word expires-in)
+  (assert (stringp phrase))
+  (assert (member context '(:home :notification :public :thread) :test #'string=))
+  (decode-filter (submit client "/api/v1/lists"
+                         :phrase  phrase
+                         :context context
+                         :irreversible irreversible
+                         :whole-word whole-word
+                         :expires-in expires-in)))
+
+(defmethod update-filter ((client client) id phrase context &key irreversible whole-word expires-in)
+  (assert (stringp id))
+  (assert (stringp phrase))
+  (assert (member context '(:home :notification :public :thread) :test #'string=))
+  (decode-filter (submit client (format NIL "/api/v1/filters/~a" id)
+                         :http-method :put
+                         :phrase  phrase
+                         :context context
+                         :irreversible irreversible
+                         :whole-word whole-word
+                         :expires-in expires-in)))
+
+(defmethod delete-filter ((client client) id)
+  (assert (stringp id))
+  (decode-filter (submit client (format NIL "/api/v1/filters/~a" id)
+                         :http-method :delete)))
+
+
 ;;; Follows
 
 (defmethod follow ((client client) (id string))
@@ -208,13 +247,13 @@
 
 ;;; Favourites
 
-(defmethod favourites ((client client) &key max-id since-id (limit 20))
+(defmethod favourites ((client client) &key min-id max-id (limit 20))
   (check-type max-id (or null string))
-  (check-type since-id (or null string))
+  (check-type min-id (or null string))
   (check-type limit (or null (integer 0)))
   (decode-status (query client "/api/v1/favourites"
+                        :min-id min-id
                         :max-id max-id
-                        :since-id since-id
                         :limit limit)))
 
 ;;; Follow Requests
@@ -229,13 +268,13 @@
                          :limit limit)))
 
 (defmethod accept-request ((client client) (id string))
-  (submit client (format NIL "/api/v1/follow_requests/~a/authorize" id)))
+  (decode-relationship (submit client (format NIL "/api/v1/follow_requests/~a/authorize" id))))
 
 (defmethod accept-request ((client client) (account account))
   (accept-request client (id account)))
 
 (defmethod reject-request ((client client) (id string))
-  (submit client (format NIL "/api/v1/follow_requests/~a/reject" id)))
+  (decode-relationship (submit client (format NIL "/api/v1/follow_requests/~a/reject" id))))
 
 (defmethod reject-request ((client client) (account account))
   (reject-request client (id account)))
@@ -545,6 +584,9 @@
 
 (defmethod unfavourite ((client client) (status status))
   (unfavourite client (id status)))
+
+(defmethod endorsements ((client client))
+  (decode-account (query client "/api/v1/endorsements")))
 
 (defmethod pin ((client client) (id string))
   (decode-status (submit client (format NIL "/api/v1/statuses/~a/pin" id))))

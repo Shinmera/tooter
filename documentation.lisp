@@ -1619,11 +1619,42 @@ See STATUS")
 See CLIENT
 See STATUS")
 
-(function unbookmark
+  (function unbookmark
     "Remove a STATUS to user'sbookmark.
 
 See CLIENT
 See STATUS")
+
+  (function filters
+    "Returns a list of all filters for this user.
+
+See CLIENT
+See FILTER")
+
+  (function filter
+    "Return a filter for this user.
+
+See CLIENT
+See FILTER")
+
+
+  (function create-filter
+    "Create a new filter.
+
+See CLIENT
+See FILTER")
+
+  (function update-filter
+    "Update an existing filter.
+
+See CLIENT
+See FILTER")
+
+  (function delete-filter
+    "Delete an existing filter.
+
+See CLIENT
+See FILTER")
 
   (function follow
     "Follow a new account.
