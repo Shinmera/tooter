@@ -13,6 +13,17 @@
 (defun unix->universal (unix)
   (+ unix *unix-epoch-difference*))
 
+(defun universal->timestring (universal)
+  (multiple-value-bind (seconds minutes hours day month year x daylight-saving timezone)
+      (decode-universal-time universal)
+    (declare (ignore x))
+    (let ((hour-offset (if daylight-saving
+                           (1- timezone)
+                           timezone)))
+    (format NIL
+            "~d-~2,'0d-~2,'0d ~2,'0d:~2,'0d:~2,'0dZ"
+            year month day (+ hours hour-offset) minutes seconds))))
+
 (defun parse-timestring (string)
   (let* ((y -1)
          (x (position #\- string))

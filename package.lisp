@@ -265,6 +265,11 @@
    #:bookmarks
    #:bookmark
    #:unbookmark
+   #:filters
+   #:filter
+   #:create-filter
+   #:update-filter
+   #:delete-filter
    #:follow
    #:unfollow
    #:block
@@ -314,6 +319,7 @@
    #:unreblog
    #:favourite
    #:unfavourite
+   #:endorsements
    #:pin
    #:unpin
    #:mute-conversation
@@ -321,7 +327,9 @@
    #:timeline-tag
    #:timeline
    #:trends
-   #:conversation))
+   #:conversation
+   #:polls
+   #:poll-vote))
 
 (defpackage #:tooter-client
   (:nicknames #:org.shirakumo.tooter.client)
@@ -349,6 +357,7 @@
    #:authorize)
   ;; toolkit.lisp
   (:export
+   #:universal->timestring
    #:plain-format-html))
 
 (defpackage #:tooter

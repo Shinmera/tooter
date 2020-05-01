@@ -115,7 +115,7 @@
 (defmethod unbookmark ((client client) (status status))
   (unbookmark (id status)))
 
-;; filters
+;;; Filters
 
 (defmethod filters ((client client))
   (decode-filter (query client "/api/v1/filters")))
@@ -526,32 +526,40 @@
 (defmethod favouriters ((client client) (status status) &rest args)
   (apply #'favouriters client (id status) args))
 
-(defmethod make-status ((client client) status &key in-reply-to media (sensitive NIL s-p) spoiler-text visibility language)
+(defmethod make-status ((client client) status &key in-reply-to media (sensitive NIL s-p) spoiler-text visibility language scheduled-at poll-options poll-expire-seconds (poll-multiple NIL m-p) (poll-hide-totals NIL h-p))
   ;; FIXME: Idempotency
   (flet ((ensure-media-id (media)
            (etypecase media
              (string media)
              (attachment (id media))
              (pathname (id (make-media client media))))))
-    (decode-status (submit client "/api/v1/statuses"
-                           :status status
-                           :in-reply-to-id (etypecase in-reply-to
-                                             (string in-reply-to)
-                                             (status (id in-reply-to))
-                                             (null NIL))
-                           :media-ids (typecase media
-                                        (null NIL)
-                                        (cons (mapcar #'ensure-media-id media))
-                                        (T (list (ensure-media-id media))))
-                           :sensitive (coerce-boolean sensitive s-p)
-                           :spoiler-text spoiler-text
-                           :visibility (ecase visibility
-                                         ((NIL) NIL)
-                                         (:direct "direct")
-                                         (:private "private")
-                                         (:unlisted "unlisted")
-                                         (:public "public"))
-                           :language (when language (string language))))))
+    (let ((results-entity (submit client "/api/v1/statuses"
+                                  :status status
+                                  :in-reply-to-id (etypecase in-reply-to
+                                                    (string in-reply-to)
+                                                    (status (id in-reply-to))
+                                                    (null NIL))
+                                  :media-ids (typecase media
+                                               (null NIL)
+                                               (cons (mapcar #'ensure-media-id media))
+                                               (T (list (ensure-media-id media))))
+                                  :sensitive (coerce-boolean sensitive s-p)
+                                  :spoiler-text spoiler-text
+                                  :visibility (ecase visibility
+                                                ((NIL) NIL)
+                                                (:direct "direct")
+                                                (:private "private")
+                                                (:unlisted "unlisted")
+                                                (:public "public"))
+                                  :language (when language (string language))
+                                  :scheduled-at scheduled-at
+                                  "poll[options]" poll-options
+                                  "poll[expires-in]" poll-expire-seconds
+                                  "poll[multiple]" (coerce-boolean poll-multiple m-p)
+                                  "poll[hide_totals]" (coerce-boolean poll-hide-totals h-p))))
+      (if scheduled-at
+          (decode-scheduled-status results-entity)
+          (decode-status results-entity)))))
 
 (defmethod delete-status ((client client) (id string))
   (submit client (format NIL "/api/v1/statuses/~a" id)
@@ -669,3 +677,19 @@
                               :since-id since-id
                               :min-id min-id
                               :limit limit)))
+;;; Polls
+
+(defmethod polls ((client client) (id string))
+  (decode-poll (query client (format NIL "/api/v1/polls/~a" id))))
+
+(defmethod polls ((client client) (poll poll))
+  (polls client (id poll)))
+
+(defmethod poll-vote ((client client) (id string) (choices list))
+  (assert (every #'stringp choices))
+  (assert (every (lambda (a) (parse-integer a :junk-allowed t)) choices))
+  (decode-poll (submit client (format NIL "/api/v1/polls/~a/votes" id)
+                       "choices" choices)))
+
+(defmethod poll-vote ((client client) (poll poll) choices)
+  (poll-vote client (id poll) choices))

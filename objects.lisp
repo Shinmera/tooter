@@ -399,7 +399,7 @@
 
 (defmethod print-object ((scheduled-status scheduled-status) stream)
   (print-unreadable-object (scheduled-status stream :type T)
-    (format stream "~a" (id scheduled-status))))
+    (format stream "~a@~a" (id scheduled-status) (scheduled-at scheduled-status))))
 
 (define-entity status
   (id)
