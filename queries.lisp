@@ -464,7 +464,7 @@
 
 (defmethod make-report ((client client) (id string) &key statuses comment forward)
   (check-type statuses list)
-  (check-type comment string)
+  (check-type comment (or null string))
   (decode-report (submit client "/api/v1/reports"
                          :account-id id
                          :status-ids (loop for status in statuses
@@ -479,10 +479,22 @@
 
 ;;; Search
 
-(defmethod find-results ((client client) query &key (resolve NIL r-p))
+(defmethod find-results ((client client) query &key account-id max-id min-id kind (exclude-unreviewed NIL e-p) (resolve NIL r-p) (limit 20) (offset 0) (following NIL f-p))
+  (check-type account-id (or null string))
+  (check-type max-id (or null string))
+  (check-type min-id (or null string))
+  (check-type kind (or null string))
   (decode-results (query client "/api/v2/search"
                          :q query
-                         :resolve (coerce-boolean resolve r-p))))
+                         :account-id account-id
+                         :max-id max-id
+                         :min-id min-id
+                         :type   kind
+                         :exclude-unreviewed (coerce-boolean exclude-unreviewed e-p)
+                         :resolve (coerce-boolean resolve r-p)
+                         :limit limit
+                         :offset offset
+                         :following (coerce-boolean following f-p))))
 
 ;;; Statuses
 
