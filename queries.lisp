@@ -684,6 +684,11 @@
 (defmethod trends ((client client))
   (decode-tag (query client "/api/v1/trends")))
 
+;;; Directory
+
+(defmethod account-directory ((client client))
+  (decode-account (query client "/api/v1/directory")))
+
 ;;; Conversations
 
 (defgeneric conversations (client &key limit max-id since-id min-id))

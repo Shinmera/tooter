@@ -329,6 +329,7 @@
    #:timeline-tag
    #:timeline
    #:trends
+   #:account-directory
    #:conversation
    #:delete-conversation
    #:mark-read-conversation

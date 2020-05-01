@@ -2196,12 +2196,22 @@ See CLIENT
 See USER-LIST")
 
   (function timeline-tag
-   "Returns statuses for the given hashtag.")
+    "Returns statuses for the given hashtag.
+
+See CLIENT
+See TAG
+See STATUS")
 
   (function trends
     "Returns a list of trending hashtags.
 
 See CLIENT")
+
+  (function account-directory
+    "Returns the list of accounts in the public directory .
+
+See CLIENT
+See ACCOUNT")
 
   (function conversations
     "Returns a list of conversation.
