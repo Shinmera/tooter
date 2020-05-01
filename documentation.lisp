@@ -2120,6 +2120,13 @@ Returns the referenced status.
 See STATUS
 See CLIENT")
 
+  (function endorsements
+    "Returns the accounts an user is showing in their profile.
+
+See CLIENT
+See PIN
+See UNPIN")
+
   (function pin
     "Pin the given status to your profile.
 
@@ -2189,7 +2196,21 @@ See CLIENT")
     "Returns a list of conversation.
 
 See CONVERSATION
-See CLIENT"))
+See CLIENT")
+
+  (function polls
+    "Returns a poll
+
+See CLIENT
+See POLL
+See POLL-OPTION")
+
+(function poll-vote
+   "Votes for choices in a poll.
+
+See CLIENT
+See POLL
+See POLL-OPTION"))
 
 ;; toolkit.lisp
 (docs:define-docs

@@ -126,14 +126,14 @@
 (defmethod filter ((client client) (filter filter))
   (filter client (id filter)))
 
-(defmethod create-filter ((client client) phrase context &key irreversible whole-word expires-in)
+(defmethod create-filter ((client client) phrase context &key (irreversible NIL i-p) (whole-word NIL w-p) expires-in)
   (assert (stringp phrase))
-  (assert (member context '(:home :notification :public :thread) :test #'string=))
+  (assert (consp context))
   (decode-filter (submit client "/api/v1/lists"
                          :phrase  phrase
                          :context context
-                         :irreversible irreversible
-                         :whole-word whole-word
+                         :irreversible (coerce-boolean irreversible i-p)
+                         :whole-word (coerce-boolean whole-word w-p)
                          :expires-in expires-in)))
 
 (defmethod update-filter ((client client) id phrase context &key irreversible whole-word expires-in)
