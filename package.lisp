@@ -328,6 +328,8 @@
    #:timeline
    #:trends
    #:conversation
+   #:delete-conversation
+   #:mark-read-conversation
    #:polls
    #:poll-vote))
 

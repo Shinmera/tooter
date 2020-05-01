@@ -2198,6 +2198,18 @@ See CLIENT")
 See CONVERSATION
 See CLIENT")
 
+  (function delete-conversation
+    "Deletes a conversation.
+
+See CONVERSATION
+See CLIENT")
+
+(function mark-read-conversation
+    "Marks a conversation ad already read.
+
+See CONVERSATION
+See CLIENT")
+
   (function polls
     "Returns a poll
 
