@@ -139,7 +139,6 @@
 (defmethod update-filter ((client client) id phrase context &key (irreversible NIL i-p) (whole-word NIL w-p) expires-in)
   (assert (stringp id))
   (assert (stringp phrase))
-  (assert (member context '(:home :notification :public :thread) :test #'string=))
   (decode-filter (submit client (format NIL "/api/v1/filters/~a" id)
                          :http-method :put
                          :phrase  phrase
@@ -703,3 +702,14 @@
 
 (defmethod poll-vote ((client client) (poll poll) choices)
   (poll-vote client (id poll) choices))
+
+;;; Markers
+
+(defmethod markers ((client client) (timeline list))
+  (decode-marker (query client "/api/v1/markers/"
+                        :timeline timeline)))
+
+(defmethod save-markers ((client client) &key last-status-read last-notification-read)
+ (decode-marker (submit client "/api/v1/markers/"
+                        "home[last_read_id]" last-status-read
+                        "notifications[last_read_id]" last-notification-read)))

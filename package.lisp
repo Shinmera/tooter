@@ -331,7 +331,9 @@
    #:delete-conversation
    #:mark-read-conversation
    #:polls
-   #:poll-vote))
+   #:poll-vote
+   #:markers
+   #:save-markers))
 
 (defpackage #:tooter-client
   (:nicknames #:org.shirakumo.tooter.client)

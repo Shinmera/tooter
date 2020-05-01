@@ -244,11 +244,11 @@
 
 (define-entity marker
   (marked-home :field "home")
-  (marked-notifications :filed "notifications"))
+  (marked-notifications :field "notifications"))
 
 (defmethod print-object ((marker marker) stream)
   (print-unreadable-object (marker stream :type T)
-    (format stream "home ~s #~a" (marked-home marker) (notifications marker))))
+    (format stream "home ~s #~a" (marked-home marker) (marked-notifications marker))))
 
 (define-entity mention
   (url)
