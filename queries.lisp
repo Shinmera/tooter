@@ -129,7 +129,7 @@
 (defmethod create-filter ((client client) phrase context &key (irreversible NIL i-p) (whole-word NIL w-p) expires-in)
   (assert (stringp phrase))
   (assert (consp context))
-  (decode-filter (submit client "/api/v1/lists"
+  (decode-filter (submit client "/api/v1/filters"
                          :phrase  phrase
                          :context context
                          :irreversible (coerce-boolean irreversible i-p)
