@@ -283,6 +283,12 @@
 (defmethod instance ((client client))
   (decode-instance (query client "/api/v1/instance")))
 
+(defmethod peers ((client client))
+  (query client "/api/v1/instance/peers"))
+
+(defmethod weekly-activity ((client client))
+  (decode-activity (query client "/api/v1/instance/activity")))
+
 (defmethod emojis ((client client))
   (decode-emoji (query client "/api/v1/custom_emojis")))
 

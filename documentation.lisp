@@ -1813,6 +1813,17 @@ See ACCOUNT")
 See INSTANCE
 See CLIENT")
 
+  (function peers
+    "Retrieve the instances that the server knows.
+
+See CLIENT")
+
+  (function weekly-activity
+    "Retrieve stats of the last 3 month activity of this instance bin size is week.
+
+See CLIENT
+See ACTIVITY")
+
   (function emojis
     "Retrieve a list of custom emojis present on the instance.
 

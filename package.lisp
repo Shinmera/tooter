@@ -287,6 +287,8 @@
    #:reject-request
    #:follow-remote
    #:instance
+   #:peers
+   #:weekly-activity
    #:emojis
    #:user-lists
    #:user-list-accounts
