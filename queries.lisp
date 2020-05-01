@@ -401,7 +401,7 @@
 
 ;;; Notifications
 
-(defmethod notifications ((client client) &key max-id since-id (limit 15) exclude-types)
+(defmethod notifications ((client client) &key max-id since-id (limit 15) exclude-types account-id)
   (check-type max-id (or null string))
   (check-type since-id (or null string))
   (check-type limit (or null (integer 0)))
@@ -415,7 +415,8 @@
                                                              (:follow "follow")
                                                              (:favourite "favourite")
                                                              (:reblog "reblog")
-                                                             (:mention "mention"))))))
+                                                             (:mention "mention")))
+                              :account-id account-id)))
 
 (defmethod find-notification ((client client) (id string))
   (decode-notification (query client (format NIL "/api/v1/notifications/~a" id))))
@@ -425,8 +426,7 @@
   T)
 
 (defmethod delete-notification ((client client) (id string))
-  (submit client "/api/v1/notifications/dismiss"
-          :id id)
+  (submit client (format nil "/api/v1/notifications/~a/dismiss" id))
   T)
 
 (defmethod delete-notification ((client client) (notification notification))
