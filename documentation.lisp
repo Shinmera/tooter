@@ -2238,12 +2238,22 @@ See CLIENT
 See POLL
 See POLL-OPTION")
 
-(function poll-vote
-   "Votes for choices in a poll.
+  (function poll-vote
+    "Votes for choices in a poll.
 
 See CLIENT
 See POLL
-See POLL-OPTION"))
+See POLL-OPTION")
+
+  (function identity-proof
+    "Returns respons from external identity provider.
+
+See CLIENT")
+
+  (function oembed
+    "Returns oembed preview.
+
+See CLIENT"))
 
 ;; toolkit.lisp
 (docs:define-docs

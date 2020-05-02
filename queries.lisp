@@ -736,3 +736,16 @@
  (decode-marker (submit client "/api/v1/markers/"
                         "home[last_read_id]" last-status-read
                         "notifications[last_read_id]" last-notification-read)))
+
+;;; Identity proof
+
+(defmethod identity-proof ((client client) (provider string) (username string))
+   (query client "/api/proofs"
+          :provider provider
+          :username username))
+
+(defmethod oembed ((client client) (url string) &key (max-width 400) max-height)
+  (query client "/api/oembed"
+         :url url
+         :maxwidth max-width
+         :maxheight max-heigh))
