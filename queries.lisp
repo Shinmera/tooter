@@ -748,4 +748,4 @@
   (query client "/api/oembed"
          :url url
          :maxwidth max-width
-         :maxheight max-heigh))
+         :maxheight max-height))
