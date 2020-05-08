@@ -609,6 +609,35 @@ See VIDEO-METADATA")
 
 See VIDEO-METADATA")
 
+  (type audio-metadata
+    "Metadata for audio.
+
+See AUDIO-LENGTH
+See AUDIO-ENCODE
+See AUDIO-BITRATE
+See AUDIO-CHANNELS
+See DURATION")
+
+  (function audio-length
+     "Returns the length (time) of the audio.
+
+See AUDIO-METADATA")
+
+  (function audio-encode
+     "Returns the audio encoding (mp3, ogg etch.).
+
+See AUDIO-METADATA")
+
+  (function audio-bitrate
+     "Returns the audio bitrate.
+
+See AUDIO-METADATA")
+
+  (function audio-channels
+     "Returns the audio channels.
+
+See AUDIO-METADATA")
+
   (type card
     "Cards represent all information to summarise a status.
 

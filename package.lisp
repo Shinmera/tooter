@@ -61,6 +61,12 @@
    #:frame-rate
    #:duration
    #:bitrate
+   #:audio-metadata
+   #:audio-length
+   #:duration
+   #:audio-encode
+   #:audio-bitrate
+   #:audio-channels
    #:card
    #:url
    #:title
