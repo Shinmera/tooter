@@ -14,9 +14,8 @@
   (+ unix *unix-epoch-difference*))
 
 (defun universal->utc-timestring (universal)
-  (multiple-value-bind (seconds minutes hours day month year x)
+  (multiple-value-bind (seconds minutes hours day month year)
       (decode-universal-time universal 0)
-    (declare (ignore x))
     (format NIL
             "~d-~2,'0d-~2,'0dT~2,'0d:~2,'0d:~2,'0dZ"
             year month day hours minutes seconds)))
