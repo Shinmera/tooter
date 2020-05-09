@@ -609,6 +609,35 @@ See VIDEO-METADATA")
 
 See VIDEO-METADATA")
 
+  (type audio-metadata
+    "Metadata for audio.
+
+See AUDIO-LENGTH
+See AUDIO-ENCODE
+See AUDIO-BITRATE
+See AUDIO-CHANNELS
+See DURATION")
+
+  (function audio-length
+     "Returns the length (time) of the audio.
+
+See AUDIO-METADATA")
+
+  (function audio-encode
+     "Returns the audio encoding (mp3, ogg etch.).
+
+See AUDIO-METADATA")
+
+  (function audio-bitrate
+     "Returns the audio bitrate.
+
+See AUDIO-METADATA")
+
+  (function audio-channels
+     "Returns the audio channels.
+
+See AUDIO-METADATA")
+
   (type card
     "Cards represent all information to summarise a status.
 
@@ -1619,11 +1648,42 @@ See STATUS")
 See CLIENT
 See STATUS")
 
-(function unbookmark
+  (function unbookmark
     "Remove a STATUS to user'sbookmark.
 
 See CLIENT
 See STATUS")
+
+  (function filters
+    "Returns a list of all filters for this user.
+
+See CLIENT
+See FILTER")
+
+  (function filter
+    "Return a filter for this user.
+
+See CLIENT
+See FILTER")
+
+
+  (function create-filter
+    "Create a new filter.
+
+See CLIENT
+See FILTER")
+
+  (function update-filter
+    "Update an existing filter.
+
+See CLIENT
+See FILTER")
+
+  (function delete-filter
+    "Delete an existing filter.
+
+See CLIENT
+See FILTER")
 
   (function follow
     "Follow a new account.
@@ -1781,6 +1841,17 @@ See ACCOUNT")
 
 See INSTANCE
 See CLIENT")
+
+  (function peers
+    "Retrieve the instances that the server knows.
+
+See CLIENT")
+
+  (function weekly-activity
+    "Retrieve stats of the last 3 month activity of this instance bin size is week.
+
+See CLIENT
+See ACTIVITY")
 
   (function emojis
     "Retrieve a list of custom emojis present on the instance.
@@ -2089,6 +2160,13 @@ Returns the referenced status.
 See STATUS
 See CLIENT")
 
+  (function endorsements
+    "Returns the accounts an user is showing in their profile.
+
+See CLIENT
+See PIN
+See UNPIN")
+
   (function pin
     "Pin the given status to your profile.
 
@@ -2147,17 +2225,63 @@ See CLIENT
 See USER-LIST")
 
   (function timeline-tag
-   "Returns statuses for the given hashtag.")
+    "Returns statuses for the given hashtag.
+
+See CLIENT
+See TAG
+See STATUS")
 
   (function trends
     "Returns a list of trending hashtags.
 
 See CLIENT")
 
+  (function account-directory
+    "Returns the list of accounts in the public directory .
+
+See CLIENT
+See ACCOUNT")
+
   (function conversations
     "Returns a list of conversation.
 
 See CONVERSATION
+See CLIENT")
+
+  (function delete-conversation
+    "Deletes a conversation.
+
+See CONVERSATION
+See CLIENT")
+
+(function mark-read-conversation
+    "Marks a conversation ad already read.
+
+See CONVERSATION
+See CLIENT")
+
+  (function polls
+    "Returns a poll
+
+See CLIENT
+See POLL
+See POLL-OPTION")
+
+  (function poll-vote
+    "Votes for choices in a poll.
+
+See CLIENT
+See POLL
+See POLL-OPTION")
+
+  (function identity-proof
+    "Returns respons from external identity provider.
+
+See CLIENT")
+
+  (function oembed
+    "Returns oembed preview.
+
 See CLIENT"))
 
 ;; toolkit.lisp
@@ -2166,4 +2290,8 @@ See CLIENT"))
     "Attempts to remove all HTML tags and translate the entities into standard characters.
 
 The exception is <br /> tags, which are turned into Linefeeds.
-This function is useful for plaintext formatting of status content."))
+This function is useful for plaintext formatting of status content.")
+
+  (function universal->utc-timestring
+   "Converts the output of CL:GET-UNIVERSAL-TIME to a string
+representation in ISO8601 format. The string represents the time at UTC timezone."))

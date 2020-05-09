@@ -115,6 +115,44 @@
 (defmethod unbookmark ((client client) (status status))
   (unbookmark (id status)))
 
+;;; Filters
+
+(defmethod filters ((client client))
+  (decode-filter (query client "/api/v1/filters")))
+
+(defmethod filter ((client client) (id string))
+  (decode-filter (query client (format NIL "/api/v1/filters/~a" id))))
+
+(defmethod filter ((client client) (filter filter))
+  (filter client (id filter)))
+
+(defmethod create-filter ((client client) phrase context &key (irreversible NIL i-p) (whole-word NIL w-p) expires-in)
+  (assert (stringp phrase))
+  (assert (consp context))
+  (decode-filter (submit client "/api/v1/filters"
+                         :phrase  phrase
+                         :context context
+                         :irreversible (coerce-boolean irreversible i-p)
+                         :whole-word (coerce-boolean whole-word w-p)
+                         :expires-in expires-in)))
+
+(defmethod update-filter ((client client) id phrase context &key (irreversible NIL i-p) (whole-word NIL w-p) expires-in)
+  (assert (stringp id))
+  (assert (stringp phrase))
+  (decode-filter (submit client (format NIL "/api/v1/filters/~a" id)
+                         :http-method :put
+                         :phrase  phrase
+                         :context context
+                         :irreversible (coerce-boolean irreversible i-p)
+                         :whole-word (coerce-boolean whole-word w-p)
+                         :expires-in expires-in)))
+
+(defmethod delete-filter ((client client) id)
+  (assert (stringp id))
+  (decode-filter (submit client (format NIL "/api/v1/filters/~a" id)
+                         :http-method :delete)))
+
+
 ;;; Follows
 
 (defmethod follow ((client client) (id string))
@@ -208,13 +246,13 @@
 
 ;;; Favourites
 
-(defmethod favourites ((client client) &key max-id since-id (limit 20))
+(defmethod favourites ((client client) &key min-id max-id (limit 20))
   (check-type max-id (or null string))
-  (check-type since-id (or null string))
+  (check-type min-id (or null string))
   (check-type limit (or null (integer 0)))
   (decode-status (query client "/api/v1/favourites"
+                        :min-id min-id
                         :max-id max-id
-                        :since-id since-id
                         :limit limit)))
 
 ;;; Follow Requests
@@ -229,13 +267,13 @@
                          :limit limit)))
 
 (defmethod accept-request ((client client) (id string))
-  (submit client (format NIL "/api/v1/follow_requests/~a/authorize" id)))
+  (decode-relationship (submit client (format NIL "/api/v1/follow_requests/~a/authorize" id))))
 
 (defmethod accept-request ((client client) (account account))
   (accept-request client (id account)))
 
 (defmethod reject-request ((client client) (id string))
-  (submit client (format NIL "/api/v1/follow_requests/~a/reject" id)))
+  (decode-relationship (submit client (format NIL "/api/v1/follow_requests/~a/reject" id))))
 
 (defmethod reject-request ((client client) (account account))
   (reject-request client (id account)))
@@ -244,6 +282,12 @@
 
 (defmethod instance ((client client))
   (decode-instance (query client "/api/v1/instance")))
+
+(defmethod peers ((client client))
+  (query client "/api/v1/instance/peers"))
+
+(defmethod weekly-activity ((client client))
+  (decode-activity (query client "/api/v1/instance/activity")))
 
 (defmethod emojis ((client client))
   (decode-emoji (query client "/api/v1/custom_emojis")))
@@ -363,7 +407,7 @@
 
 ;;; Notifications
 
-(defmethod notifications ((client client) &key max-id since-id (limit 15) exclude-types)
+(defmethod notifications ((client client) &key max-id since-id (limit 15) exclude-types account-id)
   (check-type max-id (or null string))
   (check-type since-id (or null string))
   (check-type limit (or null (integer 0)))
@@ -377,7 +421,8 @@
                                                              (:follow "follow")
                                                              (:favourite "favourite")
                                                              (:reblog "reblog")
-                                                             (:mention "mention"))))))
+                                                             (:mention "mention")))
+                              :account-id account-id)))
 
 (defmethod find-notification ((client client) (id string))
   (decode-notification (query client (format NIL "/api/v1/notifications/~a" id))))
@@ -387,8 +432,7 @@
   T)
 
 (defmethod delete-notification ((client client) (id string))
-  (submit client "/api/v1/notifications/dismiss"
-          :id id)
+  (submit client (format nil "/api/v1/notifications/~a/dismiss" id))
   T)
 
 (defmethod delete-notification ((client client) (notification notification))
@@ -426,7 +470,7 @@
 
 (defmethod make-report ((client client) (id string) &key statuses comment forward)
   (check-type statuses list)
-  (check-type comment string)
+  (check-type comment (or null string))
   (decode-report (submit client "/api/v1/reports"
                          :account-id id
                          :status-ids (loop for status in statuses
@@ -441,10 +485,22 @@
 
 ;;; Search
 
-(defmethod find-results ((client client) query &key (resolve NIL r-p))
+(defmethod find-results ((client client) query &key account-id max-id min-id kind (exclude-unreviewed NIL e-p) (resolve NIL r-p) (limit 20) (offset 0) (following NIL f-p))
+  (check-type account-id (or null string))
+  (check-type max-id (or null string))
+  (check-type min-id (or null string))
+  (check-type kind (or null string))
   (decode-results (query client "/api/v2/search"
                          :q query
-                         :resolve (coerce-boolean resolve r-p))))
+                         :account-id account-id
+                         :max-id max-id
+                         :min-id min-id
+                         :type   kind
+                         :exclude-unreviewed (coerce-boolean exclude-unreviewed e-p)
+                         :resolve (coerce-boolean resolve r-p)
+                         :limit limit
+                         :offset offset
+                         :following (coerce-boolean following f-p))))
 
 ;;; Statuses
 
@@ -487,32 +543,40 @@
 (defmethod favouriters ((client client) (status status) &rest args)
   (apply #'favouriters client (id status) args))
 
-(defmethod make-status ((client client) status &key in-reply-to media (sensitive NIL s-p) spoiler-text visibility language)
+(defmethod make-status ((client client) status &key in-reply-to media (sensitive NIL s-p) spoiler-text visibility language scheduled-at poll-options poll-expire-seconds (poll-multiple NIL m-p) (poll-hide-totals NIL h-p))
   ;; FIXME: Idempotency
   (flet ((ensure-media-id (media)
            (etypecase media
              (string media)
              (attachment (id media))
              (pathname (id (make-media client media))))))
-    (decode-status (submit client "/api/v1/statuses"
-                           :status status
-                           :in-reply-to-id (etypecase in-reply-to
-                                             (string in-reply-to)
-                                             (status (id in-reply-to))
-                                             (null NIL))
-                           :media-ids (typecase media
-                                        (null NIL)
-                                        (cons (mapcar #'ensure-media-id media))
-                                        (T (list (ensure-media-id media))))
-                           :sensitive (coerce-boolean sensitive s-p)
-                           :spoiler-text spoiler-text
-                           :visibility (ecase visibility
-                                         ((NIL) NIL)
-                                         (:direct "direct")
-                                         (:private "private")
-                                         (:unlisted "unlisted")
-                                         (:public "public"))
-                           :language (when language (string language))))))
+    (let ((results-entity (submit client "/api/v1/statuses"
+                                  :status status
+                                  :in-reply-to-id (etypecase in-reply-to
+                                                    (string in-reply-to)
+                                                    (status (id in-reply-to))
+                                                    (null NIL))
+                                  :media-ids (typecase media
+                                               (null NIL)
+                                               (cons (mapcar #'ensure-media-id media))
+                                               (T (list (ensure-media-id media))))
+                                  :sensitive (coerce-boolean sensitive s-p)
+                                  :spoiler-text spoiler-text
+                                  :visibility (ecase visibility
+                                                ((NIL) NIL)
+                                                (:direct "direct")
+                                                (:private "private")
+                                                (:unlisted "unlisted")
+                                                (:public "public"))
+                                  :language (when language (string language))
+                                  :scheduled-at scheduled-at
+                                  "poll[options]" poll-options
+                                  "poll[expires-in]" poll-expire-seconds
+                                  "poll[multiple]" (coerce-boolean poll-multiple m-p)
+                                  "poll[hide_totals]" (coerce-boolean poll-hide-totals h-p))))
+      (if scheduled-at
+          (decode-scheduled-status results-entity)
+          (decode-status results-entity)))))
 
 (defmethod delete-status ((client client) (id string))
   (submit client (format NIL "/api/v1/statuses/~a" id)
@@ -545,6 +609,9 @@
 
 (defmethod unfavourite ((client client) (status status))
   (unfavourite client (id status)))
+
+(defmethod endorsements ((client client))
+  (decode-account (query client "/api/v1/endorsements")))
 
 (defmethod pin ((client client) (id string))
   (decode-status (submit client (format NIL "/api/v1/statuses/~a/pin" id))))
@@ -617,13 +684,68 @@
 (defmethod trends ((client client))
   (decode-tag (query client "/api/v1/trends")))
 
+;;; Directory
+
+(defmethod account-directory ((client client))
+  (decode-account (query client "/api/v1/directory")))
+
 ;;; Conversations
 
 (defgeneric conversations (client &key limit max-id since-id min-id))
 
-(defmethod conversations (client &key (limit 20) max-id since-id min-id)
-  (decode-conversation (query client (format NIL "/api/v1/conversations")
+(defmethod conversations ((client client) &key (limit 20) max-id since-id min-id)
+  (decode-conversation (query client "/api/v1/conversations"
                               :max-id max-id
                               :since-id since-id
                               :min-id min-id
                               :limit limit)))
+
+(defmethod delete-conversation ((client client) (id string))
+  (query client
+         (format NIL "/api/v1/conversations/~a" id)
+         :http-method :delete))
+
+(defmethod mark-read-conversation ((client client) (id string))
+  (decode-conversation (submit client
+                               (format NIL "/api/v1/conversations/~a/read" id))))
+
+;;; Polls
+
+(defmethod polls ((client client) (id string))
+  (decode-poll (query client (format NIL "/api/v1/polls/~a" id))))
+
+(defmethod polls ((client client) (poll poll))
+  (polls client (id poll)))
+
+(defmethod poll-vote ((client client) (id string) (choices list))
+  (assert (every #'stringp choices))
+  (assert (every (lambda (a) (parse-integer a :junk-allowed t)) choices))
+  (decode-poll (submit client (format NIL "/api/v1/polls/~a/votes" id)
+                       "choices" choices)))
+
+(defmethod poll-vote ((client client) (poll poll) choices)
+  (poll-vote client (id poll) choices))
+
+;;; Markers
+
+(defmethod markers ((client client) (timeline list))
+  (decode-marker (query client "/api/v1/markers/"
+                        :timeline timeline)))
+
+(defmethod save-markers ((client client) &key last-status-read last-notification-read)
+ (decode-marker (submit client "/api/v1/markers/"
+                        "home[last_read_id]" last-status-read
+                        "notifications[last_read_id]" last-notification-read)))
+
+;;; Identity proof
+
+(defmethod identity-proof ((client client) (provider string) (username string))
+   (query client "/api/proofs"
+          :provider provider
+          :username username))
+
+(defmethod oembed ((client client) (url string) &key (max-width 400) max-height)
+  (query client "/api/oembed"
+         :url url
+         :maxwidth max-width
+         :maxheight max-height))

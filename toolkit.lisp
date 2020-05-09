@@ -13,6 +13,13 @@
 (defun unix->universal (unix)
   (+ unix *unix-epoch-difference*))
 
+(defun universal->utc-timestring (universal)
+  (multiple-value-bind (seconds minutes hours day month year)
+      (decode-universal-time universal 0)
+    (format NIL
+            "~d-~2,'0d-~2,'0dT~2,'0d:~2,'0d:~2,'0dZ"
+            year month day hours minutes seconds)))
+
 (defun parse-timestring (string)
   (let* ((y -1)
          (x (position #\- string))

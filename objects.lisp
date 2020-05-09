@@ -135,6 +135,9 @@
           ((:video :gifv)
            (let ((*translator* (lambda (data) (decode-entity 'video-metadata data))))
              (decode-entity 'metadata metadata)))
+          (:audio
+           (let ((*translator* (lambda (data) (decode-entity 'audio-metadata data))))
+             (decode-entity 'metadata metadata)))
           (:unknown NIL))))))
 
 (define-entity metadata
@@ -163,6 +166,17 @@
   (print-unreadable-object (video-metadata stream :type T)
     (format stream "~ax~a~@[@~afps~]~@[ ~as~]" (width video-metadata) (height video-metadata)
             (frame-rate video-metadata) (duration video-metadata))))
+
+(define-entity audio-metadata
+  (audio-length :field "length" :nullable T)
+  (duration :nullable T)
+  (audio-encode :field "audio_encode" :nullable T)
+  (audio-bitrate :field "audio_bitrate" :nullable T)
+  (audio-channels :field "audio_channels" :nullable T))
+
+(defmethod print-object ((audio-metadata audio-metadata) stream)
+  (print-unreadable-object (audio-metadata stream :type T)
+    (format stream "length ~a encode ~a" (audio-length audio-metadata) (audio-encode audio-metadata))))
 
 (define-entity card
   (url)
@@ -244,11 +258,11 @@
 
 (define-entity marker
   (marked-home :field "home")
-  (marked-notifications :filed "notifications"))
+  (marked-notifications :field "notifications"))
 
 (defmethod print-object ((marker marker) stream)
   (print-unreadable-object (marker stream :type T)
-    (format stream "home ~s #~a" (marked-home marker) (notifications marker))))
+    (format stream "home ~s #~a" (marked-home marker) (marked-notifications marker))))
 
 (define-entity mention
   (url)
@@ -399,7 +413,7 @@
 
 (defmethod print-object ((scheduled-status scheduled-status) stream)
   (print-unreadable-object (scheduled-status stream :type T)
-    (format stream "~a" (id scheduled-status))))
+    (format stream "~a@~a" (id scheduled-status) (scheduled-at scheduled-status))))
 
 (define-entity status
   (id)
