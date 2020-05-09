@@ -61,6 +61,12 @@
    #:frame-rate
    #:duration
    #:bitrate
+   #:audio-metadata
+   #:audio-length
+   #:duration
+   #:audio-encode
+   #:audio-bitrate
+   #:audio-channels
    #:card
    #:url
    #:title
@@ -265,6 +271,11 @@
    #:bookmarks
    #:bookmark
    #:unbookmark
+   #:filters
+   #:filter
+   #:create-filter
+   #:update-filter
+   #:delete-filter
    #:follow
    #:unfollow
    #:block
@@ -282,6 +293,8 @@
    #:reject-request
    #:follow-remote
    #:instance
+   #:peers
+   #:weekly-activity
    #:emojis
    #:user-lists
    #:user-list-accounts
@@ -314,6 +327,7 @@
    #:unreblog
    #:favourite
    #:unfavourite
+   #:endorsements
    #:pin
    #:unpin
    #:mute-conversation
@@ -321,7 +335,14 @@
    #:timeline-tag
    #:timeline
    #:trends
-   #:conversation))
+   #:account-directory
+   #:conversation
+   #:delete-conversation
+   #:mark-read-conversation
+   #:polls
+   #:poll-vote
+   #:markers
+   #:save-markers))
 
 (defpackage #:tooter-client
   (:nicknames #:org.shirakumo.tooter.client)
@@ -349,6 +370,7 @@
    #:authorize)
   ;; toolkit.lisp
   (:export
+   #:universal->utc-timestring
    #:plain-format-html))
 
 (defpackage #:tooter
