@@ -2290,4 +2290,8 @@ See CLIENT"))
     "Attempts to remove all HTML tags and translate the entities into standard characters.
 
 The exception is <br /> tags, which are turned into Linefeeds.
-This function is useful for plaintext formatting of status content."))
+This function is useful for plaintext formatting of status content.")
+
+  (function universal->UTCtimestring
+   "Converts the output of CL:GET-UNIVERSAL-TIME to a string
+representation in ISO8601 format. The string represents the time at UTC timezone."))
