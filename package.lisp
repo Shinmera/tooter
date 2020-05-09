@@ -370,7 +370,7 @@
    #:authorize)
   ;; toolkit.lisp
   (:export
-   #:universal->UTCtimestring
+   #:universal->utc-timestring
    #:plain-format-html))
 
 (defpackage #:tooter

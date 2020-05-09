@@ -13,7 +13,7 @@
 (defun unix->universal (unix)
   (+ unix *unix-epoch-difference*))
 
-(defun universal->UTCtimestring (universal)
+(defun universal->utc-timestring (universal)
   (multiple-value-bind (seconds minutes hours day month year x)
       (decode-universal-time universal 0)
     (declare (ignore x))

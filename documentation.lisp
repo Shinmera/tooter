@@ -2292,6 +2292,6 @@ See CLIENT"))
 The exception is <br /> tags, which are turned into Linefeeds.
 This function is useful for plaintext formatting of status content.")
 
-  (function universal->UTCtimestring
+  (function universal->utc-timestring
    "Converts the output of CL:GET-UNIVERSAL-TIME to a string
 representation in ISO8601 format. The string represents the time at UTC timezone."))
