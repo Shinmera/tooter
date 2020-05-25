@@ -167,3 +167,11 @@
 
 (defun coerce-boolean (boolean provided)
   (when provided (if boolean "true" "false")))
+
+(defgeneric maybe-parse-integer (object))
+
+(defmethod maybe-parse-integer ((object integer))
+  object)
+
+(defmethod maybe-parse-integer ((object string))
+  (parse-integer object))

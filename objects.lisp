@@ -428,7 +428,7 @@
   (emojis :translate-with #'decode-emoji)
   (reblogs-count)
   (favourites-count)
-  (replies-count :field "replies_count" :translate-with #'parse-integer)
+  (replies-count :field "replies_count" :translate-with #'maybe-parse-integer)
   (reblogged :nullable T)
   (favourited :nullable T)
   (muted :nullable T)
@@ -477,7 +477,7 @@
   (privacy :translate-with #'to-keyword)
   (sensitive)
   (language :translate-with #'to-keyword)
-  (follow-requests-count :fields "follow_requests_count" :translate-with #'parse-integer))
+  (follow-requests-count :fields "follow_requests_count" :translate-with #'maybe-parse-integer))
 
 (defmethod print-object ((source source) stream)
   (print-unreadable-object (source stream :type T)
@@ -523,7 +523,7 @@
 (define-entity featured-tag
   (id)
   (name)
-  (statuses-count :field "statuses_count" :translate-with #'parse-integer)
+  (statuses-count :field "statuses_count" :translate-with #'maybe-parse-integer)
   (last-status-at :field "last_status_at" :translate-with #'convert-timestamp))
 
 (defmethod print-object ((featured-tag featured-tag) stream)
