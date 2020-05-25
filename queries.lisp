@@ -422,7 +422,8 @@
                                                              (:follow "follow")
                                                              (:favourite "favourite")
                                                              (:reblog "reblog")
-                                                             (:mention "mention")))
+                                                             (:mention "mention")
+                                                             (:poll "poll")))
                               :account-id account-id)))
 
 (defmethod find-notification ((client client) (id string))
@@ -453,7 +454,8 @@
                                                    (:follows "data[alerts][follow]")
                                                    (:favourites "data[alerts][favourite]")
                                                    (:reblogs "data[alerts][reblogs]")
-                                                   (:mentions "data[alerts][mentions]"))
+                                                   (:mentions "data[alerts][mention]")
+                                                   (:polls "data[alerts][poll]"))
                                          collect "true"))))
 
 (defmethod subscription ((client client))
