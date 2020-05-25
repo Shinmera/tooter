@@ -407,13 +407,14 @@
 
 ;;; Notifications
 
-(defmethod notifications ((client client) &key max-id since-id (limit 15) exclude-types account-id)
+(defmethod notifications ((client client) &key max-id min-id since-id (limit 15) exclude-types account-id)
   (check-type max-id (or null string))
   (check-type since-id (or null string))
   (check-type limit (or null (integer 0)))
   (check-type exclude-types list)
   (decode-notification (query client "/api/v1/notifications"
                               :max-id max-id
+                              :min-id min-id
                               :since-id since-id
                               :limit limit
                               :exclude-types (loop for type in exclude-types
