@@ -168,10 +168,10 @@
 (defun coerce-boolean (boolean provided)
   (when provided (if boolean "true" "false")))
 
-(defgeneric maybe-parse-integer (object))
+(defgeneric ensure-integer (object))
 
-(defmethod maybe-parse-integer ((object integer))
+(defmethod ensure-integer ((object integer))
   object)
 
-(defmethod maybe-parse-integer ((object string))
+(defmethod ensure-integer ((object string))
   (parse-integer object))
