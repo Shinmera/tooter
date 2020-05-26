@@ -1242,6 +1242,7 @@ See EMOJIS
 See DISCOVERABLE
 See REBLOGS-COUNT
 See FAVOURITES-COUNT
+See REPLIES-COUNT
 See REBLOGGED
 See FAVOURITED
 See MUTED
@@ -1253,8 +1254,10 @@ See MENTIONS
 See TAGS
 See APPLICATION
 See LANGUAGE
-See BOT
-See PINNED")
+See PINNED
+See POLL
+See PREVIEW-CARD
+See BOOKMARKED")
 
   (function in-reply-to-id
     "Returns the ID of the status this status is a reply to.
@@ -1294,6 +1297,11 @@ See STATUS")
 
   (function favourites-count
     "Returns the number of favourites this status has received.
+
+See STATUS")
+
+  (function replies-count
+    "Returns the number of replies this status has received.
 
 See STATUS")
 
@@ -1358,13 +1366,23 @@ See APPLICATION")
 
 See STATUS")
 
-  (function bot
-    "Returns non nil if thids account is a bot.
+  (function pinned
+    "Returns whether this status is pinned on the user's profile.
 
 See STATUS")
 
-  (function pinned
-    "Returns whether this status is pinned on the user's profile.
+  (function poll
+    "Returns a poll attached to this status, nil if no poll is attached.
+
+See STATUS")
+
+  (function preview-card
+    "Returns a convenient JSON preview for links contained in a status.
+
+See STATUS")
+
+  (function bookmarked
+    "Returns whether this status has been bookmarked from the user.
 
 See STATUS")
 
