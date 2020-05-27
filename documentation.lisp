@@ -2002,6 +2002,22 @@ Returns T.
 See NOTIFICATION
 See CLIENT")
 
+  (function delete-notification-deprecated
+    "Delete or dismiss a single notification.
+
+The notification can either be a NOTIFICATION instance or a notification ID.
+
+Returns T.
+
+This function is deprecated and works only for instances of mastodon with version < 3.0.
+
+Anyway this function must be used to delete single notification if the client
+is connected to a an instance running pleroma version <= 2.0.
+
+See NOTIFICATION
+See CLIENT")
+
+
   (function make-subscription
     "Create or update a push notification subscription.
 

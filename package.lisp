@@ -314,6 +314,7 @@
    #:notifications
    #:find-notification
    #:delete-notification
+   #:delete-notification-deprecated
    #:make-subscription
    #:subscription
    #:delete-subscription

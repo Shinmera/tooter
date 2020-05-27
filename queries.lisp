@@ -440,6 +440,14 @@
 (defmethod delete-notification ((client client) (notification notification))
   (delete-notification client (id notification)))
 
+(defmethod delete-notification-deprecated ((client client) (id string))
+  (submit client "/api/v1/notifications/dismiss"
+          :id id)
+  T)
+
+(defmethod delete-notification-deprecated ((client client) (notification notification))
+  (delete-notification-deprecated client (id notification)))
+
 (defmethod make-subscription ((client client) endpoint public-key secret &key alerts)
   (check-type endpoint string)
   (check-type public-key string)
