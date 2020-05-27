@@ -428,6 +428,7 @@
   (emojis :translate-with #'decode-emoji)
   (reblogs-count)
   (favourites-count)
+  (replies-count :field "replies_count" :translate-with #'ensure-integer)
   (reblogged :nullable T)
   (favourited :nullable T)
   (muted :nullable T)
@@ -439,7 +440,10 @@
   (tags :translate-with #'decode-tag)
   (application :translate-with #'decode-application :nullable T)
   (language :nullable T :translate-with #'to-keyword)
-  (pinned :nullable T))
+  (pinned :nullable T)
+  (poll :nullable T :translate-with #'decode-poll)
+  (preview-card :field "card" :nullable T :translate-with #'decode-card)
+  (bookmarked))
 
 (defmethod print-object ((status status) stream)
   (print-unreadable-object (status stream :type T)
@@ -473,7 +477,7 @@
   (privacy :translate-with #'to-keyword)
   (sensitive)
   (language :translate-with #'to-keyword)
-  (follow-requests-count :fields "follow_requests_count" :translate-with #'parse-integer))
+  (follow-requests-count :fields "follow_requests_count" :translate-with #'ensure-integer))
 
 (defmethod print-object ((source source) stream)
   (print-unreadable-object (source stream :type T)
@@ -519,7 +523,7 @@
 (define-entity featured-tag
   (id)
   (name)
-  (statuses-count :field "statuses_count" :translate-with #'parse-integer)
+  (statuses-count :field "statuses_count" :translate-with #'ensure-integer)
   (last-status-at :field "last_status_at" :translate-with #'convert-timestamp))
 
 (defmethod print-object ((featured-tag featured-tag) stream)

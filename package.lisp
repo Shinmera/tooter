@@ -200,6 +200,7 @@
    #:emojis
    #:reblogs-count
    #:favourites-count
+   #:replies-count
    #:reblogged
    #:favourited
    #:muted
@@ -212,6 +213,9 @@
    #:application
    #:language
    #:pinned
+   #:poll
+   #:preview-card
+   #:bookmarked
    #:source
    #:note
    #:fields

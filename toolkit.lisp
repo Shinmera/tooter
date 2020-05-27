@@ -167,3 +167,11 @@
 
 (defun coerce-boolean (boolean provided)
   (when provided (if boolean "true" "false")))
+
+(defgeneric ensure-integer (object))
+
+(defmethod ensure-integer ((object integer))
+  object)
+
+(defmethod ensure-integer ((object string))
+  (parse-integer object))
