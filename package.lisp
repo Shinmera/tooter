@@ -314,7 +314,6 @@
    #:notifications
    #:find-notification
    #:delete-notification
-   #:delete-notification-deprecated
    #:make-subscription
    #:subscription
    #:delete-subscription
@@ -378,6 +377,22 @@
    #:universal->utc-timestring
    #:plain-format-html))
 
+(defpackage #:tooter-pleroma-objects
+  (:nicknames #:org.shirakumo.tooter.pleroma.objects)
+  (:use #:tooter-objects)
+  ;; objects.lisp
+  (:export))
+
+(defpackage #:tooter-pleroma-queries
+  (:nicknames #:org.shirakumo.tooter.pleroma.queries)
+  (:use #:tooter-objects
+        #:tooter-queries
+        #:tooter-pleroma-objects)
+  (:shadow #:delete-notification)
+  ;; queries.lisp
+  (:export
+   #:delete-notification))
+
 (defpackage #:tooter
   (:nicknames #:org.shirakumo.tooter)
   (:use #:cl #:tooter-objects #:tooter-queries #:tooter-client)
@@ -386,3 +401,11 @@
 (dolist (package '(#:tooter-objects #:tooter-queries #:tooter-client))
   (do-symbols (symbol package)
     (export symbol '#:tooter)))
+
+(defpackage #:tooter-pleroma
+  (:nicknames #:org.shirakumo.tooter.pleroma)
+  (:use #:cl #:tooter)
+  (:shadowing-import-from #:tooter-queries #:block)
+  (:shadowing-import-from #:tooter-pleroma-queries #:delete-notification)
+  (:export
+   #:delete-notification))

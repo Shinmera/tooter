@@ -17,6 +17,8 @@
                (:file "client")
                (:file "objects")
                (:file "queries")
+               (:module pleroma
+                        :components ((:file "queries")))
                (:file "documentation"))
   :depends-on (:yason
                :cl-ppcre
