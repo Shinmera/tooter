@@ -903,6 +903,7 @@ See EXPIRES-AT
 See EXPIRED
 See MULTIPLE
 See VOTERS-COUNT
+See VOTES-COUNT
 See VOTED
 See OWN-VOTES
 See OPTIONS
@@ -924,7 +925,13 @@ See POLL")
 See POLL")
 
   (function voters-count
-    "Returns the number of votes collected so far
+    "Returns the number of accounts that voted so far, the value of this slot is nil if
+the poll prevent multiple choice.
+
+See POLL")
+
+  (function votes-count
+    "Returns the number of votes collected so far.
 
 See POLL")
 
