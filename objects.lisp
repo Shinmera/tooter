@@ -300,14 +300,20 @@
   (expired)
   (multiple)
   (voters-count :field "voters_count")
-  (voted :nullable T)
+  (votes-count :field "votes_count")
+  (voted)
   (own-votes :field "own_votes")
   (options :translate-with #'decode-poll-option)
   (emojis :translate-with #'decode-emoji))
 
 (defmethod print-object ((poll poll) stream)
   (print-unreadable-object (poll stream :type T)
-    (format stream "~a" (id poll))))
+    (format stream
+            "#~a voted? ~a voters count ~a votes count ~a"
+            (id poll)
+            (voted poll)
+            (voters-count poll)
+            (votes-count  poll))))
 
 (define-entity preferences
   (posting-default-visibility :field "posting:default:visibility" :translate-with #'to-keyword)
