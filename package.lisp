@@ -134,6 +134,7 @@
    #:expired
    #:multiple
    #:voters-count
+   #:votes-count
    #:voted
    #:own-votes
    #:options
