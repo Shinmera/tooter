@@ -112,7 +112,7 @@ See CLIENT
 See REGISTER")
 
   (function access-token
-    "Accessor to the access token the client is using to authenticate requestts.
+    "Accessor to the access token the client is using to authenticate requests.
 
 Unless manually filled in, this will be automatically set by AUTHORIZE.
 
@@ -233,6 +233,32 @@ If the type is a symbol, a new instance of the given type is allocated
 and then filled in via DECODE-ENTITY. If the data is a list, a new
 instance is created and decoded for each entry in the list.")
 
+  (function define-entity
+    "Define a mapping between a serialized JSON entity and a CLOS class
+
+Use this macro to define a subclass of ENTITY that can be decoded by decode-entity.
+
+The definitions of an entity is shown below:
+
+(define-entity name slots+)
+
+name                 := the name of the entity
+slot                 := (slot-name field? nullable? translate?)
+slot-name            := the name of a slot of this entity, usually match a field of the JSON or another entity
+field                := :field field-name
+field-name           := a string representing the name of the field (in the JSON object) that should be mapped to the name of the entity indicated by slot-name
+nullable             := :nullable nullable-value
+nullable-value       := if non nil indicates that this field is optional in the JSON object
+translate            := :translate-with translation-function
+translation-function := a function object to translate the field in the JSON representation to lisp
+
+example:
+
+(define-entity field
+  (name)
+  (value)
+  (verified-at :field \"verified_at\" :translate-with #'convert-timestamp :nullable T))")
+
   (type field
     "Represents a profile element as key value pair.
 
@@ -251,7 +277,7 @@ See FIELD")
 See FIELD")
 
   (function verified-at
-    "Timesatmp when the server verified the url in the value of this field
+    "Timestamp when the server verified the URL in the value of this field
 
 See FIELD")
 
@@ -417,7 +443,7 @@ This is only set for accounts retrieved through verify-credentials.
 See ACCOUNT")
 
   (type activity
-    "Representation of statistsics about an instance activity.
+    "Representation of statistics about an instance activity.
 
 See WEEK
 See STATUSES
@@ -820,7 +846,7 @@ See INSTANCE")
 See INSTANCE")
 
   (type instance-stats
-    "Representation of statistics abount a single instance.
+    "Representation of statistics about a single instance.
 
 See USER-COUNT
 See STATUS-COUNT
@@ -946,7 +972,7 @@ See POLL")
 See POLL")
 
   (function options
-    "Returns the possible choiches for this poll.
+    "Returns the possible choices for this poll.
 
 See POLL")
 
@@ -1479,7 +1505,7 @@ See VISIBILITY
 See STATUS")
 
   (function unread
-    "Returns non nil if this converation has been marked not red")
+    "Returns non nil if this conversation has been marked not red")
 
   (function last-status
     "Returns the last STATUS of the conversation")
@@ -1567,7 +1593,7 @@ See IDENTITY-PROOF")
 See IDENTITY-PROOF")
 
   (type token
-    "Representation of autorization credentials
+    "Representation of authorization credentials
 
 See ACCESS-TOKEN
 See TOKEN-TYPE
@@ -1668,13 +1694,13 @@ See CLIENT
 See STATUS")
 
   (function bookmark
-    "Add a STATUS to user'sbookmark.
+    "Add a STATUS to user's bookmark.
 
 See CLIENT
 See STATUS")
 
   (function unbookmark
-    "Remove a STATUS to user'sbookmark.
+    "Remove a STATUS to user's bookmark.
 
 See CLIENT
 See STATUS")
@@ -1882,7 +1908,7 @@ See ACTIVITY")
     "Retrieve a list of custom emojis present on the instance.
 
 See CLIENT
-See EOMJI")
+See EMOJI")
 
   (function user-lists
     "Retrieve a list of up to twenty of the account's user lists.
@@ -2300,7 +2326,7 @@ See POLL
 See POLL-OPTION")
 
   (function identity-proof
-    "Returns respons from external identity provider.
+    "Returns response from external identity provider.
 
 See CLIENT")
 
