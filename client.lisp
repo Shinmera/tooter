@@ -78,10 +78,10 @@
 
 (defmethod default-headers ((client client) &key idempotency-key)
   (remove nil (list
-	       (when (access-token client)
-		 `("Authorization" . ,(format NIL "Bearer ~a" (access-token client))))
-	       (when idempotency-key
-		 `("Idempotency-Key" . idempotency-key)))))
+               (when (access-token client)
+                 `("Authorization" . ,(format NIL "Bearer ~a" (access-token client))))
+               (when idempotency-key
+                 `("Idempotency-Key" . idempotency-key)))))
 
 (defmethod query ((client client) endpoint &rest parameters)
   (let ((method (or (getf parameters :http-method) :get)))
@@ -94,7 +94,7 @@
 
 (defmethod submit ((client client) endpoint &rest parameters)
   (let ((method (or (getf parameters :http-method) :post))
-	(idempotency-key (getf parameters :idempotency-key)))
+        (idempotency-key (getf parameters :idempotency-key)))
     (remf parameters :http-method)
     (remf parameters :idempotency-key)
     (request (format NIL "~a~a" (base client) endpoint)
