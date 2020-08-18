@@ -176,7 +176,8 @@ The endpoint should be the full path on the server. The parameters
 should be a plist of keys and values to be sent as request parameters.
 The list is transformed via PARAM-PLIST->ALIST. By default this uses
 the POST request method. You can specify a different method with the
-special parameter :HTTP-METHOD.
+special parameter :HTTP-METHOD. You can also specify an idempotency 
+key with the special parameter :IDEMPOTENCY-KEY.
 
 Note that no matter what, the content-type of the request will be
 multipart/form-data meaning it is not suitable to use for GET endpoints.
@@ -2130,30 +2131,32 @@ See ACCOUNT")
     "Create a new status.
 
 The arguments should be seen as follows:
-  STATUS       --- The content of the status update. Should be plain
-                   text.
-  IN-REPLY-TO  --- May be a STATUS instance or ID to which this status
-                   should reply to.
-  MEDIA        --- May be an attachment, or a list of up to four
-                   attachments. See below for the handling of media
-                   attachments.
-  SENSITIVE    --- Whether the content contains sensitive material.
-  SPOILER-TEXT --- Denotes the text to show in place of the content
-                   before the content is revealed. Forces sensitive.
-  VISIBILITY   --- May denote how visible the status should be. Can be
-                   one of the following:
-                    :DIRECT    The status can only be seen by mentions
-                    :PRIVATE   The status can only be seen by you
-                    :UNLISTED  The status can only be seen by link
-                    :PUBLIC    The status appears publicly on timelines
-  LANGUAGE     --- May be an ISO-639 code of the language the status
-                   text is in.
+  STATUS          --- The content of the status update. Should be plain
+                      text.
+  IN-REPLY-TO     --- May be a STATUS instance or ID to which this status
+                      should reply to.
+  MEDIA           --- May be an attachment, or a list of up to four
+                      attachments. See below for the handling of media
+                      attachments.
+  SENSITIVE       --- Whether the content contains sensitive material.
+  SPOILER-TEXT    --- Denotes the text to show in place of the content
+                      before the content is revealed. Forces sensitive.
+  VISIBILITY      --- May denote how visible the status should be. Can be
+                      one of the following:
+                       :DIRECT    The status can only be seen by mentions
+                       :PRIVATE   The status can only be seen by you
+                       :UNLISTED  The status can only be seen by link
+                       :PUBLIC    The status appears publicly on timelines
+  LANGUAGE        --- May be an ISO-639 code of the language the status
+                      text is in.
+  IDEMPOTENCY-KEY --- May be any string. Used to prevent duplicate
+                      submissions of the same status.
 
 Media attachments can be one of the following types:
-  INTEGER      --- The referenced attachment is used.
-  ATTACHMENT   --- The referenced attachment is used.
-  PATHNAME     --- A new media attachment is created automatically and
-                   its new ID is used.
+  INTEGER         --- The referenced attachment is used.
+  ATTACHMENT      --- The referenced attachment is used.
+  PATHNAME        --- A new media attachment is created automatically and
+                      its new ID is used.
 
 Returns the newly created status instance.
 
