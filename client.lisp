@@ -76,9 +76,12 @@
                   :scopes (list ,@(scopes client))
                   :website ,(website client)))
 
-(defmethod default-headers ((client client))
-  (when (access-token client)
-    `(("Authorization" . ,(format NIL "Bearer ~a" (access-token client))))))
+(defmethod default-headers ((client client) &key idempotency-key)
+  (remove nil (list
+	       (when (access-token client)
+		 `("Authorization" . ,(format NIL "Bearer ~a" (access-token client))))
+	       (when idempotency-key
+		 `("Idempotency-Key" . idempotency-key)))))
 
 (defmethod query ((client client) endpoint &rest parameters)
   (let ((method (or (getf parameters :http-method) :get)))
@@ -90,13 +93,15 @@
              :headers (default-headers client))))
 
 (defmethod submit ((client client) endpoint &rest parameters)
-  (let ((method (or (getf parameters :http-method) :post)))
+  (let ((method (or (getf parameters :http-method) :post))
+	(idempotency-key (getf parameters :idempotency-key)))
     (remf parameters :http-method)
+    (remf parameters :idempotency-key)
     (request (format NIL "~a~a" (base client) endpoint)
              :parameters (param-plist->alist parameters)
              :method method
              :content-type "multipart/form-data"
-             :headers (default-headers client))))
+             :headers (default-headers client :idempotency-key idempotency-key))))
 
 (defmethod register ((client client))
   (let ((data (submit client "/api/v1/apps"

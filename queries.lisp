@@ -546,8 +546,7 @@
 (defmethod favouriters ((client client) (status status) &rest args)
   (apply #'favouriters client (id status) args))
 
-(defmethod make-status ((client client) status &key in-reply-to media (sensitive NIL s-p) spoiler-text visibility language scheduled-at poll-options poll-expire-seconds (poll-multiple NIL m-p) (poll-hide-totals NIL h-p))
-  ;; FIXME: Idempotency
+(defmethod make-status ((client client) status &key in-reply-to media (sensitive NIL s-p) spoiler-text visibility language scheduled-at poll-options poll-expire-seconds (poll-multiple NIL m-p) (poll-hide-totals NIL h-p) idempotency-key)
   (flet ((ensure-media-id (media)
            (etypecase media
              (string media)
@@ -576,7 +575,8 @@
                                   "poll[options]" poll-options
                                   "poll[expires-in]" poll-expire-seconds
                                   "poll[multiple]" (coerce-boolean poll-multiple m-p)
-                                  "poll[hide_totals]" (coerce-boolean poll-hide-totals h-p))))
+                                  "poll[hide_totals]" (coerce-boolean poll-hide-totals h-p)
+				  :idempotency-key idempotency-key)))
       (if scheduled-at
           (decode-scheduled-status results-entity)
           (decode-status results-entity)))))
