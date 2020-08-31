@@ -12,7 +12,10 @@
    #:entity
    #:define-entity
    #:decode-entity
+   #:field
+   #:decode-field
    #:account
+   #:decode-account
    #:id
    #:username
    #:account-name
@@ -33,10 +36,13 @@
    #:fields
    #:bot
    #:source
+   #:activity
+   #:decode-activity
    #:application
    #:name
    #:website
    #:vapid-key
+   #:decode-application
    #:attachment
    #:id
    #:kind
@@ -47,27 +53,32 @@
    #:metadata
    #:description
    #:blurhash
+   #:decode-attachment
    #:metadata
    #:small
    #:original
    #:focus
+   #:decode-metadata
    #:image-metadata
    #:width
    #:height
    #:size
    #:aspect
+   #:decode-image-metadata
    #:video-metadata
    #:width
    #:height
    #:frame-rate
    #:duration
    #:bitrate
+   #:decode-video-metadata
    #:audio-metadata
    #:audio-length
    #:duration
    #:audio-encode
    #:audio-bitrate
    #:audio-channels
+   #:decode-audio-metadata
    #:card
    #:url
    #:title
@@ -83,14 +94,18 @@
    #:height
    #:image
    #:embed-url
+   #:decode-card
    #:context
    #:ancestors
    #:descendants
+   #:decode-context
    #:emoji
    #:shortcode
    #:url
    #:static-url
    #:visible-in-picker
+   #:category
+   #:decode-emoji
    #:instance
    #:uri
    #:title
@@ -105,30 +120,37 @@
    #:stats
    #:thumbnail
    #:contact-account
+   #:decode-instance
    #:instance-stats
    #:user-count
    #:status-count
    #:domain-count
+   #:decode-instance-stats
    #:user-list
    #:id
    #:title
+   #:decode-user-list
    #:marker
    #:marked-home
    #:marked-notifications
+   #:decode-marker
    #:mention
    #:url
    #:username
    #:account
    #:id
+   #:decode-mention
    #:notification
    #:id
    #:kind
    #:created-at
    #:account
    #:status
+   #:decode-notification
    #:poll-option
    #:title
    #:votes-count
+   #:decode-poll-option
    #:poll
    #:id
    #:expires-at
@@ -140,23 +162,27 @@
    #:own-votes
    #:options
    #:emojis
+   #:decode-poll
    #:preferences
    #:posting-default-visibility
    #:posting-default-sensitive
    #:posting-default-language
    #:reading-expand-media
    #:reading-expand-spoilers
+   #:decode-preferences
    #:push-subscription-alerts
    #:alert-follow
    #:alert-favourite
    #:alert-mention
    #:alert-reblog
    #:alert-poll
+   #:decode-push-subscription-alerts
    #:push-subscription
    #:id
    #:endpoint
    #:server-key
    #:alerts
+   #:decode-push-subscription
    #:relationship
    #:id
    #:following
@@ -169,13 +195,16 @@
    #:blocking
    #:domain-blocking
    #:blocked-by
+   #:decode-relationship
    #:report
    #:id
    #:action-taken
+   #:decode-report
    #:results
    #:results-accounts
    #:results-statuses
    #:hashtags
+   #:decode-results
    #:status-params
    #:text
    #:in-reply-to-id
@@ -185,10 +214,12 @@
    #:visibility
    #:scheduled-at
    #:application-id
+   #:decode-status-params
    #:scheduled-status
    #:id
    #:scheduled-at
    #:params
+   #:decode-scheduled-status
    #:status
    #:id
    #:uri
@@ -218,6 +249,7 @@
    #:poll
    #:preview-card
    #:bookmarked
+   #:decode-status
    #:source
    #:note
    #:fields
@@ -225,24 +257,29 @@
    #:sensitive
    #:language
    #:follow-requests-count
+   #:decode-source
    #:tag
    #:name
    #:url
    #:history
+   #:decode-tag
    #:tag-history
    #:day
    #:use-count
    #:account-count
+   #:decode-tag-history
    #:conversations
    #:id
    #:accounts
    #:unread
    #:last-status
+   #:decode-conversation
    #:featured-tag
    #:id
    #:name
    #:statuses-count
    #:last-status-at
+   #:decode-featured-tag
    #:filter
    #:id
    #:phrase
@@ -250,17 +287,20 @@
    #:expires-at
    #:irreversible
    #:whole-word
+   #:decode-filter
    #:identity-proof
    #:provider
    #:provider-username
    #:profile-url
    #:proof-url
    #:updated-at
+   #:decode-identity-proof
    #:token
    #:access-token
    #:token-type
    #:scope
-   #:created-at))
+   #:created-at
+   #:decode-token))
 
 (defpackage #:tooter-queries
   (:nicknames #:org.shirakumo.tooter.queries)
@@ -377,6 +417,7 @@
   ;; toolkit.lisp
   (:export
    #:universal->utc-timestring
+   #:convert-timestamp
    #:plain-format-html))
 
 (defpackage #:tooter
