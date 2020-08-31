@@ -10,6 +10,7 @@
   ;; objects.lisp
   (:export
    #:entity
+   #:define-entity
    #:decode-entity
    #:account
    #:id

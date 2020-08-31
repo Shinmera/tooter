@@ -155,7 +155,7 @@
     (cl-ppcre:regex-replace-all
      "&\\w+;"
      (r "<([^>]*)>" ""
-        (r "<br\\s*/>" (string #\Linefeed)
+        (r "<br\\s*?/?>" (string #\Linefeed)
            string))
      (lambda (string s e ms me rs re)
        (declare (ignore s e rs re))
