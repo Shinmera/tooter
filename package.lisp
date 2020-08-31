@@ -377,6 +377,7 @@
   ;; toolkit.lisp
   (:export
    #:universal->utc-timestring
+   #:convert-timestamp
    #:plain-format-html))
 
 (defpackage #:tooter
