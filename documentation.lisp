@@ -176,7 +176,7 @@ The endpoint should be the full path on the server. The parameters
 should be a plist of keys and values to be sent as request parameters.
 The list is transformed via PARAM-PLIST->ALIST. By default this uses
 the POST request method. You can specify a different method with the
-special parameter :HTTP-METHOD. You can also specify an idempotency 
+special parameter :HTTP-METHOD. You can also specify an idempotency
 key with the special parameter :IDEMPOTENCY-KEY.
 
 Note that no matter what, the content-type of the request will be
@@ -2347,5 +2347,20 @@ The exception is <br /> tags, which are turned into Linefeeds.
 This function is useful for plaintext formatting of status content.")
 
   (function universal->utc-timestring
-   "Converts the output of CL:GET-UNIVERSAL-TIME to a string
-representation in ISO8601 format. The string represents the time at UTC timezone."))
+    "Converts the output of CL:GET-UNIVERSAL-TIME to a string
+representation in ISO8601 format. The string represents the time at UTC timezone.")
+
+  (function convert-timestamp
+    "Converts STAMP (an integer or string representation of a timestamp into universal timestamp format.
+
+See UNIVERSAL->UTC-TIMESTRING")
+
+  (function coerce-boolean
+    "Converts BOOLEAN to javascript representation, The argument parameter is useful when
+optional function argument is used like (defun (&optional (delete NIL delete-provided-p)))")
+
+  (function ensure-integer
+    "Converts OBJECT to an integer")
+
+  (function to-keyword
+    "Converts THING to a lisp keyword"))
