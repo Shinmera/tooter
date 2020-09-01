@@ -378,6 +378,8 @@
   (:export
    #:universal->utc-timestring
    #:convert-timestamp
+   #:coerce-boolean
+   #:ensure-integer
    #:plain-format-html))
 
 (defpackage #:tooter

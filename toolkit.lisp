@@ -44,9 +44,9 @@
     (integer (unix->universal stamp))
     (string (parse-timestring stamp))))
 
-(defun to-keyword (a)
+(defun to-keyword (thing)
   (intern (with-output-to-string (out)
-            (loop for char across a
+            (loop for char across thing
                   do (if (char= #\_ char)
                          (write-char #\- out)
                          (write-char (char-upcase char) out))))
