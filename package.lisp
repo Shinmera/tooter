@@ -380,6 +380,7 @@
    #:convert-timestamp
    #:coerce-boolean
    #:ensure-integer
+   #:to-keyword
    #:plain-format-html))
 
 (defpackage #:tooter
