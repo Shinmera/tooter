@@ -1020,6 +1020,11 @@ See PREFERENCES")
 
 See PREFERENCES")
 
+   (function preferences
+     "Returns the user preferences
+
+See PREFERENCES")
+
    (type push-subscription-alerts
      "Representation of alerts for PUSH-SUBSCRIPTION.
 
