@@ -729,6 +729,11 @@
 (defmethod poll-vote ((client client) (poll poll) choices)
   (poll-vote client (id poll) choices))
 
+;; Preferences
+
+(defmethod preferences ((client client))
+  (decode-preferences (query client "/api/v1/preferences")))
+
 ;;; Markers
 
 (defmethod markers ((client client) (timeline list))
