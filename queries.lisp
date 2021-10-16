@@ -424,7 +424,8 @@
                                                              (:favourite "favourite")
                                                              (:reblog "reblog")
                                                              (:mention "mention")
-                                                             (:poll "poll")))
+                                                             (:poll "poll")
+                                                             (:follow-request "follow_request")))
                               :account-id account-id)))
 
 (defmethod find-notification ((client client) (id string))
