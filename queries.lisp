@@ -106,14 +106,14 @@
   (decode-status (submit client (format NIL "/api/v1/statuses/~a/bookmark" id))))
 
 (defmethod bookmark ((client client) (status status))
-  (bookmark (id status)))
+  (bookmark client (id status)))
 
 (defmethod unbookmark ((client client) (id string))
   (check-type id string)
   (decode-status (submit client (format NIL "/api/v1/statuses/~a/unbookmark" id))))
 
 (defmethod unbookmark ((client client) (status status))
-  (unbookmark (id status)))
+  (unbookmark client (id status)))
 
 ;;; Filters
 
