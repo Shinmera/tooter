@@ -408,6 +408,16 @@
 
 ;;; Notifications
 
+(defun encode-notification-type (encoded-type)
+  (ecase encoded-type
+    (:follow "follow")
+    (:favourite "favourite")
+    (:reblog "reblog")
+    (:mention "mention")
+    (:move "move")
+    (:poll "poll")
+    (:follow-request "follow_request")))
+
 (defmethod notifications ((client client) &key max-id min-id since-id (limit 15) exclude-types account-id)
   (check-type max-id (or null string))
   (check-type since-id (or null string))
@@ -419,14 +429,7 @@
                               :since-id since-id
                               :limit limit
                               :exclude-types (loop for type in exclude-types
-                                                   collect (ecase type
-                                                             (:follow "follow")
-                                                             (:favourite "favourite")
-                                                             (:reblog "reblog")
-                                                             (:mention "mention")
-                                                             (:move "move")
-                                                             (:poll "poll")
-                                                             (:follow-request "follow_request")))
+                                                   collect (encode-notification-type type))
                               :account-id account-id)))
 
 (defmethod find-notification ((client client) (id string))
