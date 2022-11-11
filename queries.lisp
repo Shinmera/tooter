@@ -424,6 +424,7 @@
                                                              (:favourite "favourite")
                                                              (:reblog "reblog")
                                                              (:mention "mention")
+                                                             (:move "move")
                                                              (:poll "poll")
                                                              (:follow-request "follow_request")))
                               :account-id account-id)))
