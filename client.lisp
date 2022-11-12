@@ -16,11 +16,15 @@
                              :want-stream T)))
 
 (define-condition request-failed (error)
-  ((code :initarg :code :reader code)
+  ((uri :initarg :uri :reader uri)
+   (request-method :initarg :request-method :reader request-method)
+   (code :initarg :code :reader code)
    (data :initarg :data :reader data)
    (message :initarg :message :reader message))
-  (:report (lambda (c s) (format s "Mastodon request failed with code ~d~@[:~%  ~a~]"
-                                 (code c) (message c)))))
+  (:report (lambda (c s)
+             (format s
+                     "Mastodon ~a request to ~s failed with code ~d~@[:~%  ~a~]"
+                     (request-method c) (uri c) (code c) (message c)))))
 
 (defun request (uri &key parameters headers (method :get) (content-type "application/x-www-form-urlencoded"))
   (multiple-value-bind (stream code headers)
@@ -30,7 +34,9 @@
                   (close stream))))
       (if (= 200 code)
           (values data headers)
-          (error 'request-failed :code code
+          (error 'request-failed :uri  uri
+                                 :request-method method
+                                 :code code
                                  :data data
                                  :message (or (getj data :error-description)
                                               (getj data :error)))))))
