@@ -506,35 +506,56 @@ See TAGS
 See EMOJIS
 See REACTIONS")
 
+  (function content
+    "Returns the text of the announcement.
+
+See ANNOUNCEMENT")
+
   (function starts-at
-    "Returns a date when announce will start.")
+    "Returns a date when announcement will start.
+
+See ANNOUNCEMENT")
 
   (function ends-at
-    "Returns a date when announce will end.")
+    "Returns a date when announcement will end.
+
+See ANNOUNCEMENT")
 
   (function published
-    "Returns if this announce is active or not.")
+    "Returns if this announcement is active or not.
+
+See ANNOUNCEMENT")
 
   (function all-day
-    "Returns if this announce starts or ends on date, not daytime.")
+    "Returns if this announcement starts or ends on date, not daytime.
+
+See ANNOUNCEMENT")
 
   (function published-at
-    "Returns the date when this announce was published")
+    "Returns the date when this announcement was published.
+
+See ANNOUNCEMENT")
 
   (function update-at
-    "Returns the date when this announce was updated")
+    "Returns the date when this announcement was updated
+
+See ANNOUNCEMENT")
 
   (function readp
-    "Returns if this announcement has been read by the user")
+    "Returns if this announcement has been read by the user
+
+See ANNOUNCEMENT")
 
   (function mentions
     "Returns the account's mention in the announcement
 
+See ANNOUNCEMENT
 See ANNOUNCEMENT-ACCOUNT")
 
   (function status
     "Returns the status linked to this announcement
 
+See ANNOUNCEMENT
 See ANNOUNCEMENT-STATUS")
 
   (function tags
@@ -545,11 +566,13 @@ See TAG")
   (function emojis
     "Returns the emojis in the announcement
 
+See ANNOUNCEMENT
 See EMOJIS")
 
   (function reactions
     "Returns the reactions to this announcement
 
+See ANNOUNCEMENT
 See REACTION")
 
   (type application
