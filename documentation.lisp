@@ -472,6 +472,86 @@ See ACTIVITY")
 
 See ACTIVITY")
 
+  (type announcement-account
+    "List of accounts related to an announcement
+
+See ANNOUNCEMENT
+See ID
+See USERNAME
+See ACCOUNT-NAME
+See URL")
+
+  (type announcement-status
+    "List of statuses related to an announcement
+
+See ANNOUNCEMENT
+See ID
+See URL")
+
+  (type announcement
+    "Representation of an administrator's announce
+
+See ID
+See CONTENT
+See STARTS-AT
+See ENDS-AT
+See PUBLISHED
+See ALL-DAY
+See PUBLISHED-AT
+See UPDATED-AT
+See READP
+See MENTIONS
+See STATUSES
+See TAGS
+See EMOJIS
+See REACTIONS")
+
+  (function starts-at
+    "Returns a date when announce will start.")
+
+  (function ends-at
+    "Returns a date when announce will end.")
+
+  (function published
+    "Returns if this announce is active or not.")
+
+  (function all-day
+    "Returns if this announce starts or ends on date, not daytime.")
+
+  (function published-at
+    "Returns the date when this announce was published")
+
+  (function update-at
+    "Returns the date when this announce was updated")
+
+  (function readp
+    "Returns if this announcement has been read by the user")
+
+  (function mentions
+    "Returns the account's mention in the announcement
+
+See ANNOUNCEMENT-ACCOUNT")
+
+  (function status
+    "Returns the status linked to this announcement
+
+See ANNOUNCEMENT-STATUS")
+
+  (function tags
+    "Returns the tags in the announcement
+
+See TAG")
+
+  (function emojis
+    "Returns the emojis in the announcement
+
+See EMOJIS")
+
+  (function reactions
+    "Returns the reactions to this announcement
+
+See REACTION")
+
   (type application
     "Representation of an application as registered on a Mastodon instance.
 
@@ -497,7 +577,6 @@ See CLIENT")
 
 See APPLICATION
 See CLIENT")
-
 
   (type attachment
     "Representation of a media attachment for a status.
@@ -1152,6 +1231,27 @@ See RELATIONSHIP")
 
 See RELATIONSHIP")
 
+  (type reaction
+    "Emoji reaction to a announcement
+See ANNOUNCEMENT
+See NAME
+See REACTION-COUNT
+See ME
+See URL
+See STATIC-URL")
+
+  (function name
+    "Returns the emoji specification: unicode value or string representation (i.e. \":name:\").")
+
+  (function reaction-count
+    "Returns the number of users that reacted to an announcement.")
+
+  (function me
+    "Returns if the user reacted to this announcement.")
+
+  (function url
+    "Returns if the URL of a custom emoji.")
+
   (type report
     "Representation of an incident report.
 
@@ -1629,6 +1729,36 @@ See TOKEN"))
 
 ;; queries.lisp
 (docs:define-docs
+
+  (function get-announcements
+    "Get the administrator's announcements
+See ANNOUNCEMENT
+
+The argument should be seen as follows:
+WITH-DISMISSED --- Get the dismissed announcements too (default: NIL)")
+
+  (function dismiss-announcement
+    "Get the administrator's announcements
+See ANNOUNCEMENT
+
+The arguments should be seen as follows:
+ID   --- the announce's ID")
+
+  (function add-reaction-announcement
+    "Add a reaction to an announcement
+
+See ANNOUNCEMENT
+The argument should be seen as follows:
+ID  --- the ID
+NAME -- The name of the emoji (unicode, shortcode or URL)")
+
+  (function dismiss-reaction-announcement
+    "Dismiss a reaction to an announcement
+
+See ANNOUNCEMENT
+The argument should be seen as follows:
+ID  --- the ID
+NAME -- The name of the emoji (unicode, shortcode or URL)")
 
   (function verify-app-credentials
     "Checks and returns the Oauth credentials for this application.

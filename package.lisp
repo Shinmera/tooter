@@ -37,6 +37,29 @@
    #:name
    #:website
    #:vapid-key
+   #:announcement-account
+   #:id
+   #:username
+   #:account-name
+   #:url
+   #:announcement-status
+   #:id
+   #:url
+   #:announcement
+   #:id
+   #:content
+   #:starts-at
+   #:ends-at
+   #:published
+   #:all-day
+   #:published-at
+   #:updated-at
+   #:readp
+   #:mentions
+   #:statuses
+   #:tags
+   #:emojis
+   #:reactions
    #:attachment
    #:id
    #:kind
@@ -157,6 +180,12 @@
    #:endpoint
    #:server-key
    #:alerts
+   #:reaction
+   #:name
+   #:reaction-count
+   #:me
+   #:url
+   #:static-url
    #:relationship
    #:id
    #:following
@@ -267,6 +296,10 @@
   (:use #:org.shirakumo.tooter.objects)
   ;; queries.lisp
   (:export
+   #:get-announcements
+   #:dismiss-announcement
+   #:add-reaction-announcement
+   #:dismiss-reaction-announcement
    #:verify-app-credentials
    #:find-account
    #:verify-credentials
