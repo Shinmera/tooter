@@ -6,7 +6,26 @@
 
 (in-package #:org.shirakumo.tooter)
 
-;; application
+;; Announcement
+
+(defmethod get-announcements ((client client) &key with-dismissed)
+  (decode-announcement (query client "/api/v1/announcements"
+                              :with-dismissed with-dismissed)))
+
+(defmethod dismiss-announcement ((client client) (id string))
+  (submit client (format nil "/api/v1/announcements/~a/dismiss" id)))
+
+(defmethod add-reaction-announcement ((client client) (id string) (name string))
+  (submit client
+          (format NIL "/api/v1/announcements/~a/reactions/~a" id name)
+          :http-method :put))
+
+(defmethod dismiss-reaction-announcement ((client client) (id string) (name string))
+  (submit client
+          (format NIL "/api/v1/announcements/~a/reactions/~a" id name)
+          :http-method :delete))
+
+;; Application
 
 (defmethod verify-app-credentials ((client client))
   (decode-application (query client "/api/v1/apps/verify_credentials")))

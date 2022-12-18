@@ -97,6 +97,54 @@
       (format stream "week ~a statuses ~a logins ~a registrations ~a"
               week statuses logins registrations))))
 
+(define-entity announcement-account
+  (id)
+  (username)
+  (account-name :field "acct")
+  (url))
+
+(defmethod print-object ((announcement-account announcement-account) stream)
+  (with-accessors ((id id)
+                   (username username)
+                   (account-name account-name)
+                   (url url)) announcement-account
+    (print-unreadable-object (announcement-account stream :type T)
+      (format stream
+              "#~a username: ~a account-name: ~a url: ~a"
+              id username account-name url))))
+
+(define-entity announcement-status
+  (id)
+  (url))
+
+(defmethod print-object ((announcement-status announcement-status) stream)
+  (with-accessors ((id id)
+                   (url url)) announcement-status
+    (print-unreadable-object (announcement-status stream :type T)
+      (format stream "#~a url: ~a" id url))))
+
+(define-entity announcement
+  (id)
+  (content)
+  (starts-at :translate-with #'convert-timestamp :nullable t)
+  (ends-at :translate-with #'convert-timestamp :nullable t)
+  (published)
+  (all-day)
+  (published-at :translate-with #'convert-timestamp)
+  (updated-at :translate-with #'convert-timestamp)
+  (readp :field "read")
+  (mentions :translate-with #'decode-announcement-account)
+  (statuses :translate-with #'decode-announcement-status)
+  (tags :translate-with #'decode-tag)
+  (emojis :translate-with #'decode-emoji)
+  (reactions :translate-with #'decode-reaction))
+
+(defmethod print-object ((announcement announcement) stream)
+  (with-accessors ((id id)
+                   (content content)) announcement
+    (print-unreadable-object (announcement stream :type T)
+      (format stream "#~a url: ~a" id content))))
+
 (define-entity application
   (name)
   (website :nullable T)
@@ -362,6 +410,23 @@
 (defmethod print-object ((push-subscription push-subscription) stream)
   (print-unreadable-object (push-subscription stream :type T)
     (format stream "~a #~a" (endpoint push-subscription) (id push-subscription))))
+
+(define-entity reaction
+  (name)
+  (reaction-count :field "count")
+  (me :nullable T)
+  (url :nullable T)
+  (static-url :nullable T))
+
+(defmethod print-object ((reaction reaction) stream)
+  (print-unreadable-object (reaction stream :type T)
+    (format stream
+            "me? ~a name: ~a count: ~a url: ~a static_url ~a"
+            (me reaction)
+            (name reaction)
+            (reaction-count reaction)
+            (url reaction)
+            (static-url reaction))))
 
 (define-entity relationship
   (id)
