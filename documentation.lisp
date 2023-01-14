@@ -2307,6 +2307,15 @@ The arguments should be seen as follows:
                        :PUBLIC    The status appears publicly on timelines
   LANGUAGE        --- May be an ISO-639 code of the language the status
                       text is in.
+  SCHEDULED-AT    --- If non nil will post this status at the date represented
+                      by this argument.
+  POLL-OPTIONS    --- If non nil provides  a list of options for the poll attached
+                      to this status.
+  POLL-EXPIRE-SECONDS --- The number of seconds before the poll will expires.
+  POLL-MULTIPLE       --- If non nil the polls admits more than one selected
+                          entry by each users.
+  POLL-HIDE-TOTALS    --- If non null the total of the expressed votes
+                          will not be displayed
   IDEMPOTENCY-KEY --- May be any string. Used to prevent duplicate
                       submissions of the same status.
 
