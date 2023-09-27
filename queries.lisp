@@ -665,7 +665,36 @@
 (defmethod unmute ((client client) (status status))
   (unmute-conversation client (id status)))
 
+;; Tags
+
+(defgeneric followed-tags (client &key max-id since-id min-id limit))
+
+(defmethod followed-tags ((client client) &key max-id since-id min-id (limit 20))
+  (decode-tag (query client
+                     "/api/v1/followed_tags"
+                     :max-id max-id
+                     :since-id since-id
+                     :min-id min-id
+                     :limit limit)))
+
+(defgeneric follow-tag (client tag))
+
+(defmethod follow-tag ((client client) (tag string))
+  (decode-tag (submit client (format NIL "/api/v1/tags/~a/follow" tag))))
+
+(defmethod follow-tag ((client client) (tag tag))
+  (follow-tag client (name tag)))
+
+(defgeneric unfollow-tag (client tag))
+
+(defmethod unfollow-tag ((client client) (tag string))
+  (decode-tag (submit client (format NIL "/api/v1/tags/~a/unfollow" tag))))
+
+(defmethod unfollow-tag ((client client) (tag tag))
+  (unfollow-tag client (name tag)))
+
 ;;; Timelines
+
 (defun %timeline (client url &key (local NIL l-p) (only-media NIL o-p) max-id since-id min-id (limit 20))
   (check-type max-id (or null string))
   (check-type since-id (or null string))
