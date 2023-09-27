@@ -365,6 +365,9 @@
    #:unpin
    #:mute-conversation
    #:unmute-conversation
+   #:followed-tags
+   #:follow-tag
+   #:unfollow-tag
    #:timeline-tag
    #:timeline
    #:trends

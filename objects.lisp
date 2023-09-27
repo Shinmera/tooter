@@ -137,7 +137,7 @@
   (with-accessors ((id id)
                    (content content)) announcement
     (print-unreadable-object (announcement stream :type T)
-      (format stream "#~a url: ~a" id content))))
+      (format stream "#~a already read? ~a content: ~a" id (readp announcement) content))))
 
 (define-entity application
   (name)
@@ -551,11 +551,12 @@
 (define-entity tag
   (name)
   (url)
-  (history :translate-with #'decode-tag-history :nullable T))
+  (history :translate-with #'decode-tag-history :nullable T)
+  (following))
 
 (defmethod print-object ((tag tag) stream)
   (print-unreadable-object (tag stream :type T)
-    (format stream "~a" (name tag))))
+    (format stream "~a following? ~a" (name tag) (following tag))))
 
 (define-entity tag-history
   (day :translate-with #'convert-timestamp)

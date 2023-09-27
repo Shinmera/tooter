@@ -2446,6 +2446,24 @@ See CLIENT
 See TAG
 See STATUS")
 
+  (function followed-tags
+    "Returns a list of followed tags.
+
+See CLIENT
+See TAG")
+
+  (function follow-tag
+    "Follow a tag.
+
+See CLIENT
+See TAG")
+
+  (function unfollow-tag
+    "Follow a tag.
+
+See CLIENT
+See TAG")
+
   (function trends
     "Returns a list of trending hashtags.
 
