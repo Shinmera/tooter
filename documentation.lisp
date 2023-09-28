@@ -2459,7 +2459,7 @@ See CLIENT
 See TAG")
 
   (function unfollow-tag
-    "Follow a tag.
+    "Unfollow a tag.
 
 See CLIENT
 See TAG")
