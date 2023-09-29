@@ -1,5 +1,12 @@
 (in-package #:org.shirakumo.tooter)
 
+(defmacro with-return-also-headers ((decoding-function) &body body)
+  (let ((return-body    (gensym "BODY"))
+        (return-headers (gensym "HEADERS")))
+    `(multiple-value-bind (,return-body ,return-headers)
+         ,@body
+       (values (,decoding-function ,return-body) ,return-headers))))
+
 ;; Announcement
 
 (defmethod get-announcements ((client client) &key with-dismissed)
@@ -57,10 +64,11 @@
   (check-type max-id (or null string))
   (check-type since-id (or null string))
   (check-type limit (or null (integer 0)))
-  (decode-account (query client (format NIL "/api/v1/accounts/~a/followers" id)
-                         :max-id max-id
-                         :since-id since-id
-                         :limit limit)))
+  (with-return-also-headers (decode-account)
+    (query client (format NIL "/api/v1/accounts/~a/followers" id)
+           :max-id max-id
+           :since-id since-id
+           :limit limit)))
 
 (defmethod get-followers ((client client) (account account) &rest args)
   (apply #'get-followers client (id account) args))
@@ -72,10 +80,11 @@
   (check-type max-id (or null string))
   (check-type since-id (or null string))
   (check-type limit (or null (integer 0)))
-  (decode-account (query client (format NIL "/api/v1/accounts/~a/following" id)
-                         :max-id max-id
-                         :since-id since-id
-                         :limit limit)))
+  (with-return-also-headers (decode-account)
+    (query client (format NIL "/api/v1/accounts/~a/following" id)
+           :max-id max-id
+           :since-id since-id
+           :limit limit)))
 
 (defmethod get-following ((client client) (account account) &rest args)
   (apply #'get-following client (id account) args))
@@ -108,11 +117,12 @@
   (check-type since-id (or null string))
   (check-type min-id (or null string))
   (check-type limit (or null (integer 0)))
-  (decode-status (query client "/api/v1/bookmarks"
-                        :max-id max-id
-                        :since-id since-id
-                        :min-id min-id
-                        :limit limit)))
+  (with-return-also-headers (decode-status)
+    (query client "/api/v1/bookmarks"
+           :max-id max-id
+           :since-id since-id
+           :min-id min-id
+           :limit limit)))
 
 (defmethod bookmark ((client client) (id string))
   (check-type id string)
@@ -233,19 +243,21 @@
   (check-type max-id (or null string))
   (check-type since-id (or null string))
   (check-type limit (or null (integer 0)))
-  (decode-account (query client "/api/v1/blocks"
-                         :max-id max-id
-                         :since-id since-id
-                         :limit limit)))
+  (with-return-also-headers (decode-account)
+    (query client "/api/v1/blocks"
+           :max-id max-id
+           :since-id since-id
+           :limit limit)))
 
 (defmethod blocked-domains ((client client) &key max-id since-id (limit 40))
   (check-type max-id (or null string))
   (check-type since-id (or null string))
   (check-type limit (or null (integer 0)))
-  (query client "/api/v1/domain_blocks"
-         :max-id max-id
-         :since-id since-id
-         :limit limit))
+    (with-return-also-headers (identity)
+      (query client "/api/v1/domain_blocks"
+             :max-id max-id
+             :since-id since-id
+             :limit limit)))
 
 (defmethod block ((client client) (domain string))
   (submit client "/api/v1/domain_blocks"
@@ -264,10 +276,11 @@
   (check-type max-id (or null string))
   (check-type min-id (or null string))
   (check-type limit (or null (integer 0)))
-  (decode-status (query client "/api/v1/favourites"
-                        :min-id min-id
-                        :max-id max-id
-                        :limit limit)))
+  (with-return-also-headers (decode-status)
+    (query client "/api/v1/favourites"
+           :min-id min-id
+           :max-id max-id
+           :limit limit)))
 
 ;;; Follow Requests
 
@@ -275,10 +288,11 @@
   (check-type max-id (or null string))
   (check-type since-id (or null string))
   (check-type limit (or null (integer 0)))
-  (decode-account (query client "/api/v1/follow_requests"
-                         :max-id max-id
-                         :since-id since-id
-                         :limit limit)))
+  (with-return-also-headers (decode-account)
+    (query client "/api/v1/follow_requests"
+           :max-id max-id
+           :since-id since-id
+           :limit limit)))
 
 (defmethod accept-request ((client client) (id string))
   (decode-relationship (submit client (format NIL "/api/v1/follow_requests/~a/authorize" id))))
@@ -321,10 +335,11 @@
   (check-type max-id (or null string))
   (check-type since-id (or null string))
   (check-type limit (or null (integer 0)))
-  (decode-account (query client (format NIL "/api/v1/lists/~a/accounts" id)
-                         :max-id max-id
-                         :since-id since-id
-                         :limit (or limit 0))))
+  (with-return-also-headers (decode-account)
+    (query client (format NIL "/api/v1/lists/~a/accounts" id)
+           :max-id max-id
+           :since-id since-id
+           :limit (or limit 0))))
 
 (defmethod user-list-accounts ((client client) (user-list user-list) &rest args)
   (apply #'user-list-accounts client (id user-list) args))
@@ -413,11 +428,11 @@
   (check-type max-id (or null string))
   (check-type since-id (or null string))
   (check-type limit (or null (integer 0)))
-  ;; FIXME Link headers
-  (decode-account (query client "/api/v1/mutes"
-                         :max-id max-id
-                         :since-id since-id
-                         :limit limit)))
+  (with-return-also-headers (decode-account)
+    (query client "/api/v1/mutes"
+           :max-id max-id
+           :since-id since-id
+           :limit limit)))
 
 ;;; Notifications
 
@@ -545,10 +560,11 @@
   (check-type max-id (or null string))
   (check-type since-id (or null string))
   (check-type limit (or null (integer 0)))
-  (decode-account (query client (format NIL "/api/v1/statuses/~a/reblogged_by" id)
-                         :max-id max-id
-                         :since-id since-id
-                         :limit limit)))
+  (with-return-also-headers (decode-account)
+    (query client (format NIL "/api/v1/statuses/~a/reblogged_by" id)
+           :max-id max-id
+           :since-id since-id
+           :limit limit)))
 
 (defmethod rebloggers ((client client) (status status) &rest args)
   (apply #'rebloggers client (id status) args))
@@ -557,10 +573,11 @@
   (check-type max-id (or null string))
   (check-type since-id (or null string))
   (check-type limit (or null (integer 0)))
-  (decode-account (query client (format NIL "/api/v1/statuses/~a/favourited_by" id)
-                         :max-id max-id
-                         :since-id since-id
-                         :limit limit)))
+  (with-return-also-headers (decode-account)
+    (query client (format NIL "/api/v1/statuses/~a/favourited_by" id)
+           :max-id max-id
+           :since-id since-id
+           :limit limit)))
 
 (defmethod favouriters ((client client) (status status) &rest args)
   (apply #'favouriters client (id status) args))
@@ -670,12 +687,13 @@
 (defgeneric followed-tags (client &key max-id since-id min-id limit))
 
 (defmethod followed-tags ((client client) &key max-id since-id min-id (limit 20))
-  (decode-tag (query client
-                     "/api/v1/followed_tags"
-                     :max-id max-id
-                     :since-id since-id
-                     :min-id min-id
-                     :limit limit)))
+  (with-return-also-headers (decode-tag)
+    (query client
+           "/api/v1/followed_tags"
+           :max-id max-id
+           :since-id since-id
+           :min-id min-id
+           :limit limit)))
 
 (defgeneric follow-tag (client tag))
 
@@ -745,11 +763,12 @@
 (defgeneric conversations (client &key limit max-id since-id min-id))
 
 (defmethod conversations ((client client) &key (limit 20) max-id since-id min-id)
-  (decode-conversation (query client "/api/v1/conversations"
-                              :max-id max-id
-                              :since-id since-id
-                              :min-id min-id
-                              :limit limit)))
+  (with-return-also-headers (decode-conversation)
+    (query client "/api/v1/conversations"
+           :max-id max-id
+           :since-id since-id
+           :min-id min-id
+           :limit limit)))
 
 (defmethod delete-conversation ((client client) (id string))
   (query client
