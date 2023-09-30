@@ -8,6 +8,7 @@
   :serial T
   :components ((:file "package")
                (:file "toolkit")
+               (:file "link-header-parser")
                (:file "client")
                (:file "objects")
                (:file "queries")
