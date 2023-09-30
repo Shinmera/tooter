@@ -285,6 +285,14 @@
    #:scope
    #:created-at))
 
+(defpackage :link-header-parser
+  (:use :cl)
+  (:local-nicknames (:re :cl-ppcre))
+  (:export
+   #:parse
+   #:link-record-url
+   #:link-record-parameters))
+
 (defpackage #:tooter-queries
   (:nicknames #:org.shirakumo.tooter.queries)
   (:use #:org.shirakumo.tooter.objects)
