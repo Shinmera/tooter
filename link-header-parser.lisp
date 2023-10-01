@@ -1,7 +1,7 @@
 (in-package :link-header-parser)
 
-(defparameter *tokens* "(,)|(;)|(=)|(<[^<>;\\s]+>)|(\"[^\"]+\")|([^\\s=]+)|(\\s*)")
-;                        0   1   2       3              4            5        6
+(defparameter *tokens* "(,)|(;)|(=)|(<[^<>;\\s]+>)|(\"[^\"]+\")|([^\\s=;,]+)|(\\s*)")
+;;                       0   1   2        3             4            5         6
 
 (defun next-token (data)
   (multiple-value-bind (matched registers)
@@ -15,7 +15,7 @@
            (2 (list :parameter-separator matched))
            (3 (list :url matched))
            (4 (list :parameter-value matched))
-           (5 (list :parameter-key matched))
+           (5 (list :string matched))
            (6 (list :blanks matched)))
          (subseq data (length matched)))))))
 
@@ -24,8 +24,9 @@
 ;; single-parameter := parameter-key blanks parameter-separator blanks parameter-value
 ;; url              := "<[^<>;\\s]+>"
 ;; blanks           := "\\s*"
-;; parameter-key    := "[^\\s=]+"
-;; paramerer-value  := "\"[^\"]+\""
+;; parameter-key    := string
+;; paramerer-value  := "\"[^\"]+\"" | string
+;; string           := "[^\\s=;,]+"
 
 (defun token= (token token-symbol)
   (eq (first token) token-symbol))
@@ -122,8 +123,8 @@
     (let ((key   nil)
           (value nil))
       (if (not (and token
-                    (token= token :parameter-key)))
-          (signal-error :parameter-key data)
+                    (token= token :string)))
+          (signal-error :string data)
           (progn
             (setf key (token-value token))
             (let* ((no-blanks-rest-data        (consume-blanks rest-data))
@@ -132,8 +133,10 @@
               (multiple-value-bind (parameter-value-token no-value-rest-data)
                   (next-token no-blanks-after-rest-data)
                 (if (not (and parameter-value-token
-                              (token= parameter-value-token :parameter-value)))
-                    (signal-error :parameter-value no-blanks-after-rest-data)
+                              (or (token= parameter-value-token :parameter-value)
+                                  (token= parameter-value-token :string))))
+                    (signal-error '(or :parameter-value :string)
+                                  no-blanks-after-rest-data)
                     (progn
                       (setf value (string-trim +parameter-value-wrapper-char+
                                                (token-value parameter-value-token)))
