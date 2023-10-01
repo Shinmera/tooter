@@ -1,11 +1,5 @@
 (in-package :link-header-parser)
 
-(defparameter *test-cases* `(("<http://invalid/a/b?p=5>; rel=\"f\"" .
-                             (("http://invalid/a/b?p=5" (("rel" . "f")))))
-                             ,(cons (format nil "<https://example.org/>; rel=\"start\",~%<https://example.org/index>; rel=\"index\"")
-                                    '(("https://example.org/" (("rel" . "start")))
-                                      ("https://example.org/index" (("rel" . "index")))))))
-
 (defparameter *tokens* "(,)|(;)|(=)|(<[^<>;\\s]+>)|(\"[^\"]+\")|([^\\s=]+)|(\\s*)")
 ;                        0   1   2       3              4            5        6
 
@@ -28,12 +22,9 @@
 ;; link-record      := url blanks (field-sep blanks parameter)? | link-record
 ;; parameter        := single-parameter | (single-parameter blanks field-sep parameter)
 ;; single-parameter := parameter-key blanks parameter-separator blanks parameter-value
-;; url              := '<' url-value '>'
+;; url              := "<[^<>;\\s]+>"
 ;; blanks           := "\\s*"
-;; url-value        := "[^<>]+"
-;; url-start        := "<"
-;; url-end          := "<"
-;; parameter-key    := "[\\S]+"
+;; parameter-key    := "[^\\s=]+"
 ;; paramerer-value  := "\"[^\"]+\""
 
 (defun token= (token token-symbol)
