@@ -1749,10 +1749,7 @@ See TOKEN"))
 
   (function get-announcements
     "Get the administrator's announcements
-See ANNOUNCEMENT
-
-The argument should be seen as follows:
-WITH-DISMISSED --- Get the dismissed announcements too (default: NIL)")
+See ANNOUNCEMENT")
 
   (function dismiss-announcement
     "Get the administrator's announcements
