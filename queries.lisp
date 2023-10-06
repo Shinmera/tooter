@@ -1,11 +1,71 @@
 (in-package #:org.shirakumo.tooter)
 
+(defun pagination-url (handle)
+  (cdr handle))
+
+(defun pagination-decoding-function (handle)
+  (car handle))
+
+(defun make-pagination-handle (decoding-function url)
+  (cons decoding-function url))
+
 (defmacro with-return-also-headers ((decoding-function) &body body)
-  (let ((return-body    (gensym "BODY"))
-        (return-headers (gensym "HEADERS")))
-    `(multiple-value-bind (,return-body ,return-headers)
-         ,@body
-       (values (,decoding-function ,return-body) ,return-headers))))
+  (a:with-gensyms (return-body return-headers link-to-next-page link-to-previous-page)
+    (let ((actual-decoding-function (if (symbolp decoding-function)
+                                        `(function ,decoding-function)
+                                        decoding-function)))
+      `(multiple-value-bind (,return-body ,return-headers)
+           ,@body
+         (multiple-value-bind (,link-to-next-page ,link-to-previous-page)
+             (link-header-parser:find-pagination-links ,return-headers)
+           (values (funcall ,actual-decoding-function ,return-body)
+                   (make-pagination-handle ,actual-decoding-function
+                                           ,link-to-next-page)
+                   (make-pagination-handle ,actual-decoding-function
+                                           ,link-to-previous-page)
+                   ,return-headers))))))
+
+(defun navigate-page (client handle)
+  (when (pagination-url handle)
+    (with-return-also-headers ((pagination-decoding-function handle))
+      (query-url client (pagination-url handle)))))
+
+(defmacro do-pages ((client page &key (direction :next)) start-form &body body)
+  (a:with-gensyms (first-results
+                   previous-results
+                   results-decoded-entity
+                   results-next-handle
+                   results-previous-handle
+                   saved-results
+                   loop-name)
+    `(flet ((,results-decoded-entity (results)
+              (first results))
+            (,results-next-handle (results)
+              (second results))
+            (,results-previous-handle (results)
+              (third results)))
+       (let ((,page              nil)
+             (,first-results    :unitialized)
+             (,previous-results nil))
+         (loop named ,loop-name do
+           (let ((,saved-results ,previous-results))
+             (if (eq ,first-results :unitialized)
+                 (progn
+                   (setf ,first-results    (multiple-value-list ,start-form))
+                   (setf ,previous-results ,first-results))
+                 (progn
+                   (setf ,previous-results
+                         (if (eq ,direction :next)
+                             (multiple-value-list
+                              (navigate-page ,client
+                                             (,results-next-handle ,previous-results)))
+                             (multiple-value-list
+                              (navigate-page ,client
+                                             (,results-previous-handle ,previous-results)))))))
+             (setf ,page (,results-decoded-entity ,previous-results))
+             (if ,page
+                 (progn ,@body)
+                 (return-from ,loop-name (,results-decoded-entity ,saved-results)))))))))
 
 ;; Announcement
 

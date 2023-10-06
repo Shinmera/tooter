@@ -1,11 +1,12 @@
 (in-package :link-header-parser)
 
-(defparameter *tokens* "(,)|(;)|(=)|(<[^<>;\\s]+>)|(\"[^\"]+\")|([^\\s=;,]+)|(\\s*)")
-;;                       0   1   2        3             4            5         6
+(a:define-constant +tokens+ "(,)|(;)|(=)|(<[^<>;\\s]+>)|(\"[^\"]+\")|([^\\s=;,]+)|(\\s*)"
+  :test #'string=)
+;;                            0   1   2        3             4            5         6
 
 (defun next-token (data)
   (multiple-value-bind (matched registers)
-      (cl-ppcre:scan-to-strings *tokens* data)
+      (re:scan-to-strings +tokens+ data)
     (when matched
       (let ((position-matched (position-if-not #'null registers)))
         (values
@@ -94,7 +95,7 @@
                   (link-record new-records results))
                 url-rest-data)))))))
 
-(defconstant +url-wrapper-chars+ '(#\< #\>))
+(a:define-constant +url-wrapper-chars+ '(#\< #\>) :test #'equalp)
 
 (defun url (data record-results)
   (multiple-value-bind (token no-url-data)
@@ -115,7 +116,7 @@
         rest-data
         (signal-error :parameter-separator data))))
 
-(defconstant +parameter-value-wrapper-char+ '(#\"))
+(a:define-constant +parameter-value-wrapper-char+ '(#\") :test #'equalp)
 
 (defun parameters (data parameters-results)
   (multiple-value-bind (token rest-data)
@@ -148,3 +149,41 @@
                               (let ((no-blanks-rest-data (consume-blanks field-separator-rest-data)))
                                 (parameters no-blanks-rest-data parameters-results))
                               no-blanks-rest-data))))))))))))
+
+(a:define-constant +pagination-parameter-key+            "rel" :test #'string=)
+
+(a:define-constant +pagination-parameter-next-page+     "next" :test #'string=)
+
+(a:define-constant +pagination-parameter-previous-page+ "prev" :test #'string=)
+
+(defun find-link-header (headers)
+  (cdr (assoc :link headers :test #'eq)))
+
+(defun find-rel-links (parsed-link-header)
+  (remove-if-not (lambda (a)
+                   (assoc +pagination-parameter-key+
+                          (link-record-parameters a)
+                          :test #'string=))
+                 parsed-link-header))
+
+(defun find-pagination-link (parsed-link-header direction)
+  (a:when-let* ((rel-links       (find-rel-links parsed-link-header))
+                (direction-links (remove-if-not (lambda (link)
+                                                  (find-if (lambda (parameters)
+                                                             (string= (cdr parameters)
+                                                                      direction))
+                                                           (link-record-parameters link)))
+                                                rel-links)))
+               (link-record-url (first direction-links))))
+
+(defun find-link-to-next-page (parsed-link-header)
+  (find-pagination-link parsed-link-header +pagination-parameter-next-page+))
+
+(defun find-link-to-previous-page (parsed-link-header)
+  (find-pagination-link parsed-link-header +pagination-parameter-previous-page+))
+
+(defun find-pagination-links (headers)
+  (a:when-let* ((link-header   (find-link-header headers))
+                (parsed-header (ignore-errors (parse link-header))))
+    (values (find-link-to-next-page parsed-header)
+            (find-link-to-previous-page parsed-header))))
