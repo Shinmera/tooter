@@ -13,7 +13,8 @@
                (:file "objects")
                (:file "queries")
                (:file "documentation"))
-  :depends-on (:yason
+  :depends-on (:alexandria
+               :yason
                :cl-ppcre
                :drakma
                :documentation-utils))

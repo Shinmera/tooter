@@ -83,14 +83,20 @@
                (when idempotency-key
                  `("Idempotency-Key" . idempotency-key)))))
 
+(defmethod query-url ((client client) url &key (method :get) (parameters nil))
+  (request url
+           :method method
+           :parameters parameters
+           :content-type "application/x-www-form-urlencoded"
+           :headers (default-headers client)))
+
 (defmethod query ((client client) endpoint &rest parameters)
   (let ((method (or (getf parameters :http-method) :get)))
     (remf parameters :http-method)
-    (request (format NIL "~a~a" (base client) endpoint)
-             :parameters (param-plist->alist parameters)
-             :method method
-             :content-type "application/x-www-form-urlencoded"
-             :headers (default-headers client))))
+    (query-url client
+               (format NIL "~a~a" (base client) endpoint)
+               :method method
+               :parameters (param-plist->alist parameters))))
 
 (defmethod submit ((client client) endpoint &rest parameters)
   (let ((method (or (getf parameters :http-method) :post))

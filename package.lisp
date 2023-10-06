@@ -287,17 +287,21 @@
 
 (defpackage :link-header-parser
   (:use :cl)
-  (:local-nicknames (:re :cl-ppcre))
+  (:local-nicknames (:re :cl-ppcre)
+                    (:a  :alexandria))
   (:export
    #:parse
    #:link-record-url
-   #:link-record-parameters))
+   #:link-record-parameters
+   #:find-pagination-links))
 
 (defpackage #:tooter-queries
   (:nicknames #:org.shirakumo.tooter.queries)
   (:use #:org.shirakumo.tooter.objects)
   ;; queries.lisp
   (:export
+   #:navigate-page
+   #:do-pages
    #:get-announcements
    #:dismiss-announcement
    #:add-reaction-announcement
@@ -408,6 +412,7 @@
    #:scopes
    #:website
    #:default-headers
+   #:query-url
    #:query
    #:submit
    #:register
@@ -424,6 +429,7 @@
 (defpackage #:tooter
   (:nicknames #:org.shirakumo.tooter)
   (:use #:cl #:tooter-objects #:tooter-queries #:tooter-client)
+  (:local-nicknames (:a  :alexandria))
   (:shadowing-import-from #:tooter-queries #:block))
 
 (dolist (package '(#:tooter-objects #:tooter-queries #:tooter-client))
