@@ -69,9 +69,8 @@
 
 ;; Announcement
 
-(defmethod get-announcements ((client client) &key with-dismissed)
-  (decode-announcement (query client "/api/v1/announcements"
-                              :with-dismissed with-dismissed)))
+(defmethod get-announcements ((client client))
+  (decode-announcement (query client "/api/v1/announcements")))
 
 (defmethod dismiss-announcement ((client client) (id string))
   (submit client (format nil "/api/v1/announcements/~a/dismiss" id)))
