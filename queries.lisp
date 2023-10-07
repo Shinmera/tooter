@@ -31,6 +31,7 @@
       (query-url client (pagination-url handle)))))
 
 (defmacro do-pages ((client page &key (direction :next)) start-form &body body)
+  (assert (member direction '(:next :previous)))
   (a:with-gensyms (first-results
                    previous-results
                    results-decoded-entity
