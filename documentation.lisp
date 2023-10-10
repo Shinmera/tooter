@@ -163,6 +163,22 @@ See CLIENT
 See PARAM-PLIST->ALIST
 See SUBMIT")
 
+  (macro do-pages
+         "Some endpoints send only a \"slice\" (called: \"page\") of the complete data list. In this case the response contains an HTTP header with the URLs pointing to the next page or the previous one.
+
+This macro is intended to simplify the managing of paginated data.
+
+'do-page' iterate on all the pages in the direction specified by the keyword parameter 'direction' (the only values allowed fro this parameter are ':next' and ':previous', default is ':next'), the variable: 'page' hold the current page.
+
+start-form must be a form that returns the data and the pagination HTTP header as multiple values; the documentation for each method will specify if the procedure returns pagination data and can be used with this macro.
+
+For example to get all the followers:
+
+(do-pages (client current-page :direction :next)
+  (get-followers client t)
+  (format t \"~a~%\" current-page))")
+
+
   (function submit
     "Performs a submission request against the client.
 
@@ -1815,6 +1831,9 @@ See ACCOUNT")
 The account can be an ACCOUNT instance, an account ID, or T for
 yourself.
 
+This function returns paginated results.
+
+See DO-PAGES
 See CLIENT
 See ACCOUNT")
 
@@ -1824,6 +1843,9 @@ See ACCOUNT")
 The account can be an ACCOUNT instance, an account ID, or T for
 yourself.
 
+This function returns paginated results.
+
+See DO-PAGES
 See CLIENT
 See ACCOUNT")
 
@@ -1840,6 +1862,9 @@ See STATUS")
   (function bookmarks
     "Returns a list of STATUS bookmarked by the user.
 
+This function returns paginated results.
+
+See DO-PAGES
 See CLIENT
 See STATUS")
 
@@ -1993,23 +2018,35 @@ See ACCOUNT")
   (function blocks
     "Retrieve a list of blocked accounts.
 
+This function returns paginated results.
+
+See DO-PAGES
 See CLIENT
 See ACCOUNT")
 
   (function blocked-domains
     "Retrieve a list of blocked domains.
 
+This function returns paginated results.
+
+See DO-PAGES
 See CLIENT")
 
   (function favourites
     "Retrieve a list of favourited statuses.
 
+This function returns paginated results.
+
+See DO-PAGES
 See CLIENT
 See STATUS")
 
   (function follow-requests
     "Retrieve a list of accounts that requested to follow you.
 
+This function returns paginated results.
+
+See DO-PAGES
 See ACCOUNT
 See CLIENT")
 
@@ -2076,6 +2113,9 @@ The user list can be either a USER-LIST instance, or an ID of one.
 This is SETFable for convenience, though it will usually be much more
 efficient to simply use ADD/REMOVE-USER-LIST-ACCOUNTS instead.
 
+This function returns paginated results.
+
+See DO-PAGES
 See USER-LIST
 See CLIENT")
 
@@ -2158,6 +2198,9 @@ See ATTACHMENT")
   (function mutes
     "Returns a list of accounts that you have muted.
 
+This function returns paginated results.
+
+See DO-PAGES
 See ACCOUNT
 See CLIENT")
 
@@ -2263,6 +2306,9 @@ See CARD")
 
 The status can either be a STATUS instance, or an ID of one.
 
+This function returns paginated results.
+
+See DO-PAGES
 See STATUS
 See CLIENT
 See ACCOUNT")
@@ -2272,6 +2318,9 @@ See ACCOUNT")
 
 The status can either be a STATUS instance, or an ID of one.
 
+This function returns paginated results.
+
+See DO-PAGES
 See STATUS
 See CLIENT
 See ACCOUNT")
@@ -2446,6 +2495,9 @@ See STATUS")
   (function followed-tags
     "Returns a list of followed tags.
 
+This function returns paginated results.
+
+See DO-PAGES
 See CLIENT
 See TAG")
 
@@ -2475,6 +2527,9 @@ See ACCOUNT")
   (function conversations
     "Returns a list of conversation.
 
+This function returns paginated results.
+
+See DO-PAGES
 See CONVERSATION
 See CLIENT")
 
