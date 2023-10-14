@@ -285,7 +285,7 @@
    #:scope
    #:created-at))
 
-(defpackage :link-header-parser
+(defpackage :tooter-link-header-parser
   (:use :cl)
   (:local-nicknames (:re :cl-ppcre)
                     (:a  :alexandria))
@@ -302,6 +302,7 @@
   (:export
    #:navigate-page
    #:do-pages
+   #:collect-all-pages
    #:get-announcements
    #:dismiss-announcement
    #:add-reaction-announcement

@@ -17,7 +17,7 @@
       `(multiple-value-bind (,return-body ,return-headers)
            ,@body
          (multiple-value-bind (,link-to-next-page ,link-to-previous-page)
-             (link-header-parser:find-pagination-links ,return-headers)
+             (tooter-link-header-parser:find-pagination-links ,return-headers)
            (values (funcall ,actual-decoding-function ,return-body)
                    (make-pagination-handle ,actual-decoding-function
                                            ,link-to-next-page)
@@ -67,6 +67,14 @@
              (if ,page
                  (progn ,@body)
                  (return-from ,loop-name (,results-decoded-entity ,saved-results)))))))))
+
+(defmacro collect-all-pages (client starting-form)
+  (a:with-gensyms (results page)
+    `(let ((,results '()))
+       (do-pages (,client ,page :direction :next)
+                 ,starting-form
+         (setf ,results (nconc ,results ,page)))
+       ,results)))
 
 ;; Announcement
 
