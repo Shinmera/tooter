@@ -779,6 +779,17 @@
 (defmethod unfollow-tag ((client client) (tag tag))
   (unfollow-tag client (name tag)))
 
+(defgeneric tag-information (client tag))
+
+(defmethod tag-information ((client client) (tag tag))
+  (tag-information client (name tag)))
+
+(defmethod tag-information ((client client) (tag status-tag))
+  (tag-information client (name tag)))
+
+(defmethod tag-information ((client client) (tag string))
+  (decode-tag (query client (format NIL "/api/v1/tags/~a" tag))))
+
 ;;; Timelines
 
 (defun %timeline (client url &key (local NIL l-p) (only-media NIL o-p) max-id since-id min-id (limit 20))
