@@ -480,6 +480,14 @@
   (print-unreadable-object (scheduled-status stream :type T)
     (format stream "~a@~a" (id scheduled-status) (scheduled-at scheduled-status))))
 
+(define-entity status-tag
+  (name)
+  (url))
+
+(defmethod print-object ((status-tag status-tag) stream)
+  (print-unreadable-object (status-tag stream :type T)
+    (format stream "name ~a url ~a" (name status-tag) (url status-tag))))
+
 (define-entity status
   (id)
   (uri)
@@ -502,7 +510,7 @@
   (visibility :translate-with #'to-keyword)
   (media-attachments :translate-with #'decode-attachment)
   (mentions :translate-with #'decode-mention)
-  (tags :translate-with #'decode-tag)
+  (tags :translate-with #'decode-status-tag)
   (application :translate-with #'decode-application :nullable T)
   (language :nullable T :translate-with #'to-keyword)
   (pinned :nullable T)
