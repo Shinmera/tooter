@@ -1645,6 +1645,11 @@ See TAG-HISTORY")
 
 See TAG-HISTORY")
 
+  (function tag-information
+    "Returns information about a tag.
+
+SEE TAG")
+
   (type conversation
     "Representation of a private conversation (currently a conversation is private if visibility of a status is :DIRECT)
 
