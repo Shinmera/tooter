@@ -1,4 +1,4 @@
-(in-package :link-header-parser)
+(in-package :tooter-link-header-parser)
 
 (a:define-constant +tokens+ "(,)|(;)|(=)|(<[^<>;\\s]+>)|(\"[^\"]+\")|([^\\s=;,]+)|(\\s*)"
   :test #'string=)

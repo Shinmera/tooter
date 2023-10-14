@@ -163,8 +163,8 @@ See CLIENT
 See PARAM-PLIST->ALIST
 See SUBMIT")
 
-  (macro do-pages
-         "Some endpoints send only a \"slice\" (called: \"page\") of the complete data list. In this case the response contains an HTTP header with the URLs pointing to the next page or the previous one.
+  (function do-pages
+    "Some endpoints send only a \"slice\" (called: \"page\") of the complete data list. In this case the response contains an HTTP header with the URLs pointing to the next page or the previous one.
 
 This macro is intended to simplify the managing of paginated data.
 
@@ -178,6 +178,12 @@ For example to get all the followers:
   (get-followers client t)
   (format t \"~a~%\" current-page))")
 
+  (function collect-all-pages
+    "Some endpoints send only a \"slice\" (called: \"page\") of the complete data list. In this case the response contains an HTTP header with the URLs pointing to the next page or the previous one.
+
+This macro will collect all the pages in a single list.
+
+SEE do-pages")
 
   (function submit
     "Performs a submission request against the client.
