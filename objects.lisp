@@ -567,7 +567,7 @@
     (format stream "~a following? ~a" (name tag) (following tag))))
 
 (define-entity tag-history
-  (day :translate-with #'convert-timestamp)
+  (day :translate-with (lambda (a) (convert-timestamp (parse-integer a))))
   (use-count :field "uses")
   (account-count :field "accounts"))
 

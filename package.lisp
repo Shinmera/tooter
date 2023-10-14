@@ -382,6 +382,7 @@
    #:followed-tags
    #:follow-tag
    #:unfollow-tag
+   #:tag-information
    #:timeline-tag
    #:timeline
    #:trends
