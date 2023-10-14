@@ -1401,6 +1401,12 @@ See SCHEDULED-STATUS")
 
 See SCHEDULED-STATUS")
 
+  (type status-tag
+    "Representation of a tag linked to a status.
+
+SEE NAME
+SEE URL")
+
   (type status
     "Representation of a status update.
 
@@ -1429,7 +1435,7 @@ See SPOILER-TEXT
 See VISIBILITY
 See MEDIA-ATTACHMENTS
 See MENTIONS
-See TAGS
+See STATUS-TAG
 See APPLICATION
 See LANGUAGE
 See PINNED

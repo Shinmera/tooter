@@ -51,6 +51,7 @@
    #:readp
    #:mentions
    #:statuses
+   #:status-tag
    #:tags
    #:emojis
    #:reactions
