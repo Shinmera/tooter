@@ -272,7 +272,13 @@
    #:phrase
    #:context
    #:expires-at
-   #:irreversible
+   #:filter-status
+   #:query-filter
+   #:keyword-matches
+   #:status-matches
+   #:filter-keyword
+   #:id
+   #:status-id
    #:whole-word
    #:identity-proof
    #:provider
@@ -321,8 +327,13 @@
    #:filters
    #:filter
    #:create-filter
+   #:make-update-filter-field
    #:update-filter
    #:delete-filter
+   #:find-filter
+   #:filter-keywords
+   #:add-filter-keyword
+   #:remove-filter-keyword
    #:follow
    #:unfollow
    #:block

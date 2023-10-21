@@ -209,39 +209,108 @@
 ;;; Filters
 
 (defmethod filters ((client client))
-  (decode-filter (query client "/api/v1/filters")))
+  (decode-filter (query client "/api/v2/filters")))
 
 (defmethod filter ((client client) (id string))
-  (decode-filter (query client (format NIL "/api/v1/filters/~a" id))))
+  (decode-filter (query client (format NIL "/api/v2/filters/~a" id))))
 
 (defmethod filter ((client client) (filter filter))
   (filter client (id filter)))
 
-(defmethod create-filter ((client client) phrase context &key (irreversible NIL i-p) (whole-word NIL w-p) expires-in)
-  (assert (stringp phrase))
-  (assert (consp context))
-  (decode-filter (submit client "/api/v1/filters"
-                         :phrase  phrase
-                         :context context
-                         :irreversible (coerce-boolean irreversible i-p)
-                         :whole-word (coerce-boolean whole-word w-p)
-                         :expires-in expires-in)))
+(defun check-filter-action (value)
+  (assert (member value '("warn" "hide") :test #'string=)))
 
-(defmethod update-filter ((client client) id phrase context &key (irreversible NIL i-p) (whole-word NIL w-p) expires-in)
+(defun check-filter-context (value)
+  (assert (consp value))
+  (loop for keyword in value do
+    (assert (member keyword '
+                    ("home" "notifications" "public" "thread" "account")
+                    :test #'string=))))
+
+(defun encode-filter-context (context)
+  (loop for i from 0
+        for destination in context
+        collect (format nil "context[~a]" i)
+        collect destination))
+
+(defmethod create-filter ((client client) title context
+                          &key expires-in
+                            (filter-action "hide")
+                            (fields '()))
+  (check-filter-context context)
+  (check-filter-action filter-action)
+  (assert (stringp title))
+  (assert (consp context))
+  (decode-filter (apply #'submit
+                        client
+                        "/api/v2/filters"
+                        :title  title
+                        (encode-filter-context context)
+                        :filter-action filter-action
+                        :expires-in expires-in
+                        (loop for i from 0
+                              for (key . val) in fields
+                              collect (format NIL "fields_attributes[~a][keyword]" i)
+                              collect key
+                              collect (format NIL "fields_attributes[~a][whole_word]" i)
+                              collect val))))
+
+(defun make-update-filter-field (id keyword &key (whole-word nil) (destroy nil))
+  (list id keyword whole-word destroy))
+
+(defmethod update-filter ((client client) id title context
+                          &key (filter-action "hide") expires-in (fields '()))
   (assert (stringp id))
-  (assert (stringp phrase))
-  (decode-filter (submit client (format NIL "/api/v1/filters/~a" id)
-                         :http-method :put
-                         :phrase  phrase
-                         :context context
-                         :irreversible (coerce-boolean irreversible i-p)
-                         :whole-word (coerce-boolean whole-word w-p)
-                         :expires-in expires-in)))
+  (assert (stringp title))
+  (check-filter-context context)
+  (check-filter-action filter-action)
+  (decode-filter (apply #'submit
+                        client
+                        (format NIL "/api/v2/filters/~a" id)
+                        :http-method :put
+                        :id id
+                        :title title
+                        :filter-action filter-action
+                        :expires-in expires-in
+                        (loop for i from 0
+                              for attribute in fields
+                              collect (format NIL "keyword_attributes[~a][keyword]" i)
+                              collect (first attribute)
+                              collect (format NIL "keyword_attributes[~a][whole_word]" i)
+                              collect (second attribute)
+                              collect (format NIL "keyword_attributes[~a][id]" i)
+                              collect (third attribute)
+                              collect (format NIL "keyword_attributes[~a][_destroy]" i)
+                              collect (fourth attribute))
+                        (encode-filter-context context))))
 
 (defmethod delete-filter ((client client) id)
   (assert (stringp id))
-  (decode-filter (submit client (format NIL "/api/v1/filters/~a" id)
-                         :http-method :delete)))
+  (submit client
+    (format NIL "/api/v2/filters/~a" id)
+    :http-method :delete))
+
+(defmethod find-filter ((client client) id)
+  (assert (stringp id))
+  (decode-filter (query client (format NIL "/api/v2/filters/~a" id))))
+
+(defmethod filter-keywords ((client client) filter-id)
+  (assert (stringp filter-id))
+  (decode-filter-keyword (query client (format NIL "/api/v2/filters/~a/keywords" filter-id))))
+
+(defmethod add-filter-keyword ((client client) filter-id keyword &key (whole-word NIL w-p))
+  (assert (stringp filter-id))
+  (assert (stringp keyword))
+  (decode-filter-keyword (submit client
+                           (format NIL "/api/v2/filters/~a/keywords" filter-id)
+                           :keyword keyword
+                           "whole_word" (coerce-boolean whole-word w-p))))
+
+(defmethod remove-filter-keyword ((client client) filter-keyword-id)
+  (assert (stringp filter-keyword-id))
+  (query client
+         (format NIL "/api/v2/filters/keywords/~a" filter-keyword-id)
+         :http-method :delete))
 
 
 ;;; Follows
