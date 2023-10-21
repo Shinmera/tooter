@@ -296,12 +296,13 @@
 (defmethod relationships ((client client) (account account))
   (relationships client (list (id account))))
 
-(defmethod search-accounts ((client client) query &key (limit 40) (following NIL f-p) (resolve NIL r-p))
+(defmethod search-accounts ((client client) query &key (limit 40) (following NIL f-p) (resolve NIL r-p) (offset 0))
   (check-type query string)
   (check-type limit (or null (integer 0)))
   (decode-account (query client "/api/v1/accounts/search"
                          :q query
                          :limit limit
+                         :offset     offset
                          :following (coerce-boolean following f-p)
                          :resolve   (coerce-boolean resolve r-p))))
 
