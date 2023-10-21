@@ -518,7 +518,14 @@
     (:poll "poll")
     (:follow-request "follow_request")))
 
-(defmethod notifications ((client client) &key max-id min-id since-id (limit 15) exclude-types account-id)
+(defmethod notifications ((client client)
+                          &key max-id
+                            min-id
+                            since-id
+                            (limit 15)
+                            exclude-types
+                            types
+                            account-id)
   (check-type max-id (or null string))
   (check-type since-id (or null string))
   (check-type limit (or null (integer 0)))
@@ -528,6 +535,8 @@
                               :min-id min-id
                               :since-id since-id
                               :limit limit
+                              :types (loop for type in types
+                                           collect (encode-notification-type type))
                               :exclude-types (loop for type in exclude-types
                                                    collect (encode-notification-type type))
                               :account-id account-id)))
