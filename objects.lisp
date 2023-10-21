@@ -516,7 +516,8 @@
   (pinned :nullable T)
   (poll :nullable T :translate-with #'decode-poll)
   (preview-card :field "card" :nullable T :translate-with #'decode-card)
-  (bookmarked))
+  (bookmarked)
+  (filtered :nullable T :translate-with #'decode-filter-results))
 
 (defmethod print-object ((status status) stream)
   (print-unreadable-object (status stream :type T)
@@ -612,23 +613,61 @@
 
 (define-entity filter
   (id)
-  (phrase)
-  (filter-context :translate-with #'to-keyword)
+  (title)
+  (filter-context)
   (expires-at :field "expires_at" :translate-with #'convert-timestamp)
-  (irreversible)
-  (whole-word :field "whole_word"))
+  (filter-action :field "filter_action" :translate-with #'to-keyword)
+  (keywords :translate-with #'decode-filter-keyword)
+  (statuses :translate-with #'decode-filter-status))
 
 (defmethod print-object ((filter filter) stream)
   (print-unreadable-object (filter stream :type T)
     (with-accessors ((id id)
-                     (phrase phrase)
+                     (title title)
                      (filter-context filter-context)
                      (expires-at expires-at)
-                     (irreversible irreversible)
-                     (whole-word whole-word)) filter
+                     (filter-action filter-action)
+                     (keywords keywords)
+                     (statuses statuses)) filter
       (format stream
-              "~a phrase ~a context ~a expires at ~a irreversible? ~a whole word? ~a"
-              id phrase filter-context expires-at irreversible whole-word))))
+              "~a title ~a context ~a expires at ~a actions ~a keywords ~a statuses ~a"
+              id title filter-context expires-at filter-action keywords statuses))))
+
+(define-entity filter-results
+  (query-filter :translate-with #'decode-filter)
+  (keyword-matches :field "keyword_matches" :nullable T)
+  (status-matches :field "status_matches" :nullable T))
+
+(defmethod print-object ((filter-results filter-results) stream)
+  (print-unreadable-object (filter-results stream :type T)
+    (with-accessors ((filter query-filter)
+                     (keyword-matches keyword-matches)
+                     (status-matches status-matches)) filter-results
+      (format stream
+              "filter: ~a matched keywords: ~a matched status: ~a"
+              filter keyword-matches status-matches))))
+
+(define-entity filter-keyword
+  (id)
+  (status-id)
+  (whole-word :field "whole_word"))
+
+(defmethod print-object ((filter-keyword filter-keyword) stream)
+  (print-unreadable-object (filter-keyword stream :type T)
+    (with-accessors ((id id)
+                     (status-id status-id)
+                     (whole-word whole-word)) filter-keyword
+      (format stream "id: ~a status-id: ~a whole word? ~a" id status-id whole-word))))
+
+(define-entity filter-status
+  (id)
+  (status-id))
+
+(defmethod print-object ((filter-status filter-status) stream)
+  (print-unreadable-object (filter-status stream :type T)
+    (with-accessors ((id id)
+                     (status-id status-id)) filter-status
+      (format stream "id: ~a status-id: ~a" id status-id))))
 
 (define-entity identity-proof
   (provider)
