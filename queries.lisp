@@ -506,6 +506,10 @@
 
 (defun encode-notification-type (encoded-type)
   (ecase encoded-type
+    (:admin.sign-up "admin.sign_up")
+    (:admin.report "admin.report")
+    (:update "update")
+    (:status "status")
     (:follow "follow")
     (:favourite "favourite")
     (:reblog "reblog")
