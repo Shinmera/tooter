@@ -428,15 +428,24 @@
 (defmethod find-list ((client client) (id string))
   (decode-user-list (query client (format NIL "/api/v1/lists/~a" id))))
 
-(defmethod make-user-list ((client client) title)
-  (decode-user-list (submit client "/api/v1/lists"
-                            :title title)))
+(defun check-list-replies-policy-to-values (value)
+  (assert (member value '("followed" "list" "none") :test #'string=)))
 
-(defmethod update-user-list ((client client) (id string) &key title)
+(defmethod make-user-list ((client client) title &key (replies-policy :list) (exclusive nil))
+  (check-list-replies-policy-to-values replies-policy)
+  (decode-user-list (submit client "/api/v1/lists"
+                      :replies-policy replies-policy
+                      :exclusive exclusive
+                      :title title)))
+
+(defmethod update-user-list ((client client) (id string)
+                             &key title (replies-policy :list))
   (check-type title string)
+  (check-list-replies-policy-to-values replies-policy)
   (decode-user-list (submit client (format NIL "/api/v1/lists/~a" id)
-                            :http-method :put
-                            :title title)))
+                      :http-method :put
+                      :replies-policy replies-policy
+                      :title title)))
 
 (defmethod update-user-list ((client client) (user-list user-list) &rest args)
   (apply #'update-user-list client (id user-list) args))
