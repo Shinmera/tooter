@@ -100,13 +100,14 @@
 (defun url (data record-results)
   (multiple-value-bind (token no-url-data)
       (next-token data)
-    (if (not (and token
+    (cond
+      ((not (and token
                   (token= token :url)))
-        (signal-error :url no-url-data)
-        (progn
-          (setf (link-record-url record-results)
-                (string-trim +url-wrapper-chars+ (token-value token)))
-          no-url-data))))
+       (signal-error :url no-url-data))
+      (t
+       (setf (link-record-url record-results)
+             (string-trim +url-wrapper-chars+ (token-value token)))
+       no-url-data))))
 
 (defun consume-parameter-separator (data)
   (multiple-value-bind (token rest-data)
@@ -123,32 +124,34 @@
       (next-token data)
     (let ((key   nil)
           (value nil))
-      (if (not (and token
-                    (token= token :string)))
-          (signal-error :string data)
-          (progn
-            (setf key (token-value token))
-            (let* ((no-blanks-rest-data        (consume-blanks rest-data))
-                   (no-parameter-sep-rest-data (consume-parameter-separator no-blanks-rest-data))
-                   (no-blanks-after-rest-data  (consume-blanks no-parameter-sep-rest-data)))
-              (multiple-value-bind (parameter-value-token no-value-rest-data)
-                  (next-token no-blanks-after-rest-data)
-                (if (not (and parameter-value-token
-                              (or (token= parameter-value-token :parameter-value)
-                                  (token= parameter-value-token :string))))
-                    (signal-error '(or :parameter-value :string)
-                                  no-blanks-after-rest-data)
-                    (progn
-                      (setf value (string-trim +parameter-value-wrapper-char+
-                                               (token-value parameter-value-token)))
-                      (push (cons key value) (link-record-parameters parameters-results))
-                      (let ((no-blanks-rest-data (consume-blanks no-value-rest-data)))
-                        (multiple-value-bind (field-separator-found field-separator-rest-data)
-                            (field-separator no-blanks-rest-data)
-                          (if field-separator-found
-                              (let ((no-blanks-rest-data (consume-blanks field-separator-rest-data)))
-                                (parameters no-blanks-rest-data parameters-results))
-                              no-blanks-rest-data))))))))))))
+      (cond
+        ((not (and token
+                   (token= token :string)))
+         (signal-error :string data))
+        (t
+         (setf key (token-value token))
+         (let* ((no-blanks-rest-data        (consume-blanks rest-data))
+                (no-parameter-sep-rest-data (consume-parameter-separator no-blanks-rest-data))
+                (no-blanks-after-rest-data  (consume-blanks no-parameter-sep-rest-data)))
+           (multiple-value-bind (parameter-value-token no-value-rest-data)
+               (next-token no-blanks-after-rest-data)
+             (cond
+               ((not (and parameter-value-token
+                          (or (token= parameter-value-token :parameter-value)
+                              (token= parameter-value-token :string))))
+                (signal-error '(or :parameter-value :string)
+                              no-blanks-after-rest-data))
+               (t
+                (setf value (string-trim +parameter-value-wrapper-char+
+                                         (token-value parameter-value-token)))
+                (push (cons key value) (link-record-parameters parameters-results))
+                (let ((no-blanks-rest-data (consume-blanks no-value-rest-data)))
+                  (multiple-value-bind (field-separator-found field-separator-rest-data)
+                      (field-separator no-blanks-rest-data)
+                    (if field-separator-found
+                        (let ((no-blanks-rest-data (consume-blanks field-separator-rest-data)))
+                          (parameters no-blanks-rest-data parameters-results))
+                        no-blanks-rest-data))))))))))))
 
 (a:define-constant +pagination-parameter-key+            "rel" :test #'string=)
 
