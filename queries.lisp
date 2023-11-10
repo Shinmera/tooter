@@ -50,23 +50,25 @@
              (,previous-results nil))
          (loop named ,loop-name do
            (let ((,saved-results ,previous-results))
-             (if (eq ,first-results :unitialized)
-                 (progn
-                   (setf ,first-results    (multiple-value-list ,start-form))
-                   (setf ,previous-results ,first-results))
-                 (progn
-                   (setf ,previous-results
-                         (if (eq ,direction :next)
-                             (multiple-value-list
-                              (navigate-page ,client
-                                             (,results-next-handle ,previous-results)))
-                             (multiple-value-list
-                              (navigate-page ,client
-                                             (,results-previous-handle ,previous-results)))))))
+             (cond
+               ((eq ,first-results :unitialized)
+                (setf ,first-results    (multiple-value-list ,start-form))
+                (setf ,previous-results ,first-results))
+               (t
+                (setf ,previous-results
+                      (if (eq ,direction :next)
+                          (multiple-value-list
+                           (navigate-page ,client
+                                          (,results-next-handle ,previous-results)))
+                          (multiple-value-list
+                           (navigate-page ,client
+                                          (,results-previous-handle ,previous-results)))))))
              (setf ,page (,results-decoded-entity ,previous-results))
-             (if ,page
-                 (progn ,@body)
-                 (return-from ,loop-name (,results-decoded-entity ,saved-results)))))))))
+             (cond
+               (,page
+                ,@body)
+               (t
+                (return-from ,loop-name (,results-decoded-entity ,saved-results))))))))))
 
 (defmacro collect-all-pages (client starting-form)
   (a:with-gensyms (results page)
