@@ -9,7 +9,7 @@
 (defun make-pagination-handle (decoding-function url)
   (cons decoding-function url))
 
-(defmacro with-return-also-headers ((decoding-function) &body body)
+(defmacro with-pagination-return ((decoding-function) &body body)
   (a:with-gensyms (return-body return-headers link-to-next-page link-to-previous-page)
     (let ((actual-decoding-function (if (symbolp decoding-function)
                                         `(function ,decoding-function)
@@ -27,7 +27,7 @@
 
 (defun navigate-page (client handle)
   (when (pagination-url handle)
-    (with-return-also-headers ((pagination-decoding-function handle))
+    (with-pagination-return ((pagination-decoding-function handle))
       (query-url client (pagination-url handle)))))
 
 (defmacro do-pages ((client page &key (direction :next)) start-form &body body)
@@ -132,7 +132,7 @@
   (check-type max-id (or null string))
   (check-type since-id (or null string))
   (check-type limit (or null (integer 0)))
-  (with-return-also-headers (decode-account)
+  (with-pagination-return (decode-account)
     (query client (format NIL "/api/v1/accounts/~a/followers" id)
            :max-id max-id
            :since-id since-id
@@ -148,7 +148,7 @@
   (check-type max-id (or null string))
   (check-type since-id (or null string))
   (check-type limit (or null (integer 0)))
-  (with-return-also-headers (decode-account)
+  (with-pagination-return (decode-account)
     (query client (format NIL "/api/v1/accounts/~a/following" id)
            :max-id max-id
            :since-id since-id
@@ -185,7 +185,7 @@
   (check-type since-id (or null string))
   (check-type min-id (or null string))
   (check-type limit (or null (integer 0)))
-  (with-return-also-headers (decode-status)
+  (with-pagination-return (decode-status)
     (query client "/api/v1/bookmarks"
            :max-id max-id
            :since-id since-id
@@ -381,7 +381,7 @@
   (check-type max-id (or null string))
   (check-type since-id (or null string))
   (check-type limit (or null (integer 0)))
-  (with-return-also-headers (decode-account)
+  (with-pagination-return (decode-account)
     (query client "/api/v1/blocks"
            :max-id max-id
            :since-id since-id
@@ -391,7 +391,7 @@
   (check-type max-id (or null string))
   (check-type since-id (or null string))
   (check-type limit (or null (integer 0)))
-    (with-return-also-headers (identity)
+    (with-pagination-return (identity)
       (query client "/api/v1/domain_blocks"
              :max-id max-id
              :since-id since-id
@@ -414,7 +414,7 @@
   (check-type max-id (or null string))
   (check-type min-id (or null string))
   (check-type limit (or null (integer 0)))
-  (with-return-also-headers (decode-status)
+  (with-pagination-return (decode-status)
     (query client "/api/v1/favourites"
            :min-id min-id
            :max-id max-id
@@ -426,7 +426,7 @@
   (check-type max-id (or null string))
   (check-type since-id (or null string))
   (check-type limit (or null (integer 0)))
-  (with-return-also-headers (decode-account)
+  (with-pagination-return (decode-account)
     (query client "/api/v1/follow_requests"
            :max-id max-id
            :since-id since-id
@@ -473,7 +473,7 @@
   (check-type max-id (or null string))
   (check-type since-id (or null string))
   (check-type limit (or null (integer 0)))
-  (with-return-also-headers (decode-account)
+  (with-pagination-return (decode-account)
     (query client (format NIL "/api/v1/lists/~a/accounts" id)
            :max-id max-id
            :since-id since-id
@@ -575,7 +575,7 @@
   (check-type max-id (or null string))
   (check-type since-id (or null string))
   (check-type limit (or null (integer 0)))
-  (with-return-also-headers (decode-account)
+  (with-pagination-return (decode-account)
     (query client "/api/v1/mutes"
            :max-id max-id
            :since-id since-id
@@ -720,7 +720,7 @@
   (check-type max-id (or null string))
   (check-type since-id (or null string))
   (check-type limit (or null (integer 0)))
-  (with-return-also-headers (decode-account)
+  (with-pagination-return (decode-account)
     (query client (format NIL "/api/v1/statuses/~a/reblogged_by" id)
            :max-id max-id
            :since-id since-id
@@ -733,7 +733,7 @@
   (check-type max-id (or null string))
   (check-type since-id (or null string))
   (check-type limit (or null (integer 0)))
-  (with-return-also-headers (decode-account)
+  (with-pagination-return (decode-account)
     (query client (format NIL "/api/v1/statuses/~a/favourited_by" id)
            :max-id max-id
            :since-id since-id
@@ -847,7 +847,7 @@
 (defgeneric followed-tags (client &key max-id since-id min-id limit))
 
 (defmethod followed-tags ((client client) &key max-id since-id min-id (limit 20))
-  (with-return-also-headers (decode-tag)
+  (with-pagination-return (decode-tag)
     (query client
            "/api/v1/followed_tags"
            :max-id max-id
@@ -934,7 +934,7 @@
 (defgeneric conversations (client &key limit max-id since-id min-id))
 
 (defmethod conversations ((client client) &key (limit 20) max-id since-id min-id)
-  (with-return-also-headers (decode-conversation)
+  (with-pagination-return (decode-conversation)
     (query client "/api/v1/conversations"
            :max-id max-id
            :since-id since-id
