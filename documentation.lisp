@@ -992,22 +992,6 @@ See INSTANCE-STATS")
 See ID
 See TITLE")
 
-  (type marker
-    "Representation of the user last read position in a timeline.
-
-See MARKED-HOME
-See MARKED-NOTIFICATION")
-
-  (function marked-home
-    "Returns information about last position in home timeline
-
-See MARKER")
-
-  (function marked-notification
-    "Returns information about last position in user's notification
-
-See MARKER")
-
   (type mention
     "Representation of an account mention in a status.
 
@@ -1677,17 +1661,42 @@ See LAST-STATUS-AT")
   (function last-status-at
     "Timestamp of the last status mentioning the tag")
 
+  (function whole-word
+    "Returns if the filter take into account word limit
+
+See FILTER")
+
+
+  (type filter-status
+    "Represents a status that trigger trigger the filter
+See ID
+See STATUS-ID")
+
   (type filter
     "Representation of a filter (defined by the user) to make invisible unwanted statuses
 
-See PHRASE
+See ID
+See TITLE
 See FILTER-CONTEXT
 See EXPIRES-AT
-See IRREVERSIBLE
-See WHOLE-WORD")
+See FILTER-KEYWORD
+See FILTER-STATUSES")
 
-  (function phrase
-    "Returns the filter's text")
+  (function filter-keywords
+    "Find the filter keyword using the filter ID for searching.
+
+See CLIENT
+See FILTER")
+
+(function add-filter-keyword
+    "Add a keyword to a filter, if the stastus contains the keyword the filter is triggered and the action executed.
+
+See FILTER")
+
+(function remove-filter-keyword
+    "Remove a keyword to a filter.
+
+See FILTER")
 
   (function filter-context
     "Returns Where the filter is applied.
@@ -1704,15 +1713,16 @@ Possible values are:
 
 See FILTER")
 
-  (function irreversible
-    "Returns if the server should drop the matching entities
+  (function keywords
+    "Returns an array of FILTER-KEYWORD of statuses that matched this filter.
 
-See FILTER")
+See FILTER-KEYWORD")
 
-  (function whole-word
-    "Returns if the filter take into account word limit
+  (type filter-results
+    "Represents the filter that has been triggered by a status")
 
-See FILTER")
+  (function statuses
+    "Returns an array of FILTER-STATUS of statuses that matched this filter")
 
   (type identity-proof
     "Representation of an identity provider
@@ -1772,10 +1782,20 @@ See TOKEN")
 
 See TOKEN")
 
-(function created-at
-   "Returns the time when the token was created.
+  (function created-at
+    "Returns the time when the token was created.
 
-See TOKEN"))
+See TOKEN")
+
+  (type marker
+    "Represents a save point in a timeline
+
+See UPDATED-AT
+See LAST-READ-ID
+SEE VERSION")
+
+  (function last-read-id
+    "Returns the last read ID of an entity (status or notification)"))
 
 ;; queries.lisp
 (docs:define-docs
@@ -1924,6 +1944,12 @@ See FILTER")
 
   (function delete-filter
     "Delete an existing filter.
+
+See CLIENT
+See FILTER")
+
+  (function find-filter
+    "Find a filter using its ID for searching.
 
 See CLIENT
 See FILTER")
@@ -2079,18 +2105,6 @@ See CLIENT")
 See CLIENT
 See ACCOUNT")
 
-  (function follow-remote
-    "Follow a remote account.
-
-Typically you do not need to use this function, as FOLLOW automatically
-performs the correct action.
-
-Returns the local representation of the followed account.
-
-See FOLLOW
-See CLIENT
-See ACCOUNT")
-
   (function instance
     "Retrieve the instance information that the client is connected to.
 
@@ -2224,7 +2238,6 @@ See CLIENT")
   (function notifications
     "Returns a list of notifications about status updates.
 
-See MARKER
 See NOTIFICATION
 See CLIENT")
 
@@ -2575,6 +2588,19 @@ See POLL-OPTION")
 See CLIENT
 See POLL
 See POLL-OPTION")
+
+  (function preferences
+    "Returns the preferences (setting shared by all the clients)")
+
+  (function markers
+    "Retuns the markers
+
+See MARKERS")
+
+(function save-markers
+    "Save a marker for the last status read and the last notification read.
+
+See MARKERS")
 
   (function identity-proof
     "Returns response from external identity provider.

@@ -981,9 +981,9 @@
                         :timeline timeline)))
 
 (defmethod save-markers ((client client) &key last-status-read last-notification-read)
- (decode-marker (submit client "/api/v1/markers/"
-                        "home[last_read_id]" last-status-read
-                        "notifications[last_read_id]" last-notification-read)))
+  (decode-marker (submit client "/api/v1/markers/"
+                         "home[last_read_id]" last-status-read
+                         "notifications[last_read_id]" last-notification-read)))
 
 ;;; Identity proof
 
