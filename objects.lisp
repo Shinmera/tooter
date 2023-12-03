@@ -299,12 +299,14 @@
     (format stream "~s #~a" (title user-list) (id user-list))))
 
 (define-entity marker
-  (marked-home :field "home")
-  (marked-notifications :field "notifications"))
+  (last-read-id :field "last_read_id")
+  (updated-at :field "updated_at" :translate-with #'convert-timestamp)
+  (version))
 
 (defmethod print-object ((marker marker) stream)
   (print-unreadable-object (marker stream :type T)
-    (format stream "home ~s #~a" (marked-home marker) (marked-notifications marker))))
+    (format stream "last read id ~a  uptdated at ~a"
+            (last-read-id marker) (updated-at marker))))
 
 (define-entity mention
   (url)

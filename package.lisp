@@ -131,8 +131,7 @@
    #:id
    #:title
    #:marker
-   #:marked-home
-   #:marked-notifications
+   #:last-read-id
    #:mention
    #:url
    #:username
@@ -349,7 +348,6 @@
    #:follow-requests
    #:accept-request
    #:reject-request
-   #:follow-remote
    #:instance
    #:peers
    #:weekly-activity
