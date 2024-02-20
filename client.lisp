@@ -7,6 +7,7 @@
                              :content-type content-type
                              :additional-headers headers
                              :external-format-out :utf-8
+                             :external-format-in :utf-8
                              :want-stream T)))
 
 (define-condition request-failed (error)
