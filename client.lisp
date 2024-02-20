@@ -23,9 +23,11 @@
 (defun request (uri &key parameters headers (method :get) (content-type "application/x-www-form-urlencoded"))
   (multiple-value-bind (stream code headers)
       (%request uri parameters headers method content-type)
-    (let ((data (unwind-protect
-                     (yason:parse stream)
-                  (close stream))))
+    (let* ((utf8-stream (utf8-input-stream:make-utf8-input-stream stream))
+	   (data (unwind-protect
+		      (yason:parse utf8-stream)
+		   (close utf8-stream)
+		   (close stream))))
       (if (= 200 code)
           (values data headers)
           (error 'request-failed :uri  uri

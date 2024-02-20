@@ -17,4 +17,5 @@
                :yason
                :cl-ppcre
                :drakma
+	       :utf8-input-stream
                :documentation-utils))
