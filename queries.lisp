@@ -587,17 +587,18 @@
 
 (defun encode-notification-type (encoded-type)
   (ecase encoded-type
-    (:admin.sign-up "admin.sign_up")
     (:admin.report "admin.report")
-    (:update "update")
-    (:status "status")
-    (:follow "follow")
+    (:admin.sign-up "admin.sign_up")
     (:favourite "favourite")
-    (:reblog "reblog")
+    (:follow "follow")
+    (:follow-request "follow_request")
     (:mention "mention")
     (:move "move")
     (:poll "poll")
-    (:follow-request "follow_request")))
+    (:reblog "reblog")
+    (:severed-relationships "severed_relationships")
+    (:status "status")
+    (:update "update")))
 
 (defmethod notifications ((client client)
                           &key max-id
