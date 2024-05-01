@@ -1303,10 +1303,11 @@ See RESULTS")
 
 See RESULTS")
 
-  (function hashtags
-    "Returns a list of matching hashtags as strings.
+  (function results-tags
+    "Returns a list of matching hashtags as TAGS.
 
-See RESULTS")
+See RESULTS
+See TAGS")
 
   (type status-params
      "Representation of parameters for a SCHEDULED-STATUS.
