@@ -198,7 +198,7 @@
    #:results
    #:results-accounts
    #:results-statuses
-   #:hashtags
+   #:results-tags
    #:status-params
    #:text
    #:in-reply-to-id
