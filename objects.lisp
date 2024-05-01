@@ -453,14 +453,15 @@
 (define-entity results
   (results-accounts :field "accounts" :translate-with #'decode-account)
   (results-statuses :field "statuses" :translate-with #'decode-status)
-  (hashtags))
+  (results-tags     :field "hashtags" :translate-with #'decode-tag))
 
 (defmethod print-object ((results results) stream)
   (print-unreadable-object (results stream :type T)
     (format stream
-            "account ~a statuses ~a"
+            "account ~a statuses ~a hashtags ~a"
             (results-accounts results)
-            (results-statuses results))))
+            (results-statuses results)
+            (results-tags results))))
 
 (define-entity status-params
   (text)
