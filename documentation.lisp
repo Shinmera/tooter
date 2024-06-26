@@ -2414,6 +2414,16 @@ Returns T.
 See STATUS
 See CLIENT")
 
+  (function edit-status
+    "Edit the given status.
+
+The status can either be a STATUS instance, or an ID of one.
+
+Returns the modified status object.
+
+See STATUS
+See CLIENT")
+
   (function reblog
     "Reblog the given status.
 
