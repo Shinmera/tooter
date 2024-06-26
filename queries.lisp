@@ -690,6 +690,7 @@
   (check-type max-id (or null string))
   (check-type min-id (or null string))
   (check-type kind (or null string))
+  (assert (member kind '("accounts" "hashtags" "statuses") :test #'string=))
   (decode-results (query client "/api/v2/search"
                          :q query
                          :account-id account-id
@@ -745,40 +746,58 @@
 (defmethod favouriters ((client client) (status status) &rest args)
   (apply #'favouriters client (id status) args))
 
+(defmethod status-ensure-media-id ((client client) (media string))
+  (declare (ignore client))
+  media)
+
+(defmethod status-ensure-media-id ((client client) (media attachment))
+  (declare (ignore client))
+  (id media))
+
+(defmethod status-ensure-media-id ((client client) (media pathname))
+  (pathname (id (make-media client media))))
+
+(defmethod status-ensure-media-id ((client client) (media null))
+  (declare (ignore client media))
+  nil)
+
+(defmethod status-ensure-media-id ((client client) (media cons))
+  (mapcar (lambda (a) (status-ensure-media-id client a))
+          media))
+
+(defmethod status-ensure-media-id ((client client) media)
+  (list (status-ensure-media-id client media)))
+
+(defun status-ensure-language (language)
+  (when language
+    (string language)))
+
 (defmethod make-status ((client client) status &key in-reply-to media (sensitive NIL s-p) spoiler-text visibility language scheduled-at poll-options poll-expire-seconds (poll-multiple NIL m-p) (poll-hide-totals NIL h-p) idempotency-key)
-  (flet ((ensure-media-id (media)
-           (etypecase media
-             (string media)
-             (attachment (id media))
-             (pathname (id (make-media client media))))))
-    (let ((results-entity (submit client "/api/v1/statuses"
-                                  :status status
-                                  :in-reply-to-id (etypecase in-reply-to
-                                                    (string in-reply-to)
-                                                    (status (id in-reply-to))
-                                                    (null NIL))
-                                  :media-ids (typecase media
-                                               (null NIL)
-                                               (cons (mapcar #'ensure-media-id media))
-                                               (T (list (ensure-media-id media))))
-                                  :sensitive (coerce-boolean sensitive s-p)
-                                  :spoiler-text spoiler-text
-                                  :visibility (ecase visibility
-                                                ((NIL) NIL)
-                                                (:direct "direct")
-                                                (:private "private")
-                                                (:unlisted "unlisted")
-                                                (:public "public"))
-                                  :language (when language (string language))
-                                  :scheduled-at scheduled-at
-                                  "poll[options]" poll-options
-                                  "poll[expires-in]" poll-expire-seconds
-                                  "poll[multiple]" (coerce-boolean poll-multiple m-p)
-                                  "poll[hide_totals]" (coerce-boolean poll-hide-totals h-p)
-                                  :idempotency-key idempotency-key)))
-      (if scheduled-at
-          (decode-scheduled-status results-entity)
-          (decode-status results-entity)))))
+  (let ((results-entity (submit client "/api/v1/statuses"
+                          :status status
+                          :in-reply-to-id (etypecase in-reply-to
+                                            (string in-reply-to)
+                                            (status (id in-reply-to))
+                                            (null NIL))
+                          :media-ids (status-ensure-media-id client media)
+                          :sensitive (coerce-boolean sensitive s-p)
+                          :spoiler-text spoiler-text
+                          :visibility (ecase visibility
+                                        ((NIL) NIL)
+                                        (:direct "direct")
+                                        (:private "private")
+                                        (:unlisted "unlisted")
+                                        (:public "public"))
+                          :language (status-ensure-language language)
+                          :scheduled-at scheduled-at
+                          "poll[options]" poll-options
+                          "poll[expires-in]" poll-expire-seconds
+                          "poll[multiple]" (coerce-boolean poll-multiple m-p)
+                          "poll[hide_totals]" (coerce-boolean poll-hide-totals h-p)
+                          :idempotency-key idempotency-key)))
+    (if scheduled-at
+        (decode-scheduled-status results-entity)
+        (decode-status results-entity))))
 
 (defmethod delete-status ((client client) (id string))
   (submit client (format NIL "/api/v1/statuses/~a" id)
@@ -787,6 +806,33 @@
 
 (defmethod delete-status ((client client) (status status))
   (delete-status client (id status)))
+
+(defmethod edit-status ((client client) (status status) (text string) &key media (sensitive NIL s-p) spoiler-text language poll-options poll-expire-seconds (poll-multiple NIL m-p) (poll-hide-totals NIL h-p))
+  (edit-status client
+               (id status)
+               text
+               :media media
+               :sensitive (coerce-boolean sensitive s-p)
+               :spoiler-text spoiler-text
+               :language language
+               :poll-options poll-options
+               :poll-expire-seconds poll-expire-seconds
+               :poll-multiple (coerce-boolean poll-multiple m-p)
+               :poll-hide-totals (coerce-boolean poll-hide-totals h-p)))
+
+(defmethod edit-status ((client client) (id string) (text string) &key media (sensitive NIL s-p) spoiler-text language poll-options poll-expire-seconds (poll-multiple NIL m-p) (poll-hide-totals NIL h-p))
+  (decode-status (submit client
+                   (format nil "/api/v1/statuses/~a" id)
+                   :http-method :put
+                   :status    text
+                   :media-ids (status-ensure-media-id client media)
+                   :sensitive (coerce-boolean sensitive s-p)
+                   :spoiler-text spoiler-text
+                   :language (status-ensure-language language)
+                   "poll[options]" poll-options
+                   "poll[expires-in]" poll-expire-seconds
+                   "poll[multiple]" (coerce-boolean poll-multiple m-p)
+                   "poll[hide_totals]" (coerce-boolean poll-hide-totals h-p))))
 
 (defmethod reblog ((client client) (id string))
   (decode-status (submit client (format NIL "/api/v1/statuses/~a/reblog" id))))

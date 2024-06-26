@@ -379,6 +379,7 @@
    #:favouriters
    #:make-status
    #:delete-status
+   #:edit-status
    #:reblog
    #:unreblog
    #:favourite
