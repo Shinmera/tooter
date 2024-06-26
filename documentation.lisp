@@ -2305,6 +2305,8 @@ See CLIENT")
   (function find-results
     "Search the Mastodon instance for matching tags, accounts, or statuses.
 
+Allowed values for the KIND argument are: \"accounts\", \"hashtags\", \"statuses\".
+
 See RESULTS
 See CLIENT")
 
