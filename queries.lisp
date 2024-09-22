@@ -41,10 +41,11 @@
                    loop-name)
     `(flet ((,results-decoded-entity (results)
               (first results))
-            (,results-next-handle (results)
-              (second results))
-            (,results-previous-handle (results)
-              (third results)))
+            ,(if (eq direction :next)
+                 `(,results-next-handle (results)
+                                        (second results))
+                 `(,results-previous-handle (results)
+                                            (third results))))
        (let ((,page              nil)
              (,first-results    :unitialized)
              (,previous-results nil))
@@ -56,13 +57,13 @@
                 (setf ,previous-results ,first-results))
                (t
                 (setf ,previous-results
-                      (if (eq ,direction :next)
-                          (multiple-value-list
-                           (navigate-page ,client
-                                          (,results-next-handle ,previous-results)))
-                          (multiple-value-list
-                           (navigate-page ,client
-                                          (,results-previous-handle ,previous-results)))))))
+                      ,(if (eq direction :next)
+                           `(multiple-value-list
+                             (navigate-page ,client
+                                            (,results-next-handle ,previous-results)))
+                           `(multiple-value-list
+                             (navigate-page ,client
+                                            (,results-previous-handle ,previous-results)))))))
              (setf ,page (,results-decoded-entity ,previous-results))
              (cond
                (,page
