@@ -934,18 +934,22 @@
 
 ;;; Timelines
 
-(defun %timeline (client url &key (local NIL l-p) (only-media NIL o-p) max-id since-id min-id (limit 20))
+(defun %timeline (client url &key (local NIL l-p) (only-media NIL o-p) max-id since-id min-id (limit 20) (other-args nil))
   (check-type max-id (or null string))
   (check-type since-id (or null string))
   (check-type min-id (or null string))
   (check-type limit (or null (integer 0)))
-  (decode-status (query client (format NIL "/api/v1/timelines/~a" url)
-                        :local (coerce-boolean local l-p)
-                        :only-media (coerce-boolean only-media o-p)
-                        :max-id max-id
-                        :since-id since-id
-                        :min-id min-id
-                        :limit limit)))
+  (check-type other-args list)
+  (decode-status (apply #'query
+                        client
+                        (append (list (format NIL "/api/v1/timelines/~a" url)
+                                      :local (coerce-boolean local l-p)
+                                      :only-media (coerce-boolean only-media o-p)
+                                      :max-id max-id
+                                      :since-id since-id
+                                      :min-id min-id
+                                      :limit limit)
+                                other-args))))
 
 (defgeneric timeline-tag (client tag &rest args))
 
@@ -968,6 +972,11 @@
 
 (defmethod timeline ((client client) (user-list user-list) &rest args)
   (apply #'timeline client (id user-list) args))
+
+(defgeneric timeline-link (client url &rest args))
+
+(defmethod timeline-link ((client client) (url string) &rest args)
+  (apply #'timeline client args (list :url url)))
 
 ;;; Trends
 
