@@ -729,3 +729,22 @@
       (format stream
               "access token ~a type ~a scope ~a created at ~a"
               access-token token-type scope created-at))))
+
+(define-entity relationship-severance-event
+  (id)
+  (kind :field "type" :translate-with #'to-keyword)
+  (purged)
+  (target-name :field "target_name")
+  (relationships-count :field "relationships_count" :nullable t)
+  (created-at :field "created_at" :translate-with #'convert-timestamp))
+
+(defmethod print-object ((relationship-severance-event relationship-severance-event) stream)
+  (print-unreadable-object (relationship-severance-event stream :type T)
+    (with-accessors ((id id)
+                     (kind kind)
+                     (relationships-count relationships-count)) relationship-severance-event
+      (format stream
+              "~a type ~a ~@[count ~a~]"
+              id
+              kind
+              relationships-count))))
