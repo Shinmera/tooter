@@ -325,16 +325,23 @@
   (created-at :translate-with #'convert-timestamp)
   (account :translate-with #'decode-account)
   (status :translate-with #'decode-status :nullable T)
-  (report :translate-with #'decode-report :nullable T))
+  (report :translate-with #'decode-report :nullable T)
+  (relationship-severance-event :field "relationship_severance_event"
+                                :translate-with #'decode-relationship-severance-event
+                                :nullable t)
+  (moderation-warning :field "moderation_warning"
+                      :translate-with #'decode-account-warning
+                      :nullable t))
 
 (defmethod print-object ((notification notification) stream)
   (print-unreadable-object (notification stream :type T)
     (format stream
-            "~a ~a #~a ~@[~a~]"
+            "~a ~a #~a ~@[report: ~a~] ~@[moderation warning: ~a~]"
             (kind notification)
             (account-name (account notification))
             (id notification)
-            (report notification))))
+            (report notification)
+            (moderation-warning notification))))
 
 (define-entity poll-option
   (title)
@@ -748,3 +755,34 @@
               id
               kind
               relationships-count))))
+
+(define-entity account-warning
+  (id)
+  (action :translate-with #'to-keyword)
+  (text)
+  (status-ids :field "status_ids")
+  (target-account :field "target_account" :translate-with #'decode-account)
+  (appeal :nullable t :translate-with #'decode-appeal)
+  (created-at :field "created_at" :translate-with #'convert-timestamp))
+
+(defmethod print-object ((account-warning account-warning) stream)
+  (print-unreadable-object (account-warning stream :type T)
+    (with-accessors ((id id)
+                     (action action)
+                     (text text)) account-warning
+      (format stream
+              "~a action ~a text ~a"
+              id
+              action
+              text))))
+
+(define-entity appeal
+  (text)
+  (state))
+
+(defmethod print-object ((account-warning account-warning) stream)
+  (print-unreadable-object (account-warning stream :type T)
+      (format stream
+              "text: ~a state: ~a"
+              (text account-warning)
+              (state account-warning))))
