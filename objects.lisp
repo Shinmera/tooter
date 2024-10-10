@@ -321,14 +321,20 @@
 (define-entity notification
   (id)
   (kind :field "type" :translate-with #'to-keyword)
+  (group-id :field "group_id")
   (created-at :translate-with #'convert-timestamp)
   (account :translate-with #'decode-account)
-  (status :translate-with #'decode-status :nullable T))
+  (status :translate-with #'decode-status :nullable T)
+  (report :translate-with #'decode-report :nullable T))
 
 (defmethod print-object ((notification notification) stream)
   (print-unreadable-object (notification stream :type T)
-    (format stream "~a ~a #~a" (kind notification) (account-name (account notification))
-            (id notification))))
+    (format stream
+            "~a ~a #~a ~@[~a~]"
+            (kind notification)
+            (account-name (account notification))
+            (id notification)
+            (report notification))))
 
 (define-entity poll-option
   (title)
