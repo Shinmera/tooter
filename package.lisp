@@ -297,6 +297,16 @@
    #:access-token
    #:token-type
    #:scope
+   #:created-at
+   #:appeal
+   #:state
+   #:account-warning
+   #:id
+   #:action
+   #:text
+   #:status-ids
+   #:target-account
+   #:appeal
    #:created-at))
 
 (defpackage :tooter-link-header-parser
