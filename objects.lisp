@@ -271,24 +271,97 @@
             (status-count instance-stats)
             (domain-count instance-stats))))
 
+(defun %decode-configuration (data)
+  (let ((accounts (gethash "accounts" data))
+        (statuses (gethash "statuses" data))
+        (media-attachments (gethash "media_attachments" data))
+        (polls (gethash "polls" data))
+        (translation (gethash "translation" data)))
+    (append
+     (list :urls (gethash "urls" data))
+     (when accounts
+       (list :accounts (list :max-featured-tags (gethash "max_featured_tags" accounts)
+                             :max-pinned-status (gethash "max_pinned-status" accounts))))
+     (when statuses
+       (list :statuses (list :max-characters    (gethash "max_characters" statuses)
+                             :max-media-attachments (gethash "max_media_attachments" statuses)
+                             :characters-reserved-per-url
+                             (gethash "characters_reserved_per_url" statuses))))
+     (when media-attachments
+       (list :media-attachments (list :supported-mime-types
+                                      (gethash "supported_mime_types" media-attachments)
+                                      :image-size-limit
+                                      (gethash "image_size_limit" media-attachments)
+                                      :image-matrix-limit
+                                      (gethash "image_matrix_limit" media-attachments)
+                                      :video-size-limit
+                                      (gethash "video_size_limit" media-attachments)
+                                      :video-frame-rate-limit
+                                      (gethash "video_frame_rate_limit" media-attachments)
+                                      :video-matrix-limit
+                                      (gethash "video_matrix_limit" media-attachments))))
+     (when polls
+       (list :polls (list :max-options (gethash "max-options" polls)
+                          :max-characters-per-option
+                          (gethash "max_characters_per_option" polls)
+                          :min-expiration (gethash "min_expiration" polls)
+                          :max-expiration (gethash "max_expiration" polls))))
+     (when translation
+       (list :translation (list :enabled (gethash "enabled" translation)))))))
+
+(defun %decode-registrations (data)
+  (let ((registrations data))
+    (when (hash-table-p registrations)
+      (list :enabled (gethash "enabled" registrations)
+            :approval-required (gethash "approval_required" registrations)
+            :message (gethash "message" registrations)))))
+
+(defun %decode-api-versions (data)
+  (let ((api-versions data))
+    (when (hash-table-p api-versions)
+      (list :api-versions (list :mastodon (gethash "mastodon" api-versions))))))
+
+(defun %decode-contact (data)
+  (let ((contact data))
+    (when (hash-table-p contact)
+      (list :email (gethash "email" contact)
+            :account  (and (gethash "account" contact)
+                           (decode-account (gethash "account" contact)))))))
+
+(define-entity rule
+  (id)
+  (text)
+  (hint))
+
+(defmethod print-object ((rule rule) stream)
+  (print-unreadable-object (rule stream :type T)
+    (format stream "rule #~a text ~s hint ~s" (id rule) (text rule) (hint rule))))
+
 (define-entity instance
-  (uri)
+  (domain)
   (title)
-  (description)
-  (short-description :field "short_description")
-  (email)
   (version)
-  (languages :translate-with #'translate-languages)
-  (registrations)
-  (approval-required :field "approval_required")
-  (urls)
-  (stats :translate-with #'decode-instance-stats)
+  (source-url :field "source_url")
+  (description)
+  (usage)
   (thumbnail :nullable T)
-  (contact-account :translate-with #'decode-account :nullable T))
+  (icon)
+  (languages :translate-with #'translate-languages)
+  (configuration :translate-with #'%decode-configuration)
+  (registrations :translate-with #'%decode-registrations)
+  ;; CHECK the documentation says it is an hash but just "NIL" is returned
+  (api-versions :field "api_versions" :translate-with #'%decode-api-versions)
+  (urls)
+  (contact :translate-with #'%decode-contact)
+  (rules :translate-with #'decode-rule))
 
 (defmethod print-object ((instance instance) stream)
   (print-unreadable-object (instance stream :type T)
-    (format stream "~s ~a stats ~a" (title instance) (uri instance) (stats instance))))
+    (format stream
+            "~s ~a configuration ~a"
+            (title instance)
+            (domain instance)
+            (configuration instance))))
 
 (define-entity user-list
   (id)

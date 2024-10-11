@@ -1824,18 +1824,18 @@ See LAST-READ-ID
 SEE VERSION")
 
   (function last-read-id
-    "Returns the last read ID of an entity (status or notification)"))
+    "Returns the last read ID of an entity (status or notification)")
 
-(type appeal
-      "Represents an appeal to a moderation action
+  (type appeal
+    "Represents an appeal to a moderation action
 See TEXT
 See STATE")
 
-(function state
- "the state of the object on server")
+  (function state
+    "the state of the object on server")
 
-(type account-warning
-      "A warning from moderators because of an user's action
+  (type account-warning
+    "A warning from moderators because of an user's action
 
 See ID
 See ACTION
@@ -1853,7 +1853,7 @@ SEE KIND
 SEE PURGED
 SEE TARGET-NAME
 SEE RELATIONSHIPS-COUNT
-SEE CREATED-AT")
+SEE CREATED-AT"))
 
 ;; queries.lisp
 (docs:define-docs
