@@ -2592,6 +2592,14 @@ See CLIENT
 See TAG
 See STATUS")
 
+  (function timeline-link
+    "Returns statuses that that contains a link to a trending article.
+
+See CLIENT
+See URL
+See STATUS")
+
+
   (function followed-tags
     "Returns a list of followed tags.
 

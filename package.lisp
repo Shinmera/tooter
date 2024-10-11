@@ -420,6 +420,7 @@
    #:tag-information
    #:timeline-tag
    #:timeline
+   #:timeline-link
    #:trends
    #:account-directory
    #:conversation
