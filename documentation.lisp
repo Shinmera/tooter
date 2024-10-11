@@ -1843,7 +1843,17 @@ See TEXT
 See STATUS-IDS
 See TARGET-ACCOUNT
 See APPEAL
-See CREATED-AT"
+See CREATED-AT")
+
+(type relationship-severance-event
+"
+
+SEE ID
+SEE KIND
+SEE PURGED
+SEE TARGET-NAME
+SEE RELATIONSHIPS-COUNT
+SEE CREATED-AT")
 
 ;; queries.lisp
 (docs:define-docs

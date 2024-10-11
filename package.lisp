@@ -307,6 +307,13 @@
    #:status-ids
    #:target-account
    #:appeal
+   #:created-at
+   #:relationship-severance-event
+   #:id
+   #:kind
+   #:purged
+   #:target-name
+   #:relationships-count
    #:created-at))
 
 (defpackage :tooter-link-header-parser
