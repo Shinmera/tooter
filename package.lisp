@@ -195,6 +195,14 @@
    #:report
    #:id
    #:action-taken
+   #:action-taken-at
+   #:report-category
+   #:comment
+   #:forwarded
+   #:created-at
+   #:status-ids
+   #:rule-ids
+   #:target-account
    #:results
    #:results-accounts
    #:results-statuses
