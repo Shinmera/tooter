@@ -1279,10 +1279,38 @@ See STATIC-URL")
     "Representation of an incident report.
 
 See ID
-See ACTION-TAKEN")
+See ACTION-TAKEN
+See ACTION-TAKEN-AT
+See REPORT-CATEGORY
+See COMMENT
+See FORWARDED
+See CREATED-AT
+See STATUS-IDS
+See RULES-IDS
+See TARGET_ACCOUNT")
 
   (function action-taken
     "Returns what kind of action was taken in response to the report.
+
+See REPORT")
+
+  (function action-taken-at
+    "Represents the date where the action whas taken.
+
+See REPORT")
+
+  (function REPORT-CATEGORY
+    "Can assume the values ':spam' ':violation' or ':other'.
+
+See REPORT")
+
+  (function COMMENT
+    "Explaination of the motivation to file this report.
+
+See REPORT")
+
+  (function TARGET-ACCOUNT
+    "The accounted reported.
 
 See REPORT")
 

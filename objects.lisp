@@ -458,7 +458,7 @@
   (id)
   (action-taken)
   (action-taken-at :field "action_taken_at" :translate-with #'convert-timestamp)
-  (category :translate-with #'to-keyword)
+  (report-category :field "category" :translate-with #'to-keyword)
   (comment)
   (forwarded)
   (created-at :field "created_at" :translate-with #'convert-timestamp)
