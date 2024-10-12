@@ -142,11 +142,12 @@
 (define-entity application
   (name)
   (website :nullable T)
-  (vapid-key :field "vapid_key" :nullable T))
+  (scopes)
+  (redirect-uris :field "redirect_uris"))
 
 (defmethod print-object ((application application) stream)
   (print-unreadable-object (application stream :type T)
-    (format stream "~a" (name application))))
+    (format stream "~a ~@[website: ~a~]" (name application) (website application))))
 
 (define-entity attachment
   (id)

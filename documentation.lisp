@@ -596,7 +596,8 @@ See REACTION")
 
 See NAME
 See WEBSITE
-See VAPID-KEY")
+See SCOPES
+See REDIRECT-URIS")
 
   (function name
     "Returns the name of the object.
@@ -611,11 +612,8 @@ See TAG")
 See APPLICATION
 See CLIENT")
 
-  (function VAPID-KEY
-    "Returns the key for PUSH streaming API.
-
-See APPLICATION
-See CLIENT")
+  (function redirect-uris
+    "A list of redirection URIs for the applications")
 
   (type attachment
     "Representation of a media attachment for a status.
