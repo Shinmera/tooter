@@ -317,7 +317,34 @@
    #:instance-rule
    #:id
    #:text
-   #:hint))
+   #:hint
+   #:partial-account-with-avatar
+   #:id
+   #:account-name
+   #:url
+   #:avatar
+   #:avatar-static
+   #:locked
+   #:display-name
+   #:bot
+   #:notification-group
+   #:group-key
+   #:notifications-count
+   #:kind
+   #:most-recent-notification-id
+   #:page-min-id
+   #:page-max-id
+   #:latest-page-notification-at
+   #:sample-account-ids
+   #:status-id
+   #:report :translate-with
+   #:relationship-severance-event
+   #:moderation-warning
+   #:grouped-notifications-results
+   #:accounts
+   #:partial-accounts
+   #:statuses
+   #:notification-groups))
 
 (defpackage :tooter-link-header-parser
   (:use :cl)

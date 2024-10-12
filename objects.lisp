@@ -377,7 +377,7 @@
 
 (defmethod print-object ((instance-icon instance-icon) stream)
   (print-unreadable-object (instance-icon stream :type T)
-    (format t "url ~a size ~a" (src instance-icon) (size instance-icon))))
+    (format t "url ~a size ~a" (icon-src instance-icon) (icon-size instance-icon))))
 
 (define-entity instance
   (domain)
@@ -899,3 +899,38 @@
               "text: ~a state: ~a"
               (text account-warning)
               (state account-warning))))
+
+(define-entity partial-account-with-avatar
+  (id)
+  (account-name :field "acct")
+  (url)
+  (avatar)
+  (avatar-static)
+  (locked)
+  (display-name)
+  (bot))
+
+(define-entity notification-group
+  (group-key :field "group_key")
+  (notifications-count :field "notifications_count")
+  (kind :field "type")
+  (most-recent-notification-id :field "most_recent_notification_id")
+  (page-min-id :field "page_min_id" :nullable t)
+  (page-max-id :field "page_max_id" :nullable t)
+  (latest-page-notification-at :field "latest_page_notification_at" :nullable t)
+  (sample-account-ids :field "sample_account_ids")
+  (status-id :field "status_id" :nullable t)
+  (report :translate-with #'decode-report :nullable t)
+  (relationship-severance-event :field "event"
+                                :translate-with #'decode-relationship-severance-event
+                                :nullable t)
+  (moderation-warning :field "moderation_warning" :nullable t))
+
+(define-entity grouped-notifications-results
+  (accounts :translate-with #'decode-account)
+  (partial-accounts :field "partial_accounts"
+                    :translate-with #'decode-partial-account-with-avatar
+                    :nullable t)
+  (statuses :translate-with #'decode-status)
+  (notification-groups :field "notification-groups"
+                       :translate-with #'decode-notification-group))
