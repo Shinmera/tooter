@@ -684,6 +684,17 @@
                  (encode-grouped-notification-type type))
            :include-filtered include-filtered)))
 
+(defmethod find-grouped-notification ((client client) (group-key string))
+  (decode-grouped-notifications-results (query client
+                                               (format NIL
+                                                       "/api/v2/notifications/~a"
+                                                       group-key))))
+
+(defmethod delete-grouped-notification ((client client) (group-key string))
+  (submit client (format nil "/api/v2/notifications/~a/dismiss" id))
+  T)
+
+
 (defmethod make-subscription ((client client) endpoint public-key secret &key alerts)
   (check-type endpoint string)
   (check-type public-key string)
