@@ -2337,7 +2337,21 @@ See CLIENT")
 
 This function returns paginated results.
 
-See NOTIFICATION
+See GROUPED-NOTIFICATION-RESULTS
+See CLIENT")
+
+  (function find-grouped-notification
+    "Retrieve the grouped notification of the given GROUP-KEY.
+
+See GROUPED-NOTIFICATION-RESULTS
+See CLIENT")
+
+  (function delete-grouped-notification
+    "Delete or dismiss the grouped notification of the given GROUP-KEY.
+
+Returns T.
+
+See GROUPED-NOTIFICATION-RESULTS
 See CLIENT")
 
   (function make-subscription
