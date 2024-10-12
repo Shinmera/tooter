@@ -421,6 +421,7 @@
    #:notifications
    #:find-notification
    #:delete-notification
+   #:grouped-notifications
    #:make-subscription
    #:subscription
    #:delete-subscription

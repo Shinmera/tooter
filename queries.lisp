@@ -601,6 +601,12 @@
     (:status "status")
     (:update "update")))
 
+(defun encode-grouped-notification-type (encoded-type)
+  (ecase encoded-type
+    (:favourite "favourite")
+    (:follow "follow")
+    (:reblog "reblog")))
+
 (defmethod notifications ((client client)
                           &key max-id
                             min-id
@@ -637,6 +643,45 @@
 
 (defmethod delete-notification ((client client) (notification notification))
   (delete-notification client (id notification)))
+
+;; grouped notifications
+
+(defmethod grouped-notifications ((client client)
+                                  &key max-id
+                                    min-id
+                                    since-id
+                                    (limit 15)
+                                    exclude-types
+                                    types
+                                    account-id
+                                    (expand-accounts :full)
+                                    grouped-types
+                                    include-filtered)
+  (check-type max-id (or null string))
+  (check-type since-id (or null string))
+  (check-type limit (or null (integer 0)))
+  (check-type exclude-types list)
+  (assert (member expand-accounts '(:full :partial-avatars)))
+  (with-pagination-return (decode-grouped-notifications-results)
+    (query client
+           "/api/v2/notifications"
+           :max-id max-id
+           :min-id min-id
+           :since-id since-id
+           :limit limit
+           :types
+           (loop for type in types
+                 collect (encode-notification-type type))
+           :exclude-types
+           (loop for type in exclude-types
+                 collect (encode-notification-type type))
+           :account-id account-id
+           :expand-accounts expand-accounts
+           :grouped-types
+           (loop for type in grouped-types
+                 collect
+                 (encode-grouped-notification-type type))
+           :include-filtered include-filtered)))
 
 (defmethod make-subscription ((client client) endpoint public-key secret &key alerts)
   (check-type endpoint string)
