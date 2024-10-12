@@ -276,7 +276,8 @@
         (statuses (gethash "statuses" data))
         (media-attachments (gethash "media_attachments" data))
         (polls (gethash "polls" data))
-        (translation (gethash "translation" data)))
+        (translation (gethash "translation" data))
+        (urls (gethash "urls" data)))
     (append
      (list :urls (gethash "urls" data))
      (when accounts
@@ -307,7 +308,10 @@
                           :min-expiration (gethash "min_expiration" polls)
                           :max-expiration (gethash "max_expiration" polls))))
      (when translation
-       (list :translation (list :enabled (gethash "enabled" translation)))))))
+       (list :translation (list :enabled (gethash "enabled" translation))))
+     (when urls
+       (list :urls (list :streaming (gethash "streaming" urls)
+                         :status (gethash "status" urls))))))); undocumented, 2024-10-12
 
 (defun %decode-registrations (data)
   (let ((registrations data))
@@ -359,7 +363,6 @@
   (configuration :translate-with #'%decode-configuration)
   (registrations :translate-with #'%decode-registrations)
   (api-versions :field "api_versions" :translate-with #'%decode-api-versions)
-  (urls)
   (contact :translate-with #'%decode-contact)
   (rules :translate-with #'decode-instance-rule))
 
@@ -369,7 +372,7 @@
             "~s ~a configuration ~a"
             (title instance)
             (domain instance)
-            (usage instance))))
+            (configuration instance))))
 
 (define-entity user-list
   (id)

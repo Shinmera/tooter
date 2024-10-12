@@ -120,7 +120,6 @@
    #:languages
    #:registrations
    #:api-versions
-   #:urls
    #:contact
    #:rules
    #:instance-stats
