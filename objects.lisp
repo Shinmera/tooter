@@ -352,6 +352,32 @@
       (when (hash-table-p users)
         (list :active-month (gethash "active_month" users))))))
 
+(defun %decode-thumbnail (data)
+  (when (hash-table-p data)
+    (let* ((thumbnail data)
+           (versions (gethash "versions" thumbnail)))
+      (list :thumbnail
+            (append (list :url (gethash "url" thumbnail)
+                          :blurhash (gethash "blurhash" thumbnail))
+                    (when (hash-table-p versions)
+                      (list :@1x (gethash "@1x" versions)
+                            :@2x (gethash "@2x" versions))))))))
+
+(defun %decode-instance-icon-size (data)
+  (let ((multiplication-symbol-pos (position #\x data :test #'char-equal)))
+    (if multiplication-symbol-pos
+        (list (subseq data 0 multiplication-symbol-pos)
+              (subseq data (1+ multiplication-symbol-pos)))
+        data)))
+
+(define-entity instance-icon
+  (src)
+  (size :translate-with #'%decode-instance-icon-size))
+
+(defmethod print-object ((instance-icon instance-icon) stream)
+  (print-unreadable-object (instance-icon stream :type T)
+    (format t "url ~a size ~a" (src instance-icon) (size instance-icon))))
+
 (define-entity instance
   (domain)
   (title)
@@ -359,8 +385,8 @@
   (source-url :field "source_url")
   (description)
   (usage :translate-with #'%decode-usage)
-  (thumbnail :nullable T)
-  (icon)
+  (thumbnail :nullable T :translate-with #'%decode-thumbnail)
+  (icon :translate-with #'decode-instance-icon)
   (languages :translate-with #'translate-languages)
   (configuration :translate-with #'%decode-configuration)
   (registrations :translate-with #'%decode-registrations)
