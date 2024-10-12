@@ -619,16 +619,17 @@
   (check-type since-id (or null string))
   (check-type limit (or null (integer 0)))
   (check-type exclude-types list)
-  (decode-notification (query client "/api/v1/notifications"
-                              :max-id max-id
-                              :min-id min-id
-                              :since-id since-id
-                              :limit limit
-                              :types (loop for type in types
-                                           collect (encode-notification-type type))
-                              :exclude-types (loop for type in exclude-types
-                                                   collect (encode-notification-type type))
-                              :account-id account-id)))
+  (with-pagination-return (decode-notification)
+    (query client "/api/v1/notifications"
+           :max-id max-id
+           :min-id min-id
+           :since-id since-id
+           :limit limit
+           :types (loop for type in types
+                        collect (encode-notification-type type))
+           :exclude-types (loop for type in exclude-types
+                                collect (encode-notification-type type))
+           :account-id account-id)))
 
 (defmethod find-notification ((client client) (id string))
   (decode-notification (query client (format NIL "/api/v1/notifications/~a" id))))
