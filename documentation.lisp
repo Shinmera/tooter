@@ -1855,13 +1855,23 @@ SEE TARGET-NAME
 SEE RELATIONSHIPS-COUNT
 SEE CREATED-AT")
 
-
 (type instance-rule
   "A rule that users of the instance must comply with.
 
 SEE ID
 SEE TEXT
-SEE HINT"))
+SEE HINT")
+
+(type instance-icon
+      "Represents an icon for this instance
+SEE ICON-SRC
+SEE ICON-SIZE")
+
+(function icon-src
+          "url of the icon")
+
+(function icon-size
+ "A list of two values: the width and the height of the icon, in pixels"))
 
 ;; queries.lisp
 (docs:define-docs

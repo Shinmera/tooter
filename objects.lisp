@@ -371,8 +371,8 @@
         data)))
 
 (define-entity instance-icon
-  (src)
-  (size :translate-with #'%decode-instance-icon-size))
+  (icon-src :field "src")
+  (icon-size :field "size" :translate-with #'%decode-instance-icon-size))
 
 (defmethod print-object ((instance-icon instance-icon) stream)
   (print-unreadable-object (instance-icon stream :type T)
