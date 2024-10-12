@@ -328,14 +328,23 @@
             :account  (and (gethash "account" contact)
                            (decode-account (gethash "account" contact)))))))
 
-(define-entity rule
+(define-entity instance-rule
   (id)
   (text)
   (hint))
 
-(defmethod print-object ((rule rule) stream)
-  (print-unreadable-object (rule stream :type T)
-    (format stream "rule #~a text ~s hint ~s" (id rule) (text rule) (hint rule))))
+(defmethod print-object ((instance-rule instance-rule) stream)
+  (with-accessors ((id id)
+                   (text text)
+                   (hint hint)) instance-rule
+    (print-unreadable-object (instance-rule stream :type T)
+      (format stream "rule #~a text ~s hint ~s" id text hint))))
+
+(defun %decode-usage (data)
+  (when (hash-table-p data)
+    (let ((users (gethash "users" data)))
+      (when (hash-table-p users)
+        (list :active-month (gethash "active_month" users))))))
 
 (define-entity instance
   (domain)
@@ -343,17 +352,16 @@
   (version)
   (source-url :field "source_url")
   (description)
-  (usage)
+  (usage :translate-with #'%decode-usage)
   (thumbnail :nullable T)
   (icon)
   (languages :translate-with #'translate-languages)
   (configuration :translate-with #'%decode-configuration)
   (registrations :translate-with #'%decode-registrations)
-  ;; CHECK the documentation says it is an hash but just "NIL" is returned
   (api-versions :field "api_versions" :translate-with #'%decode-api-versions)
   (urls)
   (contact :translate-with #'%decode-contact)
-  (rules :translate-with #'decode-rule))
+  (rules :translate-with #'decode-instance-rule))
 
 (defmethod print-object ((instance instance) stream)
   (print-unreadable-object (instance stream :type T)
@@ -361,7 +369,7 @@
             "~s ~a configuration ~a"
             (title instance)
             (domain instance)
-            (configuration instance))))
+            (usage instance))))
 
 (define-entity user-list
   (id)

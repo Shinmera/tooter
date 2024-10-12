@@ -1853,7 +1853,15 @@ SEE KIND
 SEE PURGED
 SEE TARGET-NAME
 SEE RELATIONSHIPS-COUNT
-SEE CREATED-AT"))
+SEE CREATED-AT")
+
+
+(type instance-rule
+  "A rule that users of the instance must comply with.
+
+SEE ID
+SEE TEXT
+SEE HINT"))
 
 ;; queries.lisp
 (docs:define-docs

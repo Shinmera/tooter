@@ -110,19 +110,19 @@
    #:static-url
    #:visible-in-picker
    #:instance
-   #:uri
+   #:domain
    #:title
-   #:description
-   #:short-description
-   #:email
    #:version
+   #:source-url
+   #:description
+   #:usage
+   #:thumbnail
    #:languages
    #:registrations
-   #:approval-required
+   #:api-versions
    #:urls
-   #:stats
-   #:thumbnail
-   #:contact-account
+   #:contact
+   #:rules
    #:instance-stats
    #:user-count
    #:status-count
@@ -314,7 +314,11 @@
    #:purged
    #:target-name
    #:relationships-count
-   #:created-at))
+   #:created-at
+   #:instance-rule
+   #:id
+   #:text
+   #:hint))
 
 (defpackage :tooter-link-header-parser
   (:use :cl)
