@@ -1693,7 +1693,6 @@ See LAST-STATUS-AT")
 
 See FILTER")
 
-
   (type filter-status
     "Represents a status that trigger trigger the filter
 See ID
@@ -2003,7 +2002,6 @@ See FILTER")
 See CLIENT
 See FILTER")
 
-
   (function create-filter
     "Create a new filter.
 
@@ -2312,6 +2310,8 @@ See CLIENT")
   (function notifications
     "Returns a list of notifications about status updates.
 
+This function returns paginated results.
+
 See NOTIFICATION
 See CLIENT")
 
@@ -2328,6 +2328,14 @@ The notification can either be a NOTIFICATION instance, an ID of one,
 or T for all notifications.
 
 Returns T.
+
+See NOTIFICATION
+See CLIENT")
+
+  (function grouped-notifications
+    "Returns a list of cumulative notifications grouped by type about status updates.
+
+This function returns paginated results.
 
 See NOTIFICATION
 See CLIENT")
@@ -2614,7 +2622,6 @@ See STATUS")
 See CLIENT
 See URL
 See STATUS")
-
 
   (function followed-tags
     "Returns a list of followed tags.
