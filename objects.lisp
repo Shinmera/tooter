@@ -277,9 +277,9 @@
         (media-attachments (gethash "media_attachments" data))
         (polls (gethash "polls" data))
         (translation (gethash "translation" data))
-        (urls (gethash "urls" data)))
+        (urls (gethash "urls" data))
+        (vapid (gethash "vapid" data)))
     (append
-     (list :urls (gethash "urls" data))
      (when accounts
        (list :accounts (list :max-featured-tags (gethash "max_featured_tags" accounts)
                              :max-pinned-status (gethash "max_pinned-status" accounts))))
@@ -311,7 +311,9 @@
        (list :translation (list :enabled (gethash "enabled" translation))))
      (when urls
        (list :urls (list :streaming (gethash "streaming" urls)
-                         :status (gethash "status" urls))))))); undocumented, 2024-10-12
+                         :status (gethash "status" urls)))) ; undocumented, 2024-10-12
+     (when vapid
+       (list :vapid (list :public-key (gethash "public_key" vapid)))))))
 
 (defun %decode-registrations (data)
   (let ((registrations data))
