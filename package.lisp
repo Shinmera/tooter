@@ -441,6 +441,8 @@
    #:fetch-notification-policy
    #:update-notification-policy
    #:get-notifications-requests
+   #:accept-multiple-notification-requests
+   #:dismiss-multiple-notification-requests
    #:make-subscription
    #:subscription
    #:delete-subscription

@@ -712,6 +712,41 @@
                                       (format nil "/api/v1/notifications/requests/~a"
                                               id))))
 
+(defun %apply-to-notification-requests (client id action)
+  (submit client (format nil
+                         "/api/v1/notifications/requests/~a/~a"
+                         id
+                         action))
+  t)
+
+(defmethod accept-notification-request ((client client) (id string))
+  (%apply-to-notification-requests client id "accept"))
+
+(defmethod dismiss-notification-request ((client client) (id string))
+  (%apply-to-notification-requests client id "dismiss"))
+
+(defun %apply-to-notification-requests-multiple (client ids action)
+  (submit client
+          (format nil
+                  "/api/v1/notifications/requests/~a"
+                  action)
+          (loop for id in ids
+                collect
+                (format nil "id[]")
+                collect id))
+  t)
+
+(defmethod accept-multiple-notification-requests ((client client) (ids list))
+  (%apply-to-notification-requests-multiple client ids "accept"))
+
+(defmethod dismiss-multiple-notification-requests ((client client) (ids list))
+  (%apply-to-notification-requests-multiple client ids "dismiss"))
+
+(defmethod notifications-request-merged-p ((client client))
+  (%decode-check-notification-requests-merged
+   (query client
+          "/api/v1/notifications/requests/merged")))
+
 (defmethod update-notification-policy ((client client)
                                        for-not-following
                                        for-not-followers

@@ -937,9 +937,9 @@
                        :translate-with #'decode-notification-group))
 
 (defun %decode-notification-policy-summary (summary-data)
-    (when (hash-table-p summary-data)
-      (list :pending-requests-count (gethash "pending_requests_count" summary-data)
-            :pending-notifications-count (gethash "pending_notifications_count" summary-data))))
+  (when (hash-table-p summary-data)
+    (list :pending-requests-count (gethash "pending_requests_count" summary-data)
+          :pending-notifications-count (gethash "pending_notifications_count" summary-data))))
 
 (define-entity notification-policy
   (for-not-following    :field "for_not_following")
@@ -956,3 +956,7 @@
   (account :translate-with #'decode-account)
   (notifications-count :field "notifications_count")
   (last-status :field "last_status" :translate-with #'decode-status :nullable t))
+
+(defun %decode-check-notification-requests-merged (request)
+  (when (hash-table-p request)
+    (gethash "merged" request)))
