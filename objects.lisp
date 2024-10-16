@@ -955,4 +955,4 @@
   (updated-at :field "update_at"  :translate-with #'convert-timestamp)
   (account :translate-with #'decode-account)
   (notifications-count :field "notifications_count")
-  (last-status :field "last_status" :translate-with #'decode-status))
+  (last-status :field "last_status" :translate-with #'decode-status :nullable t))
