@@ -948,3 +948,11 @@
   (for-private-mentions :field "for_private_mentions")
   (for-limited-accounts :field "for_limited_accounts")
   (summary :translate-with #'%decode-notification-policy-summary))
+
+(define-entity notification-request
+  (id)
+  (created-at :field "created_at" :translate-with #'convert-timestamp)
+  (updated-at :field "update_at"  :translate-with #'convert-timestamp)
+  (account :translate-with #'decode-account)
+  (notifications-count :field "notifications_count")
+  (last-status :field "last_status" :translate-with #'decode-status))

@@ -702,10 +702,15 @@
   (check-type since-id (or null string))
   (check-type limit (or null (integer 0)))
   (with-pagination-return (decode-account)
-    (query client (format NIL "/api/v1/notifications/requests")
-           :max-id max-id
-           :since-id since-id
-           :limit limit)))
+    (decode-notification-request (query client (format NIL "/api/v1/notifications/requests")
+                                        :max-id max-id
+                                        :since-id since-id
+                                        :limit limit))))
+
+(defmethod get-notification-requests ((client client) (id string))
+  (decode-notification-request (query client
+                                      (format nil "/api/v1/notifications/requests/~a"
+                                              id))))
 
 (defmethod update-notification-policy ((client client)
                                        for-not-following

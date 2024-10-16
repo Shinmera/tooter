@@ -351,7 +351,14 @@
    #:for-new-accounts
    #:for-private-mentions
    #:for-limited-accounts
-   #:summary :translate-with))
+   #:summary
+   #:notification-request
+   #:id
+   #:created-at
+   #:updated-at
+   #:account
+   #:notifications-count
+   #:last-status))
 
 (defpackage :tooter-link-header-parser
   (:use :cl)
