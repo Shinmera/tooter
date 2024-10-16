@@ -344,7 +344,14 @@
    #:accounts
    #:partial-accounts
    #:statuses
-   #:notification-groups))
+   #:notification-groups
+   #:notification-policy
+   #:for-not-following
+   #:for-not-followers
+   #:for-new-accounts
+   #:for-private-mentions
+   #:for-limited-accounts
+   #:summary :translate-with))
 
 (defpackage :tooter-link-header-parser
   (:use :cl)
@@ -424,6 +431,9 @@
    #:grouped-notifications
    #:find-grouped-notification
    #:delete-grouped-notification
+   #:fetch-notification-policy
+   #:update-notification-policy
+   #:get-notifications-requests
    #:make-subscription
    #:subscription
    #:delete-subscription

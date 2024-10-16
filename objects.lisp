@@ -165,6 +165,7 @@
     (format stream "~a #~a" (kind attachment) (id attachment))))
 
 (defvar *translator*)
+
 (defun %decode-metadata (data)
   (let ((metadata (getj data "meta")))
     (when metadata
@@ -934,3 +935,16 @@
   (statuses :translate-with #'decode-status)
   (notification-groups :field "notification-groups"
                        :translate-with #'decode-notification-group))
+
+(defun %decode-notification-policy-summary (summary-data)
+    (when (hash-table-p summary-data)
+      (list :pending-requests-count (gethash "pending_requests_count" summary-data)
+            :pending-notifications-count (gethash "pending_notifications_count" summary-data))))
+
+(define-entity notification-policy
+  (for-not-following    :field "for_not_following")
+  (for-not-followers    :field "for_not_followers")
+  (for-new-accounts     :field "for_new_accounts")
+  (for-private-mentions :field "for_private_mentions")
+  (for-limited-accounts :field "for_limited_accounts")
+  (summary :translate-with #'%decode-notification-policy-summary))
