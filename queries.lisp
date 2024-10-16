@@ -694,9 +694,6 @@
   (submit client (format nil "/api/v2/notifications/~a/dismiss" group-key))
   T)
 
-(defmethod fetch-notification-policy ((client client))
-  (decode-notification-policy (query client "/api/v2/notifications/policy")))
-
 (defmethod get-notifications-requests ((client client) (id string) &key max-id since-id limit)
   (check-type max-id (or null string))
   (check-type since-id (or null string))
@@ -747,6 +744,9 @@
    (query client
           "/api/v1/notifications/requests/merged")))
 
+(defmethod fetch-notification-policy ((client client))
+  (decode-notification-policy (query client "/api/v2/notifications/policy")))
+
 (defmethod update-notification-policy ((client client)
                                        for-not-following
                                        for-not-followers
@@ -758,15 +758,14 @@
   (assert (member for-new-accounts     '(:accept :filter :drop)))
   (assert (member for-private-mentions '(:accept :filter :drop)))
   (assert (member for-limited-accounts '(:accept :filter :drop)))
-  (submit client
-          (format NIL "/api/v2/notifications/policy")
-          :http-method :delete
-          :for-not-following    for-not-following
-          :for-not-followers    for-not-followers
-          :for-new-accounts     for-new-accounts
-          :for-private-mentions for-private-mentions
-          :for-limited-accounts for-limited-accounts)
-  T)
+  (decode-notification-policy (submit client
+                                      (format NIL "/api/v2/notifications/policy")
+                                      :http-method :delete
+                                      :for-not-following    for-not-following
+                                      :for-not-followers    for-not-followers
+                                      :for-new-accounts     for-new-accounts
+                                      :for-private-mentions for-private-mentions
+                                      :for-limited-accounts for-limited-accounts)))
 
 (defmethod make-subscription ((client client) endpoint public-key secret &key alerts)
   (check-type endpoint string)

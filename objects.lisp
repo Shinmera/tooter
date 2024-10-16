@@ -942,12 +942,27 @@
           :pending-notifications-count (gethash "pending_notifications_count" summary-data))))
 
 (define-entity notification-policy
-  (for-not-following    :field "for_not_following")
-  (for-not-followers    :field "for_not_followers")
-  (for-new-accounts     :field "for_new_accounts")
-  (for-private-mentions :field "for_private_mentions")
-  (for-limited-accounts :field "for_limited_accounts")
+  (for-not-following    :field "for_not_following" :translate-with #'to-keyword)
+  (for-not-followers    :field "for_not_followers" :translate-with #'to-keyword)
+  (for-new-accounts     :field "for_new_accounts" :translate-with #'to-keyword)
+  (for-private-mentions :field "for_private_mentions" :translate-with #'to-keyword)
+  (for-limited-accounts :field "for_limited_accounts" :translate-with #'to-keyword)
   (summary :translate-with #'%decode-notification-policy-summary))
+
+(defmethod print-object ((notification-policy notification-policy) stream)
+  (with-accessors ((for-not-following    for-not-following)
+                   (for-not-followers    for-not-followers)
+                   (for-new-accounts     for-new-accounts)
+                   (for-private-mentions for-private-mentions)
+                   (for-limited-accounts for-limited-accounts)) notification-policy
+    (print-unreadable-object (notification-policy stream :type T)
+      (format stream
+              "for-not-following ~a for-not-followers ~a for-new-accounts ~a for-private-mentions ~a for-limited-accounts ~a"
+              for-not-following
+              for-not-followers
+              for-new-accounts
+              for-private-mentions
+              for-limited-accounts))))
 
 (define-entity notification-request
   (id)
