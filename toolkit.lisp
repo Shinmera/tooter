@@ -71,7 +71,8 @@
              ((eql T) "true")
              ((eql NIL) "false")
              (integer (princ-to-string val))
-             (string val))))
+             (string val)
+             (keyword (translate-key val)))))
     (loop for (key val) on plist by #'cddr
           nconc (typecase val
                   (list (loop with field = (format NIL "~a[]" (translate-key key))

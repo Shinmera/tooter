@@ -748,24 +748,25 @@
   (decode-notification-policy (query client "/api/v2/notifications/policy")))
 
 (defmethod update-notification-policy ((client client)
-                                       for-not-following
-                                       for-not-followers
-                                       for-new-accounts
-                                       for-private-mentions
-                                       for-limited-accounts)
+                                       &key
+                                       (for-not-following :accept)
+                                       (for-not-followers :accept)
+                                       (for-new-accounts :accept)
+                                       (for-private-mentions :accept)
+                                       (for-limited-accounts :accept))
   (assert (member for-not-following    '(:accept :filter :drop)))
   (assert (member for-not-followers    '(:accept :filter :drop)))
   (assert (member for-new-accounts     '(:accept :filter :drop)))
   (assert (member for-private-mentions '(:accept :filter :drop)))
   (assert (member for-limited-accounts '(:accept :filter :drop)))
-  (decode-notification-policy (submit client
-                                      (format NIL "/api/v2/notifications/policy")
-                                      :http-method :delete
-                                      :for-not-following    for-not-following
-                                      :for-not-followers    for-not-followers
-                                      :for-new-accounts     for-new-accounts
-                                      :for-private-mentions for-private-mentions
-                                      :for-limited-accounts for-limited-accounts)))
+  (decode-notification-policy(submit client
+                                     (format NIL "/api/v2/notifications/policy")
+                                     :http-method :patch
+                                     :for-not-following    for-not-following
+                                     :for-not-followers    for-not-followers
+                                     :for-new-accounts     for-new-accounts
+                                     :for-private-mentions for-private-mentions
+                                     :for-limited-accounts for-limited-accounts)))
 
 (defmethod make-subscription ((client client) endpoint public-key secret &key alerts)
   (check-type endpoint string)
