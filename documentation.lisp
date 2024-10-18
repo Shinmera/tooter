@@ -2462,6 +2462,51 @@ Returns T.
 See GROUPED-NOTIFICATION-RESULTS
 See CLIENT")
 
+  (function get-notifications-requests
+    "Get the filtered notifications
+
+SEE NOTIFICATION-REQUEST
+SEE CLIENT")
+
+  (function get-notifications-requests
+    "Get a single filtered notification
+
+SEE NOTIFICATION-REQUEST
+SEE CLIENT")
+
+  (function accept-notification-request
+    "Accept the current notification requests and all future notifications from an user.
+
+SEE ID
+SEE NOTIFICATION-REQUEST
+SEE CLIENT")
+
+  (function dismiss-notification-request
+    "Dismiss the notification requests, and all notifications, from an user.
+
+SEE NOTIFICATION-REQUEST
+SEE CLIENT")
+
+  (function accept-multiple-notification-requests
+    "Accepts multiple notifications requests (specified from a ist of IDs)
+
+See ACCEPT-NOTIFICATION-REQUEST")
+
+  (function dismiss-multiple-notification-requests
+    "Dismiss multiple notifications requests (specified from a ist of IDs)
+
+See DISMISS-NOTIFICATION-REQUEST")
+
+  (function fetch-notification-policy
+    "Get the current notification filtering policy.
+
+SEE NOTIFICATION-POLICY")
+
+  (function update-notification-policy
+    "update the current notification filtering policy.
+
+SEE NOTIFICATION-POLICY")
+
   (function make-subscription
     "Create or update a push notification subscription.
 
