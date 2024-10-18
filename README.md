@@ -32,6 +32,6 @@ If you write an application on top of Mastodon and would like to offer this as a
 
 ## Official Documentation
 
-The official documentation for the REST API of mastodon can be foud here:
+The official documentation for the REST API of mastodon can be found here:
 
 https://docs.joinmastodon.org/
