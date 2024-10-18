@@ -1106,7 +1106,7 @@
 (defgeneric timeline-link (client url &rest args))
 
 (defmethod timeline-link ((client client) (url string) &rest args)
-  (apply #'timeline client args (list :url url)))
+  (apply #'%timeline client "link" :other-args (list :url url) args))
 
 ;;; Trends
 
