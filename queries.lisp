@@ -449,7 +449,7 @@
 
 ;;; Instances
 
-(defmethod instance ((object client-legacy))
+(defmethod instance ((object client-v1))
   (decode-instance (query object "/api/v1/instance")))
 
 (defmethod instance ((object client))

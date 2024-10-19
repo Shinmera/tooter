@@ -141,4 +141,4 @@
                            :redirect-uri (redirect client)
                            :client-id (key client))))))
 
-(defclass client-legacy (client) ())
+(defclass client-v1 (client) ())

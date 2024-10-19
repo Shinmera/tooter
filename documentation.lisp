@@ -78,7 +78,7 @@ See DEFAULT-HEADERS
 See QUERY
 See SUBMIT")
 
-  (type client-legacy
+  (type client-v1
     "This class has the same structure and purpose as CLIENT but is used to communicate with the instances that does not have full support for the version 2 of the mastodon API
 
 SEE CLIENT")
