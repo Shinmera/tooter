@@ -937,19 +937,14 @@
   (summary :translate-with #'%decode-notification-policy-summary))
 
 (defmethod print-object ((notification-policy notification-policy) stream)
-  (with-accessors ((for-not-following    for-not-following)
-                   (for-not-followers    for-not-followers)
-                   (for-new-accounts     for-new-accounts)
-                   (for-private-mentions for-private-mentions)
-                   (for-limited-accounts for-limited-accounts)) notification-policy
-    (print-unreadable-object (notification-policy stream :type T)
-      (format stream
-              "for-not-following ~a for-not-followers ~a for-new-accounts ~a for-private-mentions ~a for-limited-accounts ~a"
-              for-not-following
-              for-not-followers
-              for-new-accounts
-              for-private-mentions
-              for-limited-accounts))))
+  (print-unreadable-object (notification-policy stream :type T)
+    (format stream
+            "for-not-following ~a for-not-followers ~a for-new-accounts ~a for-private-mentions ~a for-limited-accounts ~a"
+            (for-not-following notification-policy)
+            (for-not-followers notification-policy)
+            (for-new-accounts notification-policy)
+            (for-private-mentions notification-policy)
+            (for-limited-accounts notification-policy))))
 
 (define-entity notification-request
   (id)
