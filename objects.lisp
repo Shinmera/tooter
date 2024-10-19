@@ -151,6 +151,15 @@
   (print-unreadable-object (application stream :type T)
     (format stream "~a ~@[website: ~a~]" (name application) (website application))))
 
+(define-entity credential-application
+  (name)
+  (website :nullable T)
+  (scopes)
+  (redirect-uris :field "redirect_uris")
+  (client-id :field "client_id")
+  (client-secret :field "client_secret")
+  (client-secret-expires-at :field "client_secret_expires_at")) ; always 0, according to docs
+
 (define-entity attachment
   (id)
   (kind :field "type" :translate-with #'to-keyword)

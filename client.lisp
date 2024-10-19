@@ -111,13 +111,13 @@
              :headers (default-headers client :idempotency-key idempotency-key))))
 
 (defmethod register ((client client))
-  (let ((data (submit client "/api/v1/apps"
-                      :client-name (name client)
-                      :redirect-uris (redirect client)
-                      :scopes (format NIL "~{~(~a~)~^ ~}" (scopes client))
-                      :website (website client))))
-    (setf (key client) (getj data :client-id))
-    (setf (secret client) (getj data :client-secret))
+  (let ((data (decode-credential-application (submit client "/api/v1/apps"
+                                               :client-name (name client)
+                                               :redirect-uris (redirect client)
+                                               :scopes (format NIL "~{~(~a~)~^ ~}" (scopes client))
+                                               :website (website client)))))
+    (setf (key client) (client-id data))
+    (setf (secret client) (client-secret data))
     (values client (key client) (secret client))))
 
 (defun guess-and-change-effective-client-class (client)
@@ -133,16 +133,16 @@
      (values (guess-and-change-effective-client-class client)
              (access-token client)))
     (authorization-code
-         (let ((data (submit client "/oauth/token"
-                             :client-id (key client)
-                             :grant-type "authorization_code"
-                             :code authorization-code
-                             :redirect-uri (redirect client)
-                             :client-id (key client)
-                             :client-secret (secret client))))
-           (setf (access-token client) (getj data :access-token))
-           (values (guess-and-change-effective-client-class client)
-                   (access-token client))))
+     (let ((data (submit client "/oauth/token"
+                   :client-id (key client)
+                   :grant-type "authorization_code"
+                   :code authorization-code
+                   :redirect-uri (redirect client)
+                   :client-id (key client)
+                   :client-secret (secret client))))
+       (setf (access-token client) (getj data :access-token))
+       (values (guess-and-change-effective-client-class client)
+               (access-token client))))
     (T
      (values NIL
              (make-url (format NIL "~a/oauth/authorize" (base client))

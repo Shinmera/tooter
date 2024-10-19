@@ -31,6 +31,14 @@
    #:name
    #:website
    #:vapid-key
+   #:credential-application
+   #:name
+   #:website
+   #:scopes
+   #:redirect-uris
+   #:client-id
+   #:client-secret
+   #:client-secret-expires-at
    #:announcement-account
    #:id
    #:username
