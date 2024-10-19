@@ -347,11 +347,12 @@
   (hint))
 
 (defmethod print-object ((instance-rule instance-rule) stream)
-  (with-accessors ((id id)
-                   (text text)
-                   (hint hint)) instance-rule
-    (print-unreadable-object (instance-rule stream :type T)
-      (format stream "rule #~a text ~s hint ~s" id text hint))))
+  (print-unreadable-object (instance-rule stream :type T)
+    (format stream
+            "rule #~a text ~s hint ~s"
+            (id instance-rule)
+            (text instance-rule)
+            (hint instance-rule))))
 
 (defun %decode-usage (data)
   (when (hash-table-p data)
