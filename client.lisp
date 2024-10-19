@@ -140,3 +140,5 @@
                            :response-type "code"
                            :redirect-uri (redirect client)
                            :client-id (key client))))))
+
+(defclass client-legacy (client) ())

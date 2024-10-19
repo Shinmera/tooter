@@ -507,7 +507,8 @@
    #:query
    #:submit
    #:register
-   #:authorize)
+   #:authorize
+   #:client-legacy)
   ;; toolkit.lisp
   (:export
    #:universal->utc-timestring

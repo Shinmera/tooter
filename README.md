@@ -1,5 +1,5 @@
 ## About Tooter
-This is a client library implementing the full v1 REST API protocol for [Mastodon](https://joinmastodon.org/).
+This is a client library implementing v1/v2 REST API protocol for [Mastodon](https://joinmastodon.org/).
 
 ## How To
 Before you start, you'll need an account on some Mastodon instance. For the purposes of this documentation we'll simply pick [mastodon.social](https://mastodon.social). Once you've got Tooter loaded you'll first need to create a `client` instance.
@@ -19,6 +19,10 @@ This will return an URL as its secondary value. Visit this URL in your browser, 
 If everything goes well this should return a fully authorised client instance.
 
     (tooter:account *client*)
+
+If you are connecting to an instance that is running a version of the software that does not supports API version 2, is recommended that you switch client class to `tooter:client-legacy`
+
+    (setf *client* (change-class *client* 'tooter:client-legacy))
 
 From here on out you can make use of the full API Mastodon API. See the definition index below.
 
