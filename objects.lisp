@@ -134,10 +134,12 @@
   (reactions :translate-with #'decode-reaction))
 
 (defmethod print-object ((announcement announcement) stream)
-  (with-accessors ((id id)
-                   (content content)) announcement
-    (print-unreadable-object (announcement stream :type T)
-      (format stream "#~a already read? ~a content: ~a" id (readp announcement) content))))
+  (print-unreadable-object (announcement stream :type T)
+    (format stream
+            "#~a already read? ~a content: ~a"
+            (id announcement)
+            (readp announcement)
+            (content announcement))))
 
 (define-entity application
   (name)
