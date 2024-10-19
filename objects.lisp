@@ -518,13 +518,13 @@
 
 (defmethod print-object ((push-subscription-alerts push-subscription-alerts) stream)
   (print-unreadable-object (push-subscription-alerts stream :type T)
-    (with-accessors ((alert-follow alert-follow)
-                     (alert-favourite alert-favourite)
-                     (alert-mention alert-mention)
-                     (alert-reblog alert-reblog)
-                     (alert-poll alert-poll)) push-subscription-alerts
-      (format stream "when follow? ~a when favourite ~a when mention? ~a when reblog? ~a when poll? ~a"
-              alert-follow alert-favourite alert-mention alert-reblog alert-poll))))
+    (format stream
+            "when follow? ~a when favourite ~a when mention? ~a when reblog? ~a when poll? ~a"
+            (alert-follow push-subscription-alerts)
+            (alert-favourite push-subscription-alerts)
+            (alert-mention push-subscription-alerts)
+            (alert-reblog push-subscription-alerts)
+            (alert-poll push-subscription-alerts))))
 
 (define-entity push-subscription
   (id)
