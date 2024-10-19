@@ -871,14 +871,11 @@
 
 (defmethod print-object ((account-warning account-warning) stream)
   (print-unreadable-object (account-warning stream :type T)
-    (with-accessors ((id id)
-                     (action action)
-                     (text text)) account-warning
-      (format stream
-              "~a action ~a text ~a"
-              id
-              action
-              text))))
+    (format stream
+            "~a action ~a text ~a"
+            (id account-warning)
+            (action account-warning)
+            (text account-warning))))
 
 (define-entity appeal
   (text)
@@ -886,10 +883,10 @@
 
 (defmethod print-object ((account-warning account-warning) stream)
   (print-unreadable-object (account-warning stream :type T)
-      (format stream
-              "text: ~a state: ~a"
-              (text account-warning)
-              (state account-warning))))
+    (format stream
+            "text: ~a state: ~a"
+            (text account-warning)
+            (state account-warning))))
 
 (define-entity partial-account-with-avatar
   (id)
