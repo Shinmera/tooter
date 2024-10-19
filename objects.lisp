@@ -83,13 +83,13 @@
   (registrations))
 
 (defmethod print-object ((activity activity) stream)
-  (with-accessors ((week week)
-                   (statuses statuses)
-                   (logins logins)
-                   (registrations registrations)) activity
-    (print-unreadable-object (activity stream :type T)
-      (format stream "week ~a statuses ~a logins ~a registrations ~a"
-              week statuses logins registrations))))
+  (print-unreadable-object (activity stream :type T)
+    (format stream
+            "week ~a statuses ~a logins ~a registrations ~a"
+            (week activity)
+            (statuses activity)
+            (logins activity)
+            (registrations activity))))
 
 (define-entity announcement-account
   (id)
