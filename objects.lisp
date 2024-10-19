@@ -881,12 +881,12 @@
   (text)
   (state))
 
-(defmethod print-object ((account-warning account-warning) stream)
-  (print-unreadable-object (account-warning stream :type T)
+(defmethod print-object ((appeal appeal) stream)
+  (print-unreadable-object (appeal stream :type T)
     (format stream
             "text: ~a state: ~a"
-            (text account-warning)
-            (state account-warning))))
+            (text appeal)
+            (state appeal))))
 
 (define-entity partial-account-with-avatar
   (id)
