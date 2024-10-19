@@ -98,14 +98,13 @@
   (url))
 
 (defmethod print-object ((announcement-account announcement-account) stream)
-  (with-accessors ((id id)
-                   (username username)
-                   (account-name account-name)
-                   (url url)) announcement-account
-    (print-unreadable-object (announcement-account stream :type T)
-      (format stream
-              "#~a username: ~a account-name: ~a url: ~a"
-              id username account-name url))))
+  (print-unreadable-object (announcement-account stream :type T)
+    (format stream
+            "#~a username: ~a account-name: ~a url: ~a"
+            (id announcement-account)
+            (username announcement-account)
+            (account-name announcement-account)
+            (url announcement-account))))
 
 (define-entity announcement-status
   (id)
