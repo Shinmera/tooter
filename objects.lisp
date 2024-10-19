@@ -747,13 +747,12 @@
 
 (defmethod print-object ((featured-tag featured-tag) stream)
   (print-unreadable-object (featured-tag stream :type T)
-    (with-accessors ((id id)
-                     (name name)
-                     (statuses-count statuses-count)
-                     (last-status-at last-status-at)) featured-tag
-      (format stream
-              "~a name ~a  count ~a last status at ~a"
-              id name statuses-count last-status-at))))
+    (format stream
+            "~a name ~a  count ~a last status at ~a"
+            (id featured-tag)
+            (name featured-tag)
+            (statuses-count featured-tag)
+            (last-status-at featured-tag))))
 
 (define-entity filter
   (id)
