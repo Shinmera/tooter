@@ -20,10 +20,6 @@ If everything goes well this should return a fully authorised client instance.
 
     (tooter:account *client*)
 
-If you are connecting to an instance that is running a version of the software that does not supports API version 2, is recommended that you switch client class to `tooter:client-v1`
-
-    (setf *client* (change-class *client* 'tooter:client-v1))
-
 From here on out you can make use of the full API Mastodon API. See the definition index below.
 
     (tooter:make-status *client* "Tooter works, woah nelly!")

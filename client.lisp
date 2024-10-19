@@ -120,10 +120,19 @@
     (setf (secret client) (getj data :client-secret))
     (values client (key client) (secret client))))
 
+(defun guess-and-change-effective-client-class (client)
+  (let ((effective-class (guess-more-fitted-client-class client)))
+    (assert effective-class)
+    (change-class client effective-class)))
+
 (defmethod authorize ((client client) &optional authorization-code)
   (unless (and (key client) (secret client))
     (register client))
-  (cond (authorization-code
+  (cond
+    ((access-token client)
+     (values (guess-and-change-effective-client-class client)
+             (access-token client)))
+    (authorization-code
          (let ((data (submit client "/oauth/token"
                              :client-id (key client)
                              :grant-type "authorization_code"
@@ -132,13 +141,14 @@
                              :client-id (key client)
                              :client-secret (secret client))))
            (setf (access-token client) (getj data :access-token))
-           (values client (access-token client))))
-        (T
-         (values NIL
-                 (make-url (format NIL "~a/oauth/authorize" (base client))
-                           :scope (format NIL "~{~(~a~)~^ ~}" (scopes client))
-                           :response-type "code"
-                           :redirect-uri (redirect client)
-                           :client-id (key client))))))
+           (values (guess-and-change-effective-client-class client)
+                   (access-token client))))
+    (T
+     (values NIL
+             (make-url (format NIL "~a/oauth/authorize" (base client))
+                       :scope (format NIL "~{~(~a~)~^ ~}" (scopes client))
+                       :response-type "code"
+                       :redirect-uri (redirect client)
+                       :client-id (key client))))))
 
 (defclass client-v1 (client) ())
