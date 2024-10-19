@@ -501,17 +501,13 @@
 
 (defmethod print-object ((preferences preferences) stream)
   (print-unreadable-object (preferences stream :type T)
-    (with-accessors ((posting-default-visibility posting-default-visibility)
-                     (posting-default-sensitive posting-default-sensitive)
-                     (posting-default-language posting-default-language)
-                     (reading-expand-media reading-expand-media)
-                     (reading-expand-spoilers reading-expand-spoilers)) preferences
-      (format stream "posting default visibility ~a posting default sensitive ~a posting default language ~a reading expand media ~a reading expand spoilers ~a"
-              posting-default-visibility
-              posting-default-sensitive
-              posting-default-language
-              reading-expand-media
-              reading-expand-spoilers))))
+    (format stream
+            "posting default visibility ~a posting default sensitive ~a posting default language ~a reading expand media ~a reading expand spoilers ~a"
+            (posting-default-visibility preferences)
+            (posting-default-sensitive preferences)
+            (posting-default-language preferences)
+            (reading-expand-media preferences)
+            (reading-expand-spoilers preferences))))
 
 (define-entity push-subscription-alerts
   (alert-follow)
