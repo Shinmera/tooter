@@ -854,14 +854,11 @@
 
 (defmethod print-object ((relationship-severance-event relationship-severance-event) stream)
   (print-unreadable-object (relationship-severance-event stream :type T)
-    (with-accessors ((id id)
-                     (kind kind)
-                     (relationships-count relationships-count)) relationship-severance-event
-      (format stream
-              "~a type ~a ~@[count ~a~]"
-              id
-              kind
-              relationships-count))))
+    (format stream
+            "~a type ~a ~@[count ~a~]"
+            (id relationship-severance-event)
+            (kind relationship-severance-event)
+            (relationships-count relationship-severance-event))))
 
 (define-entity account-warning
   (id)
