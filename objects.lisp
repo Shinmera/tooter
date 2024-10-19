@@ -807,9 +807,10 @@
 
 (defmethod print-object ((filter-status filter-status) stream)
   (print-unreadable-object (filter-status stream :type T)
-    (with-accessors ((id id)
-                     (status-id status-id)) filter-status
-      (format stream "id: ~a status-id: ~a" id status-id))))
+    (format stream
+            "id: ~a status-id: ~a"
+            (id filter-status)
+            (status-id filter-status))))
 
 (define-entity identity-proof
   (provider)
