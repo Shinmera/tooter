@@ -782,12 +782,11 @@
 
 (defmethod print-object ((filter-results filter-results) stream)
   (print-unreadable-object (filter-results stream :type T)
-    (with-accessors ((filter query-filter)
-                     (keyword-matches keyword-matches)
-                     (status-matches status-matches)) filter-results
       (format stream
               "filter: ~a matched keywords: ~a matched status: ~a"
-              filter keyword-matches status-matches))))
+              (query-filter filter-results)
+              (keyword-matches filter-results)
+              (status-matches filter-results))))
 
 (define-entity filter-keyword
   (id)
