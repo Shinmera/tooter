@@ -954,6 +954,16 @@
   (notifications-count :field "notifications_count")
   (last-status :field "last_status" :translate-with #'decode-status :nullable t))
 
+(defmethod print-object ((notification-request notification-request) stream)
+  (print-unreadable-object (notification-request stream :type T)
+    (format stream
+            "#~a created at: ~a updated at: ~a account ~a count ~a"
+            (id notification-request)
+            (created-at notification-request)
+            (updated-at notification-request)
+            (account notification-request)
+            (notifications-count notification-request))))
+
 (defun %decode-check-notification-requests-merged (request)
   (when (hash-table-p request)
     (gethash "merged" request)))
