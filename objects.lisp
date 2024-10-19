@@ -837,13 +837,12 @@
 
 (defmethod print-object ((token token) stream)
   (print-unreadable-object (token stream :type T)
-    (with-accessors ((access-token access-token)
-                     (token-type token-type)
-                     (scope scope)
-                     (created-at created-at)) token
-      (format stream
-              "access token ~a type ~a scope ~a created at ~a"
-              access-token token-type scope created-at))))
+    (format stream
+            "access token ~a type ~a scope ~a created at ~a"
+            (access-token token)
+            (token-type token)
+            (scope token)
+            (created-at token))))
 
 (define-entity relationship-severance-event
   (id)
