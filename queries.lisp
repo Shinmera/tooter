@@ -449,11 +449,20 @@
 
 ;;; Instances
 
+(defun %instance (client url-path)
+  (decode-instance (query client url-path)))
+
+(defun %instance-v1 (client)
+  (%instance client "/api/v1/instance"))
+
+(defun %instance-v2 (client)
+  (%instance client "/api/v2/instance"))
+
 (defmethod instance ((object client-v1))
-  (decode-instance (query object "/api/v1/instance")))
+  (%instance-v1 object))
 
 (defmethod instance ((object client))
-  (decode-instance (query object "/api/v2/instance")))
+  (%instance-v2 object))
 
 (defmethod peers ((client client))
   (query client "/api/v1/instance/peers"))
@@ -1187,3 +1196,16 @@
          :url url
          :maxwidth max-width
          :maxheight max-height))
+
+(defun %mastodon-api-version-number (api-versions)
+  (getf (getf api-versions :api-versions)
+        :mastodon
+        -1))
+
+(defun guess-more-fitted-client-class (client)
+  (let ((instance-v2 (ignore-errors (%instance-v2 client))))
+    (if (and instance-v2
+             (= (%mastodon-api-version-number (api-versions instance-v2))
+                2))
+        'tooter:client
+        'tooter:client-v1)))
