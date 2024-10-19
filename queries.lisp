@@ -1072,14 +1072,14 @@
   (check-type other-args list)
   (decode-status (apply #'query
                         client
-                        (append (list (format NIL "/api/v1/timelines/~a" url)
-                                      :local (coerce-boolean local l-p)
-                                      :only-media (coerce-boolean only-media o-p)
-                                      :max-id max-id
-                                      :since-id since-id
-                                      :min-id min-id
-                                      :limit limit)
-                                other-args))))
+                        (format NIL "/api/v1/timelines/~a" url)
+                        :local (coerce-boolean local l-p)
+                        :only-media (coerce-boolean only-media o-p)
+                        :max-id max-id
+                        :since-id since-id
+                        :min-id min-id
+                        :limit limit
+                        other-args)))
 
 (defgeneric timeline-tag (client tag &rest args))
 
