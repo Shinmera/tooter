@@ -583,17 +583,13 @@
   (target-account :field "target_account" :translate-with #'decode-account))
 
 (defmethod print-object ((report report) stream)
-  (with-accessors ((id id)
-                   (action-taken action-taken)
-                   (category category)
-                   (comment comment)) report
-    (print-unreadable-object (report stream :type T)
-      (format stream
-              "#~a action taken? ~a category: ~a comment ~a"
-              id
-              action-taken
-              category
-              comment))))
+  (print-unreadable-object (report stream :type T)
+    (format stream
+            "#~a action taken? ~a category: ~a comment ~a"
+            (id report)
+            (action-taken report)
+            (category report)
+            (comment report))))
 
 (define-entity results
   (results-accounts :field "accounts" :translate-with #'decode-account)
