@@ -732,11 +732,12 @@
 
 (defmethod print-object ((conversation conversation) stream)
   (print-unreadable-object (conversation stream :type T)
-    (with-accessors ((id id)
-                     (accounts accounts)
-                     (last-status last-status)
-                     (unread unread)) conversation
-      (format stream "~a unread? ~a ~a ~a" id unread accounts last-status))))
+    (format stream
+            "~a unread? ~a ~a ~a"
+            (id conversation)
+            (unread conversation)
+            (accounts conversation)
+            (last-status conversation))))
 
 (define-entity featured-tag
   (id)
