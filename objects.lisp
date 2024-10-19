@@ -765,16 +765,15 @@
 
 (defmethod print-object ((filter filter) stream)
   (print-unreadable-object (filter stream :type T)
-    (with-accessors ((id id)
-                     (title title)
-                     (filter-context filter-context)
-                     (expires-at expires-at)
-                     (filter-action filter-action)
-                     (keywords keywords)
-                     (statuses statuses)) filter
-      (format stream
-              "~a title ~a context ~a expires at ~a actions ~a keywords ~a statuses ~a"
-              id title filter-context expires-at filter-action keywords statuses))))
+    (format stream
+            "~a title ~a context ~a expires at ~a actions ~a keywords ~a statuses ~a"
+            (id filter)
+            (title filter)
+            (filter-context filter)
+            (expires-at filter)
+            (filter-action filter)
+            (keywords filter)
+            (statuses filter))))
 
 (define-entity filter-results
   (query-filter :translate-with #'decode-filter)
