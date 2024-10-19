@@ -325,9 +325,12 @@
             :message (gethash "message" registrations)))))
 
 (defun %decode-api-versions (data)
-  (let ((api-versions data))
-    (when (hash-table-p api-versions)
-      (list :api-versions (list :mastodon (gethash "mastodon" api-versions))))))
+  (flet ((parse-api-version (data)
+           (ignore-errors (parse-integer data))))
+    (let ((api-versions data))
+      (when (hash-table-p api-versions)
+        (list :api-versions (list :mastodon
+                                  (parse-api-version (gethash "mastodon" api-versions))))))))
 
 (defun %decode-contact (data)
   (let ((contact data))

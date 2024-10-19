@@ -450,7 +450,10 @@
 ;;; Instances
 
 (defmethod instance ((client client))
-  (decode-instance (query client "/api/v2/instance")))
+  (let ((instance-version-2 (decode-instance (query client "/api/v2/instance"))))
+    (if (api-versions instance-version-2) ; only objects returned from v2 API have this slot
+        instance-version-2
+        (decode-instance (query client "/api/v1/instance")))))
 
 (defmethod peers ((client client))
   (query client "/api/v1/instance/peers"))
