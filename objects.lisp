@@ -821,16 +821,13 @@
 
 (defmethod print-object ((identity-proof identity-proof) stream)
   (print-unreadable-object (identity-proof stream :type T)
-    (with-accessors ((provider provider)
-                     (provider-username provider-username)
-                     (profile-url profile-url)
-                     (proof-url proof-url)
-                     (updated-at updated-at)
-                     (irreversible irreversible)
-                     (whole-word whole-word)) identity-proof
-      (format stream
-              "provider ~a provider username ~a profile url ~a proof url ~a  updated at ~a"
-              provider provider-username profile-url proof-url updated-at))))
+    (format stream
+            "provider ~a provider username ~a profile url ~a proof url ~a  updated at ~a"
+            (provider identity-proof)
+            (provider-username identity-proof)
+            (profile-url identity-proof)
+            (proof-url identity-proof)
+            (updated-at identity-proof))))
 
 (define-entity token
   (access-token :field "access_token")
