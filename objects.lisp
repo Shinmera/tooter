@@ -795,10 +795,11 @@
 
 (defmethod print-object ((filter-keyword filter-keyword) stream)
   (print-unreadable-object (filter-keyword stream :type T)
-    (with-accessors ((id id)
-                     (status-id status-id)
-                     (whole-word whole-word)) filter-keyword
-      (format stream "id: ~a status-id: ~a whole word? ~a" id status-id whole-word))))
+    (format stream
+            "id: ~a status-id: ~a whole word? ~a"
+            (id filter-keyword)
+            (status-id filter-keyword)
+            (whole-word filter-keyword))))
 
 (define-entity filter-status
   (id)
