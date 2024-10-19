@@ -111,10 +111,11 @@
   (url))
 
 (defmethod print-object ((announcement-status announcement-status) stream)
-  (with-accessors ((id id)
-                   (url url)) announcement-status
-    (print-unreadable-object (announcement-status stream :type T)
-      (format stream "#~a url: ~a" id url))))
+  (print-unreadable-object (announcement-status stream :type T)
+    (format stream
+            "#~a url: ~a"
+            (id announcement-status)
+            (url announcement-status))))
 
 (define-entity announcement
   (id)
