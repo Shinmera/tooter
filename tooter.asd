@@ -10,6 +10,7 @@
                (:file "toolkit")
                (:file "link-header-parser")
                (:file "client")
+               (:file "client-v2")
                (:file "objects")
                (:file "queries")
                (:file "documentation"))

@@ -458,10 +458,10 @@
 (defun %instance-v2 (client)
   (%instance client "/api/v2/instance"))
 
-(defmethod instance ((object client-v1))
+(defmethod instance ((object client))
   (%instance-v1 object))
 
-(defmethod instance ((object client))
+(defmethod instance ((object v2:client))
   (%instance-v2 object))
 
 (defmethod peers ((client client))
@@ -1207,5 +1207,5 @@
     (if (and instance-v2
              (= (%mastodon-api-version-number (api-versions instance-v2))
                 2))
-        'tooter:client
-        'tooter:client-v1)))
+        'v2:client
+        'client)))
