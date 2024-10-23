@@ -930,6 +930,15 @@
   (notification-groups :field "notification-groups"
                        :translate-with #'decode-notification-group))
 
+(defmethod print-object ((grouped-notifications-results grouped-notifications-results) stream)
+  (print-unreadable-object (grouped-notifications-results stream :type T)
+    (format stream
+            "accounts: ~a ~@[partial accounts: ~a~] statuses: ~a group: ~a"
+            (accounts grouped-notifications-results)
+            (partial-accounts grouped-notifications-results)
+            (statuses grouped-notifications-results)
+            (notification-groups grouped-notifications-results))))
+
 (defun %decode-notification-policy-summary (summary-data)
   (when (hash-table-p summary-data)
     (list :pending-requests-count (gethash "pending_requests_count" summary-data)
