@@ -56,6 +56,20 @@
    :scopes '(:read :write :follow)
    :website NIL))
 
+(defclass v2:client (client) ())
+
+(defmethod shared-initialize :after ((client client) slots &key)
+  (when (access-token client)
+    (let ((ideal-class (ecase (max-api-version)
+                         (2 (find-class 'v2:client))
+                         (1 (find-class 'client)))))
+      (unless (eq ideal-class (class-of client))
+        (change-class client ideal-class)))))
+
+(defmethod (setf access-token) ((value string) (client client))
+  (reinitialize-instance client :access-token value)
+  value)
+
 (defmethod print-object ((client client) stream)
   (print-unreadable-object (client stream :type T)
     (format stream "~a ~a" (name client) (base client))))
@@ -110,33 +124,42 @@
              :content-type "multipart/form-data"
              :headers (default-headers client :idempotency-key idempotency-key))))
 
+(defmethod max-api-version ((client client))
+  (let ((instance (ignore-errors (decode-instance (query client "/api/v2/instance")))))
+    (if instance
+        (getf (getf (api-versions instance) :api-versions) :mastodon 1)
+        1)))
+
 (defmethod register ((client client))
-  (let ((data (submit client "/api/v1/apps"
-                      :client-name (name client)
-                      :redirect-uris (redirect client)
-                      :scopes (format NIL "~{~(~a~)~^ ~}" (scopes client))
-                      :website (website client))))
-    (setf (key client) (getj data :client-id))
-    (setf (secret client) (getj data :client-secret))
+  (let ((data (decode-credential-application (submit client "/api/v1/apps"
+                                                     :client-name (name client)
+                                                     :redirect-uris (redirect client)
+                                                     :scopes (format NIL "~{~(~a~)~^ ~}" (scopes client))
+                                                     :website (website client)))))
+    (setf (key client) (client-id data))
+    (setf (secret client) (client-secret data))
     (values client (key client) (secret client))))
 
 (defmethod authorize ((client client) &optional authorization-code)
   (unless (and (key client) (secret client))
     (register client))
-  (cond (authorization-code
-         (let ((data (submit client "/oauth/token"
-                             :client-id (key client)
-                             :grant-type "authorization_code"
-                             :code authorization-code
-                             :redirect-uri (redirect client)
-                             :client-id (key client)
-                             :client-secret (secret client))))
-           (setf (access-token client) (getj data :access-token))
-           (values client (access-token client))))
-        (T
-         (values NIL
-                 (make-url (format NIL "~a/oauth/authorize" (base client))
-                           :scope (format NIL "~{~(~a~)~^ ~}" (scopes client))
-                           :response-type "code"
-                           :redirect-uri (redirect client)
-                           :client-id (key client))))))
+  (cond
+    ((access-token client)
+     (values client (access-token client)))
+    (authorization-code
+     (let ((data (submit client "/oauth/token"
+                   :client-id (key client)
+                   :grant-type "authorization_code"
+                   :code authorization-code
+                   :redirect-uri (redirect client)
+                   :client-id (key client)
+                   :client-secret (secret client))))
+       (setf (access-token client) (getj data :access-token))
+       (values client (access-token client))))
+    (T
+     (values NIL
+             (make-url (format NIL "~a/oauth/authorize" (base client))
+                       :scope (format NIL "~{~(~a~)~^ ~}" (scopes client))
+                       :response-type "code"
+                       :redirect-uri (redirect client)
+                       :client-id (key client))))))

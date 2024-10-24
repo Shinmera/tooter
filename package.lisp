@@ -31,6 +31,14 @@
    #:name
    #:website
    #:vapid-key
+   #:credential-application
+   #:name
+   #:website
+   #:scopes
+   #:redirect-uris
+   #:client-id
+   #:client-secret
+   #:client-secret-expires-at
    #:announcement-account
    #:id
    #:username
@@ -110,19 +118,18 @@
    #:static-url
    #:visible-in-picker
    #:instance
-   #:uri
+   #:domain
    #:title
-   #:description
-   #:short-description
-   #:email
    #:version
+   #:source-url
+   #:description
+   #:usage
+   #:thumbnail
    #:languages
    #:registrations
-   #:approval-required
-   #:urls
-   #:stats
-   #:thumbnail
-   #:contact-account
+   #:api-versions
+   #:contact
+   #:rules
    #:instance-stats
    #:user-count
    #:status-count
@@ -195,6 +202,14 @@
    #:report
    #:id
    #:action-taken
+   #:action-taken-at
+   #:report-category
+   #:comment
+   #:forwarded
+   #:created-at
+   #:status-ids
+   #:rule-ids
+   #:target-account
    #:results
    #:results-accounts
    #:results-statuses
@@ -289,7 +304,69 @@
    #:access-token
    #:token-type
    #:scope
-   #:created-at))
+   #:created-at
+   #:appeal
+   #:state
+   #:account-warning
+   #:id
+   #:action
+   #:text
+   #:status-ids
+   #:target-account
+   #:appeal
+   #:created-at
+   #:relationship-severance-event
+   #:id
+   #:kind
+   #:purged
+   #:target-name
+   #:relationships-count
+   #:created-at
+   #:instance-rule
+   #:id
+   #:text
+   #:hint
+   #:partial-account-with-avatar
+   #:id
+   #:account-name
+   #:url
+   #:avatar
+   #:avatar-static
+   #:locked
+   #:display-name
+   #:bot
+   #:notification-group
+   #:group-key
+   #:notifications-count
+   #:kind
+   #:most-recent-notification-id
+   #:page-min-id
+   #:page-max-id
+   #:latest-page-notification-at
+   #:sample-account-ids
+   #:status-id
+   #:report :translate-with
+   #:relationship-severance-event
+   #:moderation-warning
+   #:grouped-notifications-results
+   #:accounts
+   #:partial-accounts
+   #:statuses
+   #:notification-groups
+   #:notification-policy
+   #:for-not-following
+   #:for-not-followers
+   #:for-new-accounts
+   #:for-private-mentions
+   #:for-limited-accounts
+   #:summary
+   #:notification-request
+   #:id
+   #:created-at
+   #:updated-at
+   #:account
+   #:notifications-count
+   #:last-status))
 
 (defpackage :tooter-link-header-parser
   (:use :cl)
@@ -366,6 +443,14 @@
    #:notifications
    #:find-notification
    #:delete-notification
+   #:grouped-notifications
+   #:find-grouped-notification
+   #:delete-grouped-notification
+   #:fetch-notification-policy
+   #:update-notification-policy
+   #:get-notifications-requests
+   #:accept-multiple-notification-requests
+   #:dismiss-multiple-notification-requests
    #:make-subscription
    #:subscription
    #:delete-subscription
@@ -395,6 +480,7 @@
    #:tag-information
    #:timeline-tag
    #:timeline
+   #:timeline-link
    #:trends
    #:account-directory
    #:conversation
@@ -429,7 +515,8 @@
    #:query
    #:submit
    #:register
-   #:authorize)
+   #:authorize
+   #:client-v1)
   ;; toolkit.lisp
   (:export
    #:universal->utc-timestring
@@ -439,10 +526,16 @@
    #:to-keyword
    #:plain-format-html))
 
+(defpackage tooter-client-v2
+  (:nicknames #:org.shirakumo.tooter.client.v2)
+  (:use :cl)
+  (:export #:client))
+
 (defpackage #:tooter
   (:nicknames #:org.shirakumo.tooter)
   (:use #:cl #:tooter-objects #:tooter-queries #:tooter-client)
-  (:local-nicknames (:a  :alexandria))
+  (:local-nicknames (#:a  #:alexandria)
+                    (#:v2 #:org.shirakumo.tooter.client.v2))
   (:shadowing-import-from #:tooter-queries #:block))
 
 (dolist (package '(#:tooter-objects #:tooter-queries #:tooter-client))

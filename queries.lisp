@@ -211,13 +211,13 @@
 
 ;;; Filters
 
-(defmethod filters ((client client))
+(defmethod filters ((client v2:client))
   (decode-filter (query client "/api/v2/filters")))
 
-(defmethod filter ((client client) (id string))
+(defmethod filter ((client v2:client) (id string))
   (decode-filter (query client (format NIL "/api/v2/filters/~a" id))))
 
-(defmethod filter ((client client) (filter filter))
+(defmethod filter ((client v2:client) (filter filter))
   (filter client (id filter)))
 
 (defun check-filter-action (value)
@@ -236,7 +236,7 @@
         collect (format nil "context[~a]" i)
         collect destination))
 
-(defmethod create-filter ((client client) title context
+(defmethod create-filter ((client v2:client) title context
                           &key expires-in
                             (filter-action "hide")
                             (fields '()))
@@ -261,7 +261,7 @@
 (defun make-update-filter-field (id keyword &key (whole-word nil) (destroy nil))
   (list id keyword whole-word destroy))
 
-(defmethod update-filter ((client client) id title context
+(defmethod update-filter ((client v2:client) id title context
                           &key (filter-action "hide") expires-in (fields '()))
   (assert (stringp id))
   (assert (stringp title))
@@ -287,21 +287,21 @@
                               collect (fourth attribute))
                         (encode-filter-context context))))
 
-(defmethod delete-filter ((client client) id)
+(defmethod delete-filter ((client v2:client) id)
   (assert (stringp id))
   (submit client
     (format NIL "/api/v2/filters/~a" id)
     :http-method :delete))
 
-(defmethod find-filter ((client client) id)
+(defmethod find-filter ((client v2:client) id)
   (assert (stringp id))
   (decode-filter (query client (format NIL "/api/v2/filters/~a" id))))
 
-(defmethod filter-keywords ((client client) filter-id)
+(defmethod filter-keywords ((client v2:client) filter-id)
   (assert (stringp filter-id))
   (decode-filter-keyword (query client (format NIL "/api/v2/filters/~a/keywords" filter-id))))
 
-(defmethod add-filter-keyword ((client client) filter-id keyword &key (whole-word NIL w-p))
+(defmethod add-filter-keyword ((client v2:client) filter-id keyword &key (whole-word NIL w-p))
   (assert (stringp filter-id))
   (assert (stringp keyword))
   (decode-filter-keyword (submit client
@@ -309,7 +309,7 @@
                            :keyword keyword
                            "whole_word" (coerce-boolean whole-word w-p))))
 
-(defmethod remove-filter-keyword ((client client) filter-keyword-id)
+(defmethod remove-filter-keyword ((client v2:client) filter-keyword-id)
   (assert (stringp filter-keyword-id))
   (query client
          (format NIL "/api/v2/filters/keywords/~a" filter-keyword-id)
@@ -448,9 +448,11 @@
   (reject-request client (id account)))
 
 ;;; Instances
-
 (defmethod instance ((client client))
   (decode-instance (query client "/api/v1/instance")))
+
+(defmethod instance ((client v2:client))
+  (decode-instance (query client "/api/v2/instance")))
 
 (defmethod peers ((client client))
   (query client "/api/v1/instance/peers"))
@@ -601,6 +603,12 @@
     (:status "status")
     (:update "update")))
 
+(defun encode-grouped-notification-type (encoded-type)
+  (ecase encoded-type
+    (:favourite "favourite")
+    (:follow "follow")
+    (:reblog "reblog")))
+
 (defmethod notifications ((client client)
                           &key max-id
                             min-id
@@ -613,16 +621,17 @@
   (check-type since-id (or null string))
   (check-type limit (or null (integer 0)))
   (check-type exclude-types list)
-  (decode-notification (query client "/api/v1/notifications"
-                              :max-id max-id
-                              :min-id min-id
-                              :since-id since-id
-                              :limit limit
-                              :types (loop for type in types
-                                           collect (encode-notification-type type))
-                              :exclude-types (loop for type in exclude-types
-                                                   collect (encode-notification-type type))
-                              :account-id account-id)))
+  (with-pagination-return (decode-notification)
+    (query client "/api/v1/notifications"
+           :max-id max-id
+           :min-id min-id
+           :since-id since-id
+           :limit limit
+           :types (loop for type in types
+                        collect (encode-notification-type type))
+           :exclude-types (loop for type in exclude-types
+                                collect (encode-notification-type type))
+           :account-id account-id)))
 
 (defmethod find-notification ((client client) (id string))
   (decode-notification (query client (format NIL "/api/v1/notifications/~a" id))))
@@ -637,6 +646,129 @@
 
 (defmethod delete-notification ((client client) (notification notification))
   (delete-notification client (id notification)))
+
+;; grouped notifications
+
+(defmethod grouped-notifications ((client v2:client)
+                                  &key max-id
+                                    min-id
+                                    since-id
+                                    (limit 15)
+                                    exclude-types
+                                    types
+                                    account-id
+                                    (expand-accounts :full)
+                                    grouped-types
+                                    include-filtered)
+  (check-type max-id (or null string))
+  (check-type since-id (or null string))
+  (check-type limit (or null (integer 0)))
+  (check-type exclude-types list)
+  (assert (member expand-accounts '(:full :partial-avatars)))
+  (with-pagination-return (decode-grouped-notifications-results)
+    (query client
+           "/api/v2/notifications"
+           :max-id max-id
+           :min-id min-id
+           :since-id since-id
+           :limit limit
+           :types
+           (loop for type in types
+                 collect (encode-notification-type type))
+           :exclude-types
+           (loop for type in exclude-types
+                 collect (encode-notification-type type))
+           :account-id account-id
+           :expand-accounts expand-accounts
+           :grouped-types
+           (loop for type in grouped-types
+                 collect
+                 (encode-grouped-notification-type type))
+           :include-filtered include-filtered)))
+
+(defmethod find-grouped-notification ((client v2:client) (group-key string))
+  (decode-grouped-notifications-results (query client
+                                               (format NIL
+                                                       "/api/v2/notifications/~a"
+                                                       group-key))))
+
+(defmethod delete-grouped-notification ((client v2:client) (group-key string))
+  (submit client (format nil "/api/v2/notifications/~a/dismiss" group-key))
+  T)
+
+(defmethod get-notifications-requests ((client client) (id string) &key max-id since-id limit)
+  (check-type max-id (or null string))
+  (check-type since-id (or null string))
+  (check-type limit (or null (integer 0)))
+  (with-pagination-return (decode-account)
+    (decode-notification-request (query client (format NIL "/api/v1/notifications/requests")
+                                        :max-id max-id
+                                        :since-id since-id
+                                        :limit limit))))
+
+(defmethod get-notification-requests ((client client) (id string))
+  (decode-notification-request (query client
+                                      (format nil "/api/v1/notifications/requests/~a"
+                                              id))))
+
+(defun %apply-to-notification-requests (client id action)
+  (submit client (format nil
+                         "/api/v1/notifications/requests/~a/~a"
+                         id
+                         action))
+  t)
+
+(defmethod accept-notification-request ((client client) (id string))
+  (%apply-to-notification-requests client id "accept"))
+
+(defmethod dismiss-notification-request ((client client) (id string))
+  (%apply-to-notification-requests client id "dismiss"))
+
+(defun %apply-to-notification-requests-multiple (client ids action)
+  (submit client
+          (format nil
+                  "/api/v1/notifications/requests/~a"
+                  action)
+          (loop for id in ids
+                collect
+                (format nil "id[]")
+                collect id))
+  t)
+
+(defmethod accept-multiple-notification-requests ((client client) (ids list))
+  (%apply-to-notification-requests-multiple client ids "accept"))
+
+(defmethod dismiss-multiple-notification-requests ((client client) (ids list))
+  (%apply-to-notification-requests-multiple client ids "dismiss"))
+
+(defmethod notifications-request-merged-p ((client client))
+  (%decode-check-notification-requests-merged
+   (query client
+          "/api/v1/notifications/requests/merged")))
+
+(defmethod fetch-notification-policy ((client v2:client))
+  (decode-notification-policy (query client "/api/v2/notifications/policy")))
+
+(defmethod update-notification-policy ((client v2:client)
+                                       &key
+                                       (for-not-following :accept)
+                                       (for-not-followers :accept)
+                                       (for-new-accounts :accept)
+                                       (for-private-mentions :accept)
+                                       (for-limited-accounts :accept))
+  (assert (member for-not-following    '(:accept :filter :drop)))
+  (assert (member for-not-followers    '(:accept :filter :drop)))
+  (assert (member for-new-accounts     '(:accept :filter :drop)))
+  (assert (member for-private-mentions '(:accept :filter :drop)))
+  (assert (member for-limited-accounts '(:accept :filter :drop)))
+  (decode-notification-policy(submit client
+                                     (format NIL "/api/v2/notifications/policy")
+                                     :http-method :patch
+                                     :for-not-following    for-not-following
+                                     :for-not-followers    for-not-followers
+                                     :for-new-accounts     for-new-accounts
+                                     :for-private-mentions for-private-mentions
+                                     :for-limited-accounts for-limited-accounts)))
 
 (defmethod make-subscription ((client client) endpoint public-key secret &key alerts)
   (check-type endpoint string)
@@ -686,7 +818,7 @@
 
 ;;; Search
 
-(defmethod find-results ((client client) query &key account-id max-id min-id kind (exclude-unreviewed NIL e-p) (resolve NIL r-p) (limit 20) (offset 0) (following NIL f-p))
+(defmethod find-results ((client v2:client) query &key account-id max-id min-id kind (exclude-unreviewed NIL e-p) (resolve NIL r-p) (limit 20) (offset 0) (following NIL f-p))
   (check-type account-id (or null string))
   (check-type max-id (or null string))
   (check-type min-id (or null string))
@@ -934,18 +1066,22 @@
 
 ;;; Timelines
 
-(defun %timeline (client url &key (local NIL l-p) (only-media NIL o-p) max-id since-id min-id (limit 20))
+(defun %timeline (client url &key (local NIL l-p) (only-media NIL o-p) max-id since-id min-id (limit 20) (other-args nil))
   (check-type max-id (or null string))
   (check-type since-id (or null string))
   (check-type min-id (or null string))
   (check-type limit (or null (integer 0)))
-  (decode-status (query client (format NIL "/api/v1/timelines/~a" url)
+  (check-type other-args list)
+  (decode-status (apply #'query
+                        client
+                        (format NIL "/api/v1/timelines/~a" url)
                         :local (coerce-boolean local l-p)
                         :only-media (coerce-boolean only-media o-p)
                         :max-id max-id
                         :since-id since-id
                         :min-id min-id
-                        :limit limit)))
+                        :limit limit
+                        other-args)))
 
 (defgeneric timeline-tag (client tag &rest args))
 
@@ -968,6 +1104,11 @@
 
 (defmethod timeline ((client client) (user-list user-list) &rest args)
   (apply #'timeline client (id user-list) args))
+
+(defgeneric timeline-link (client url &rest args))
+
+(defmethod timeline-link ((client client) (url string) &rest args)
+  (apply #'%timeline client "link" :other-args (list :url url) args))
 
 ;;; Trends
 

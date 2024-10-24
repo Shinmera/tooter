@@ -83,13 +83,13 @@
   (registrations))
 
 (defmethod print-object ((activity activity) stream)
-  (with-accessors ((week week)
-                   (statuses statuses)
-                   (logins logins)
-                   (registrations registrations)) activity
-    (print-unreadable-object (activity stream :type T)
-      (format stream "week ~a statuses ~a logins ~a registrations ~a"
-              week statuses logins registrations))))
+  (print-unreadable-object (activity stream :type T)
+    (format stream
+            "week ~a statuses ~a logins ~a registrations ~a"
+            (week activity)
+            (statuses activity)
+            (logins activity)
+            (registrations activity))))
 
 (define-entity announcement-account
   (id)
@@ -98,24 +98,24 @@
   (url))
 
 (defmethod print-object ((announcement-account announcement-account) stream)
-  (with-accessors ((id id)
-                   (username username)
-                   (account-name account-name)
-                   (url url)) announcement-account
-    (print-unreadable-object (announcement-account stream :type T)
-      (format stream
-              "#~a username: ~a account-name: ~a url: ~a"
-              id username account-name url))))
+  (print-unreadable-object (announcement-account stream :type T)
+    (format stream
+            "#~a username: ~a account-name: ~a url: ~a"
+            (id announcement-account)
+            (username announcement-account)
+            (account-name announcement-account)
+            (url announcement-account))))
 
 (define-entity announcement-status
   (id)
   (url))
 
 (defmethod print-object ((announcement-status announcement-status) stream)
-  (with-accessors ((id id)
-                   (url url)) announcement-status
-    (print-unreadable-object (announcement-status stream :type T)
-      (format stream "#~a url: ~a" id url))))
+  (print-unreadable-object (announcement-status stream :type T)
+    (format stream
+            "#~a url: ~a"
+            (id announcement-status)
+            (url announcement-status))))
 
 (define-entity announcement
   (id)
@@ -134,19 +134,31 @@
   (reactions :translate-with #'decode-reaction))
 
 (defmethod print-object ((announcement announcement) stream)
-  (with-accessors ((id id)
-                   (content content)) announcement
-    (print-unreadable-object (announcement stream :type T)
-      (format stream "#~a already read? ~a content: ~a" id (readp announcement) content))))
+  (print-unreadable-object (announcement stream :type T)
+    (format stream
+            "#~a already read? ~a content: ~a"
+            (id announcement)
+            (readp announcement)
+            (content announcement))))
 
 (define-entity application
   (name)
   (website :nullable T)
-  (vapid-key :field "vapid_key" :nullable T))
+  (scopes)
+  (redirect-uris :field "redirect_uris"))
 
 (defmethod print-object ((application application) stream)
   (print-unreadable-object (application stream :type T)
-    (format stream "~a" (name application))))
+    (format stream "~a ~@[website: ~a~]" (name application) (website application))))
+
+(define-entity credential-application
+  (name)
+  (website :nullable T)
+  (scopes)
+  (redirect-uris :field "redirect_uris")
+  (client-id :field "client_id")
+  (client-secret :field "client_secret")
+  (client-secret-expires-at :field "client_secret_expires_at")) ; always 0, according to docs
 
 (define-entity attachment
   (id)
@@ -164,6 +176,7 @@
     (format stream "~a #~a" (kind attachment) (id attachment))))
 
 (defvar *translator*)
+
 (defun %decode-metadata (data)
   (let ((metadata (getj data "meta")))
     (when metadata
@@ -271,24 +284,138 @@
             (status-count instance-stats)
             (domain-count instance-stats))))
 
+(defun %decode-configuration (data)
+  (let ((accounts (gethash "accounts" data))
+        (statuses (gethash "statuses" data))
+        (media-attachments (gethash "media_attachments" data))
+        (polls (gethash "polls" data))
+        (translation (gethash "translation" data))
+        (urls (gethash "urls" data))
+        (vapid (gethash "vapid" data)))
+    (append
+     (when accounts
+       (list :accounts (list :max-featured-tags (gethash "max_featured_tags" accounts)
+                             :max-pinned-status (gethash "max_pinned-status" accounts))))
+     (when statuses
+       (list :statuses (list :max-characters    (gethash "max_characters" statuses)
+                             :max-media-attachments (gethash "max_media_attachments" statuses)
+                             :characters-reserved-per-url
+                             (gethash "characters_reserved_per_url" statuses))))
+     (when media-attachments
+       (list :media-attachments (list :supported-mime-types
+                                      (gethash "supported_mime_types" media-attachments)
+                                      :image-size-limit
+                                      (gethash "image_size_limit" media-attachments)
+                                      :image-matrix-limit
+                                      (gethash "image_matrix_limit" media-attachments)
+                                      :video-size-limit
+                                      (gethash "video_size_limit" media-attachments)
+                                      :video-frame-rate-limit
+                                      (gethash "video_frame_rate_limit" media-attachments)
+                                      :video-matrix-limit
+                                      (gethash "video_matrix_limit" media-attachments))))
+     (when polls
+       (list :polls (list :max-options (gethash "max-options" polls)
+                          :max-characters-per-option
+                          (gethash "max_characters_per_option" polls)
+                          :min-expiration (gethash "min_expiration" polls)
+                          :max-expiration (gethash "max_expiration" polls))))
+     (when translation
+       (list :translation (list :enabled (gethash "enabled" translation))))
+     (when urls
+       (list :urls (list :streaming (gethash "streaming" urls)
+                         :status (gethash "status" urls)))) ; undocumented, 2024-10-12
+     (when vapid
+       (list :vapid (list :public-key (gethash "public_key" vapid)))))))
+
+(defun %decode-registrations (data)
+  (let ((registrations data))
+    (when (hash-table-p registrations)
+      (list :enabled (gethash "enabled" registrations)
+            :approval-required (gethash "approval_required" registrations)
+            :message (gethash "message" registrations)))))
+
+(defun %decode-api-versions (data)
+  (let ((api-versions data))
+    (when (hash-table-p api-versions)
+      (list :api-versions (list :mastodon
+                                (gethash "mastodon" api-versions))))))
+
+(defun %decode-contact (data)
+  (let ((contact data))
+    (when (hash-table-p contact)
+      (list :email (gethash "email" contact)
+            :account  (and (gethash "account" contact)
+                           (decode-account (gethash "account" contact)))))))
+
+(define-entity instance-rule
+  (id)
+  (text)
+  (hint))
+
+(defmethod print-object ((instance-rule instance-rule) stream)
+  (print-unreadable-object (instance-rule stream :type T)
+    (format stream
+            "rule #~a text ~s hint ~s"
+            (id instance-rule)
+            (text instance-rule)
+            (hint instance-rule))))
+
+(defun %decode-usage (data)
+  (when (hash-table-p data)
+    (let ((users (gethash "users" data)))
+      (when (hash-table-p users)
+        (list :active-month (gethash "active_month" users))))))
+
+(defun %decode-thumbnail (data)
+  (when (hash-table-p data)
+    (let* ((thumbnail data)
+           (versions (gethash "versions" thumbnail)))
+      (list :thumbnail
+            (append (list :url (gethash "url" thumbnail)
+                          :blurhash (gethash "blurhash" thumbnail))
+                    (when (hash-table-p versions)
+                      (list :@1x (gethash "@1x" versions)
+                            :@2x (gethash "@2x" versions))))))))
+
+(defun %decode-instance-icon-size (data)
+  (let ((multiplication-symbol-pos (position #\x data :test #'char-equal)))
+    (if multiplication-symbol-pos
+        (list (subseq data 0 multiplication-symbol-pos)
+              (subseq data (1+ multiplication-symbol-pos)))
+        data)))
+
+(define-entity instance-icon
+  (icon-src :field "src")
+  (icon-size :field "size" :translate-with #'%decode-instance-icon-size))
+
+(defmethod print-object ((instance-icon instance-icon) stream)
+  (print-unreadable-object (instance-icon stream :type T)
+    (format t "url ~a size ~a" (icon-src instance-icon) (icon-size instance-icon))))
+
 (define-entity instance
-  (uri)
+  (domain)
   (title)
-  (description)
-  (short-description :field "short_description")
-  (email)
   (version)
+  (source-url :field "source_url")
+  (description)
+  (usage :translate-with #'%decode-usage)
+  (thumbnail :nullable T :translate-with #'%decode-thumbnail)
+  (icon :translate-with #'decode-instance-icon)
   (languages :translate-with #'translate-languages)
-  (registrations)
-  (approval-required :field "approval_required")
-  (urls)
-  (stats :translate-with #'decode-instance-stats)
-  (thumbnail :nullable T)
-  (contact-account :translate-with #'decode-account :nullable T))
+  (configuration :translate-with #'%decode-configuration)
+  (registrations :translate-with #'%decode-registrations)
+  (api-versions :field "api_versions" :translate-with #'%decode-api-versions)
+  (contact :translate-with #'%decode-contact)
+  (rules :translate-with #'decode-instance-rule))
 
 (defmethod print-object ((instance instance) stream)
   (print-unreadable-object (instance stream :type T)
-    (format stream "~s ~a stats ~a" (title instance) (uri instance) (stats instance))))
+    (format stream
+            "~s ~a configuration ~a"
+            (title instance)
+            (domain instance)
+            (configuration instance))))
 
 (define-entity user-list
   (id)
@@ -321,14 +448,27 @@
 (define-entity notification
   (id)
   (kind :field "type" :translate-with #'to-keyword)
+  (group-id :field "group_id")
   (created-at :translate-with #'convert-timestamp)
   (account :translate-with #'decode-account)
-  (status :translate-with #'decode-status :nullable T))
+  (status :translate-with #'decode-status :nullable T)
+  (report :translate-with #'decode-report :nullable T)
+  (relationship-severance-event :field "relationship_severance_event"
+                                :translate-with #'decode-relationship-severance-event
+                                :nullable t)
+  (moderation-warning :field "moderation_warning"
+                      :translate-with #'decode-account-warning
+                      :nullable t))
 
 (defmethod print-object ((notification notification) stream)
   (print-unreadable-object (notification stream :type T)
-    (format stream "~a ~a #~a" (kind notification) (account-name (account notification))
-            (id notification))))
+    (format stream
+            "~a ~a #~a ~@[report: ~a~] ~@[moderation warning: ~a~]"
+            (kind notification)
+            (account-name (account notification))
+            (id notification)
+            (report notification)
+            (moderation-warning notification))))
 
 (define-entity poll-option
   (title)
@@ -368,17 +508,13 @@
 
 (defmethod print-object ((preferences preferences) stream)
   (print-unreadable-object (preferences stream :type T)
-    (with-accessors ((posting-default-visibility posting-default-visibility)
-                     (posting-default-sensitive posting-default-sensitive)
-                     (posting-default-language posting-default-language)
-                     (reading-expand-media reading-expand-media)
-                     (reading-expand-spoilers reading-expand-spoilers)) preferences
-      (format stream "posting default visibility ~a posting default sensitive ~a posting default language ~a reading expand media ~a reading expand spoilers ~a"
-              posting-default-visibility
-              posting-default-sensitive
-              posting-default-language
-              reading-expand-media
-              reading-expand-spoilers))))
+    (format stream
+            "posting default visibility ~a posting default sensitive ~a posting default language ~a reading expand media ~a reading expand spoilers ~a"
+            (posting-default-visibility preferences)
+            (posting-default-sensitive preferences)
+            (posting-default-language preferences)
+            (reading-expand-media preferences)
+            (reading-expand-spoilers preferences))))
 
 (define-entity push-subscription-alerts
   (alert-follow)
@@ -389,13 +525,13 @@
 
 (defmethod print-object ((push-subscription-alerts push-subscription-alerts) stream)
   (print-unreadable-object (push-subscription-alerts stream :type T)
-    (with-accessors ((alert-follow alert-follow)
-                     (alert-favourite alert-favourite)
-                     (alert-mention alert-mention)
-                     (alert-reblog alert-reblog)
-                     (alert-poll alert-poll)) push-subscription-alerts
-      (format stream "when follow? ~a when favourite ~a when mention? ~a when reblog? ~a when poll? ~a"
-              alert-follow alert-favourite alert-mention alert-reblog alert-poll))))
+    (format stream
+            "when follow? ~a when favourite ~a when mention? ~a when reblog? ~a when poll? ~a"
+            (alert-follow push-subscription-alerts)
+            (alert-favourite push-subscription-alerts)
+            (alert-mention push-subscription-alerts)
+            (alert-reblog push-subscription-alerts)
+            (alert-poll push-subscription-alerts))))
 
 (define-entity push-subscription
   (id)
@@ -441,14 +577,26 @@
   (print-unreadable-object (relationship stream :type T)
     (format stream "#~a" (id relationship))))
 
-;; TODO check official documentation because currently is WIP 2020-08-25
 (define-entity report
   (id)
-  (action-taken))
+  (action-taken)
+  (action-taken-at :field "action_taken_at" :translate-with #'convert-timestamp)
+  (report-category :field "category" :translate-with #'to-keyword)
+  (comment)
+  (forwarded)
+  (created-at :field "created_at" :translate-with #'convert-timestamp)
+  (status-ids :field "status_ids" :nullable T)
+  (rule-ids :field "rule_ids" :nullable T)
+  (target-account :field "target_account" :translate-with #'decode-account))
 
 (defmethod print-object ((report report) stream)
   (print-unreadable-object (report stream :type T)
-    (format stream "~a #~a" (action-taken report) (id report))))
+    (format stream
+            "#~a action taken? ~a category: ~a comment ~a"
+            (id report)
+            (action-taken report)
+            (category report)
+            (comment report))))
 
 (define-entity results
   (results-accounts :field "accounts" :translate-with #'decode-account)
@@ -577,12 +725,11 @@
 
 (defmethod print-object ((tag-history tag-history) stream)
   (print-unreadable-object (tag-history stream :type T)
-    (with-accessors ((day day)
-                     (use-count use-count)
-                     (account-count account-count)) tag-history
-      (format stream
-              "day: ~a use-count: ~a account-count: ~a"
-              day use-count account-count))))
+    (format stream
+            "day: ~a use-count: ~a account-count: ~a"
+            (day tag-history)
+            (use-count tag-history)
+            (account-count tag-history))))
 
 (define-entity conversation
   (id)
@@ -592,11 +739,12 @@
 
 (defmethod print-object ((conversation conversation) stream)
   (print-unreadable-object (conversation stream :type T)
-    (with-accessors ((id id)
-                     (accounts accounts)
-                     (last-status last-status)
-                     (unread unread)) conversation
-      (format stream "~a unread? ~a ~a ~a" id unread accounts last-status))))
+    (format stream
+            "~a unread? ~a ~a ~a"
+            (id conversation)
+            (unread conversation)
+            (accounts conversation)
+            (last-status conversation))))
 
 (define-entity featured-tag
   (id)
@@ -606,13 +754,12 @@
 
 (defmethod print-object ((featured-tag featured-tag) stream)
   (print-unreadable-object (featured-tag stream :type T)
-    (with-accessors ((id id)
-                     (name name)
-                     (statuses-count statuses-count)
-                     (last-status-at last-status-at)) featured-tag
-      (format stream
-              "~a name ~a  count ~a last status at ~a"
-              id name statuses-count last-status-at))))
+    (format stream
+            "~a name ~a  count ~a last status at ~a"
+            (id featured-tag)
+            (name featured-tag)
+            (statuses-count featured-tag)
+            (last-status-at featured-tag))))
 
 (define-entity filter
   (id)
@@ -625,16 +772,15 @@
 
 (defmethod print-object ((filter filter) stream)
   (print-unreadable-object (filter stream :type T)
-    (with-accessors ((id id)
-                     (title title)
-                     (filter-context filter-context)
-                     (expires-at expires-at)
-                     (filter-action filter-action)
-                     (keywords keywords)
-                     (statuses statuses)) filter
-      (format stream
-              "~a title ~a context ~a expires at ~a actions ~a keywords ~a statuses ~a"
-              id title filter-context expires-at filter-action keywords statuses))))
+    (format stream
+            "~a title ~a context ~a expires at ~a actions ~a keywords ~a statuses ~a"
+            (id filter)
+            (title filter)
+            (filter-context filter)
+            (expires-at filter)
+            (filter-action filter)
+            (keywords filter)
+            (statuses filter))))
 
 (define-entity filter-results
   (query-filter :translate-with #'decode-filter)
@@ -643,12 +789,11 @@
 
 (defmethod print-object ((filter-results filter-results) stream)
   (print-unreadable-object (filter-results stream :type T)
-    (with-accessors ((filter query-filter)
-                     (keyword-matches keyword-matches)
-                     (status-matches status-matches)) filter-results
       (format stream
               "filter: ~a matched keywords: ~a matched status: ~a"
-              filter keyword-matches status-matches))))
+              (query-filter filter-results)
+              (keyword-matches filter-results)
+              (status-matches filter-results))))
 
 (define-entity filter-keyword
   (id)
@@ -657,10 +802,11 @@
 
 (defmethod print-object ((filter-keyword filter-keyword) stream)
   (print-unreadable-object (filter-keyword stream :type T)
-    (with-accessors ((id id)
-                     (status-id status-id)
-                     (whole-word whole-word)) filter-keyword
-      (format stream "id: ~a status-id: ~a whole word? ~a" id status-id whole-word))))
+    (format stream
+            "id: ~a status-id: ~a whole word? ~a"
+            (id filter-keyword)
+            (status-id filter-keyword)
+            (whole-word filter-keyword))))
 
 (define-entity filter-status
   (id)
@@ -668,9 +814,10 @@
 
 (defmethod print-object ((filter-status filter-status) stream)
   (print-unreadable-object (filter-status stream :type T)
-    (with-accessors ((id id)
-                     (status-id status-id)) filter-status
-      (format stream "id: ~a status-id: ~a" id status-id))))
+    (format stream
+            "id: ~a status-id: ~a"
+            (id filter-status)
+            (status-id filter-status))))
 
 (define-entity identity-proof
   (provider)
@@ -681,16 +828,13 @@
 
 (defmethod print-object ((identity-proof identity-proof) stream)
   (print-unreadable-object (identity-proof stream :type T)
-    (with-accessors ((provider provider)
-                     (provider-username provider-username)
-                     (profile-url profile-url)
-                     (proof-url proof-url)
-                     (updated-at updated-at)
-                     (irreversible irreversible)
-                     (whole-word whole-word)) identity-proof
-      (format stream
-              "provider ~a provider username ~a profile url ~a proof url ~a  updated at ~a"
-              provider provider-username profile-url proof-url updated-at))))
+    (format stream
+            "provider ~a provider username ~a profile url ~a proof url ~a  updated at ~a"
+            (provider identity-proof)
+            (provider-username identity-proof)
+            (profile-url identity-proof)
+            (proof-url identity-proof)
+            (updated-at identity-proof))))
 
 (define-entity token
   (access-token :field "access_token")
@@ -700,10 +844,142 @@
 
 (defmethod print-object ((token token) stream)
   (print-unreadable-object (token stream :type T)
-    (with-accessors ((access-token access-token)
-                     (token-type token-type)
-                     (scope scope)
-                     (created-at created-at)) token
-      (format stream
-              "access token ~a type ~a scope ~a created at ~a"
-              access-token token-type scope created-at))))
+    (format stream
+            "access token ~a type ~a scope ~a created at ~a"
+            (access-token token)
+            (token-type token)
+            (scope token)
+            (created-at token))))
+
+(define-entity relationship-severance-event
+  (id)
+  (kind :field "type" :translate-with #'to-keyword)
+  (purged)
+  (target-name :field "target_name")
+  (relationships-count :field "relationships_count" :nullable t)
+  (created-at :field "created_at" :translate-with #'convert-timestamp))
+
+(defmethod print-object ((relationship-severance-event relationship-severance-event) stream)
+  (print-unreadable-object (relationship-severance-event stream :type T)
+    (format stream
+            "~a type ~a ~@[count ~a~]"
+            (id relationship-severance-event)
+            (kind relationship-severance-event)
+            (relationships-count relationship-severance-event))))
+
+(define-entity account-warning
+  (id)
+  (action :translate-with #'to-keyword)
+  (text)
+  (status-ids :field "status_ids")
+  (target-account :field "target_account" :translate-with #'decode-account)
+  (appeal :nullable t :translate-with #'decode-appeal)
+  (created-at :field "created_at" :translate-with #'convert-timestamp))
+
+(defmethod print-object ((account-warning account-warning) stream)
+  (print-unreadable-object (account-warning stream :type T)
+    (format stream
+            "~a action ~a text ~a"
+            (id account-warning)
+            (action account-warning)
+            (text account-warning))))
+
+(define-entity appeal
+  (text)
+  (state))
+
+(defmethod print-object ((appeal appeal) stream)
+  (print-unreadable-object (appeal stream :type T)
+    (format stream
+            "text: ~a state: ~a"
+            (text appeal)
+            (state appeal))))
+
+(define-entity partial-account-with-avatar
+  (id)
+  (account-name :field "acct")
+  (url)
+  (avatar)
+  (avatar-static)
+  (locked)
+  (display-name)
+  (bot))
+
+(define-entity notification-group
+  (group-key :field "group_key")
+  (notifications-count :field "notifications_count")
+  (kind :field "type")
+  (most-recent-notification-id :field "most_recent_notification_id")
+  (page-min-id :field "page_min_id" :nullable t)
+  (page-max-id :field "page_max_id" :nullable t)
+  (latest-page-notification-at :field "latest_page_notification_at" :nullable t)
+  (sample-account-ids :field "sample_account_ids")
+  (status-id :field "status_id" :nullable t)
+  (report :translate-with #'decode-report :nullable t)
+  (relationship-severance-event :field "event"
+                                :translate-with #'decode-relationship-severance-event
+                                :nullable t)
+  (moderation-warning :field "moderation_warning" :nullable t))
+
+(define-entity grouped-notifications-results
+  (accounts :translate-with #'decode-account)
+  (partial-accounts :field "partial_accounts"
+                    :translate-with #'decode-partial-account-with-avatar
+                    :nullable t)
+  (statuses :translate-with #'decode-status)
+  (notification-groups :field "notification-groups"
+                       :translate-with #'decode-notification-group))
+
+(defmethod print-object ((grouped-notifications-results grouped-notifications-results) stream)
+  (print-unreadable-object (grouped-notifications-results stream :type T)
+    (format stream
+            "accounts: ~a ~@[partial accounts: ~a~] statuses: ~a group: ~a"
+            (accounts grouped-notifications-results)
+            (partial-accounts grouped-notifications-results)
+            (statuses grouped-notifications-results)
+            (notification-groups grouped-notifications-results))))
+
+(defun %decode-notification-policy-summary (summary-data)
+  (when (hash-table-p summary-data)
+    (list :pending-requests-count (gethash "pending_requests_count" summary-data)
+          :pending-notifications-count (gethash "pending_notifications_count" summary-data))))
+
+(define-entity notification-policy
+  (for-not-following    :field "for_not_following" :translate-with #'to-keyword)
+  (for-not-followers    :field "for_not_followers" :translate-with #'to-keyword)
+  (for-new-accounts     :field "for_new_accounts" :translate-with #'to-keyword)
+  (for-private-mentions :field "for_private_mentions" :translate-with #'to-keyword)
+  (for-limited-accounts :field "for_limited_accounts" :translate-with #'to-keyword)
+  (summary :translate-with #'%decode-notification-policy-summary))
+
+(defmethod print-object ((notification-policy notification-policy) stream)
+  (print-unreadable-object (notification-policy stream :type T)
+    (format stream
+            "for-not-following ~a for-not-followers ~a for-new-accounts ~a for-private-mentions ~a for-limited-accounts ~a"
+            (for-not-following notification-policy)
+            (for-not-followers notification-policy)
+            (for-new-accounts notification-policy)
+            (for-private-mentions notification-policy)
+            (for-limited-accounts notification-policy))))
+
+(define-entity notification-request
+  (id)
+  (created-at :field "created_at" :translate-with #'convert-timestamp)
+  (updated-at :field "update_at"  :translate-with #'convert-timestamp)
+  (account :translate-with #'decode-account)
+  (notifications-count :field "notifications_count")
+  (last-status :field "last_status" :translate-with #'decode-status :nullable t))
+
+(defmethod print-object ((notification-request notification-request) stream)
+  (print-unreadable-object (notification-request stream :type T)
+    (format stream
+            "#~a created at: ~a updated at: ~a account ~a count ~a"
+            (id notification-request)
+            (created-at notification-request)
+            (updated-at notification-request)
+            (account notification-request)
+            (notifications-count notification-request))))
+
+(defun %decode-check-notification-requests-merged (request)
+  (when (hash-table-p request)
+    (gethash "merged" request)))

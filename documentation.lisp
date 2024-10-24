@@ -78,6 +78,11 @@ See DEFAULT-HEADERS
 See QUERY
 See SUBMIT")
 
+  (type client-v1
+    "This class has the same structure and purpose as CLIENT but is used to communicate with the instances that does not have full support for the version 2 of the mastodon API
+
+SEE CLIENT")
+
   (function base
     "Accessor to the base URL of the Mastodon instance the client connects to.
 
@@ -596,7 +601,8 @@ See REACTION")
 
 See NAME
 See WEBSITE
-See VAPID-KEY")
+See SCOPES
+See REDIRECT-URIS")
 
   (function name
     "Returns the name of the object.
@@ -611,11 +617,8 @@ See TAG")
 See APPLICATION
 See CLIENT")
 
-  (function VAPID-KEY
-    "Returns the key for PUSH streaming API.
-
-See APPLICATION
-See CLIENT")
+  (function redirect-uris
+    "A list of redirection URIs for the applications")
 
   (type attachment
     "Representation of a media attachment for a status.
@@ -1279,10 +1282,38 @@ See STATIC-URL")
     "Representation of an incident report.
 
 See ID
-See ACTION-TAKEN")
+See ACTION-TAKEN
+See ACTION-TAKEN-AT
+See REPORT-CATEGORY
+See COMMENT
+See FORWARDED
+See CREATED-AT
+See STATUS-IDS
+See RULES-IDS
+See TARGET_ACCOUNT")
 
   (function action-taken
     "Returns what kind of action was taken in response to the report.
+
+See REPORT")
+
+  (function action-taken-at
+    "Represents the date where the action whas taken.
+
+See REPORT")
+
+  (function REPORT-CATEGORY
+    "Can assume the values ':spam' ':violation' or ':other'.
+
+See REPORT")
+
+  (function COMMENT
+    "Explaination of the motivation to file this report.
+
+See REPORT")
+
+  (function TARGET-ACCOUNT
+    "The accounted reported.
 
 See REPORT")
 
@@ -1649,7 +1680,7 @@ See STATUS")
     "Returns non nil if this conversation has been marked not red")
 
   (function last-status
-    "Returns the last STATUS of the conversation")
+    "Returns the last STATUS")
 
   (type featured-tag
     "Representation of tags most visited by a profile
@@ -1666,7 +1697,6 @@ See LAST-STATUS-AT")
     "Returns if the filter take into account word limit
 
 See FILTER")
-
 
   (type filter-status
     "Represents a status that trigger trigger the filter
@@ -1796,7 +1826,162 @@ See LAST-READ-ID
 SEE VERSION")
 
   (function last-read-id
-    "Returns the last read ID of an entity (status or notification)"))
+    "Returns the last read ID of an entity (status or notification)")
+
+  (type appeal
+    "Represents an appeal to a moderation action
+See TEXT
+See STATE")
+
+  (function state
+    "the state of the object on server")
+
+  (type account-warning
+    "A warning from moderators because of an user's action
+
+See ID
+See ACTION
+See TEXT
+See STATUS-IDS
+See TARGET-ACCOUNT
+See APPEAL
+See CREATED-AT")
+
+(type relationship-severance-event
+"
+
+SEE ID
+SEE KIND
+SEE PURGED
+SEE TARGET-NAME
+SEE RELATIONSHIPS-COUNT
+SEE CREATED-AT")
+
+(type instance-rule
+  "A rule that users of the instance must comply with.
+
+SEE ID
+SEE TEXT
+SEE HINT")
+
+(type instance-icon
+      "Represents an icon for this instance
+SEE ICON-SRC
+SEE ICON-SIZE")
+
+(function icon-src
+  "url of the icon")
+
+(function icon-size
+          "A list of two values: the width and the height of the icon, in pixels")
+
+(type partial-account-with-avatar
+"Minimal version of account entity
+
+SEE ACCOUNT
+SEE ID
+SEE ACCOUNT-NAME
+SEE URL
+SEE AVATAR
+SEE AVATAR-STATIC
+SEE LOCKED
+SEE DISPLAY-NAME
+SEE BOT")
+
+(type notification-group
+  "represents a set of notifications grouped together.
+
+SEE GROUP-KEY
+SEE NOTIFICATIONS-COUNT
+SEE KIND
+SEE MOST-RECENT-NOTIFICATION-ID
+SEE PAGE-MIN-ID
+SEE PAGE-MAX-ID
+SEE LATEST-PAGE-NOTIFICATION-AT
+SEE SAMPLE-ACCOUNT-IDS
+SEE STATUS-ID
+SEE REPORT
+SEE RELATIONSHIP-SEVERANCE-EVENT
+SEE MODERATION-WARNING")
+
+  (function group-key
+    "The id of this gouped notification")
+
+  (function notifications-count
+    "The number of notifictions grouped together")
+
+  (function most-recent-notification-id
+    "The id of the most recent notification i this group")
+
+  (function page-min-id "")
+
+  (function page-max-id "")
+
+  (function latest-page-notification-at "")
+
+  (function sample-account-ids
+    "A subset of accounts that triggered the notifications in this group")
+
+  (function status-id "")
+
+  (function relationship-severance-event
+    "Optional representation of event that caused relationship to be severed")
+
+  (function moderation-warning
+    "Non null only if the kind of notification is :modration-warning")
+
+  (type account-warning
+    "Moderation warning to a specific user account
+SEE ID
+SEE ACTION
+SEE TEXT
+SEE STATUS-IDS
+SEE TARGET-ACCOUNT
+SEE APPEAL
+SEE CREATED-AT")
+
+  (type grouped-notifications-results
+    "
+SEE accounts
+SEE partial-accounts
+SEE statuses
+SEE notification-groups")
+
+  (type notification-policy
+    "Represents the filtering criteria for notifications.
+
+SEE FOR-NOT-FOLLOWING
+SEE FOR-NOT-FOLLOWERS
+SEE FOR-NEW-ACCOUNTS
+SEE FOR-PRIVATE-MENTIONS
+SEE FOR-LIMITED-ACCOUNTS")
+
+  (function for-not-following
+    "Criteria for filtering notifications, allowed values are :accept, :filter or :drop")
+
+  (function for-not-followers
+    "Criteria for filtering notifications, allowed values are :accept, :filter or :drop")
+
+  (function for-new-accounts
+    "Criteria for filtering notifications, allowed values are :accept, :filter or :drop")
+
+  (function for-private-mentions
+    "Criteria for filtering notifications, allowed values are :accept, :filter or :drop")
+
+  (function for-limited-accounts
+    "Criteria for filtering notifications, allowed values are :accept, :filter or :drop")
+
+  (type notification-request
+    "Group of filtered notification
+SEE id
+SEE created-at
+SEE updated-at
+SEE account
+SEE notifications-count
+SEE last-status")
+
+  (function notifications-count
+    "Number of notifications"))
 
 ;; queries.lisp
 (docs:define-docs
@@ -1929,7 +2114,6 @@ See FILTER")
 
 See CLIENT
 See FILTER")
-
 
   (function create-filter
     "Create a new filter.
@@ -2239,6 +2423,8 @@ See CLIENT")
   (function notifications
     "Returns a list of notifications about status updates.
 
+This function returns paginated results.
+
 See NOTIFICATION
 See CLIENT")
 
@@ -2258,6 +2444,73 @@ Returns T.
 
 See NOTIFICATION
 See CLIENT")
+
+  (function grouped-notifications
+    "Returns a list of cumulative notifications grouped by type about status updates.
+
+This function returns paginated results.
+
+See GROUPED-NOTIFICATION-RESULTS
+See CLIENT")
+
+  (function find-grouped-notification
+    "Retrieve the grouped notification of the given GROUP-KEY.
+
+See GROUPED-NOTIFICATION-RESULTS
+See CLIENT")
+
+  (function delete-grouped-notification
+    "Delete or dismiss the grouped notification of the given GROUP-KEY.
+
+Returns T.
+
+See GROUPED-NOTIFICATION-RESULTS
+See CLIENT")
+
+  (function get-notifications-requests
+    "Get the filtered notifications
+
+SEE NOTIFICATION-REQUEST
+SEE CLIENT")
+
+  (function get-notifications-requests
+    "Get a single filtered notification
+
+SEE NOTIFICATION-REQUEST
+SEE CLIENT")
+
+  (function accept-notification-request
+    "Accept the current notification requests and all future notifications from an user.
+
+SEE ID
+SEE NOTIFICATION-REQUEST
+SEE CLIENT")
+
+  (function dismiss-notification-request
+    "Dismiss the notification requests, and all notifications, from an user.
+
+SEE NOTIFICATION-REQUEST
+SEE CLIENT")
+
+  (function accept-multiple-notification-requests
+    "Accepts multiple notifications requests (specified from a ist of IDs)
+
+See ACCEPT-NOTIFICATION-REQUEST")
+
+  (function dismiss-multiple-notification-requests
+    "Dismiss multiple notifications requests (specified from a ist of IDs)
+
+See DISMISS-NOTIFICATION-REQUEST")
+
+  (function fetch-notification-policy
+    "Get the current notification filtering policy.
+
+SEE NOTIFICATION-POLICY")
+
+  (function update-notification-policy
+    "update the current notification filtering policy.
+
+SEE NOTIFICATION-POLICY")
 
   (function make-subscription
     "Create or update a push notification subscription.
@@ -2533,6 +2786,13 @@ See USER-LIST")
 
 See CLIENT
 See TAG
+See STATUS")
+
+  (function timeline-link
+    "Returns statuses that that contains a link to a trending article.
+
+See CLIENT
+See URL
 See STATUS")
 
   (function followed-tags

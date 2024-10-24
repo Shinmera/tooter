@@ -1,5 +1,5 @@
 ## About Tooter
-This is a client library implementing the full v1 REST API protocol for [Mastodon](https://joinmastodon.org/).
+This is a client library implementing v1/v2 REST API protocol for [Mastodon](https://joinmastodon.org/).
 
 ## How To
 Before you start, you'll need an account on some Mastodon instance. For the purposes of this documentation we'll simply pick [mastodon.social](https://mastodon.social). Once you've got Tooter loaded you'll first need to create a `client` instance.
@@ -29,3 +29,9 @@ Once you have authorised your client, you will probably want to save the informa
 
 ## Writing an Application Library
 If you write an application on top of Mastodon and would like to offer this as another re-usable library, you should create a subclass of `client` that automatically provides the proper initargs for the `:name` and so forth. This ensures that your application is known under the correct name, but still lets the user specify the correct `:base`.
+
+## Official Documentation
+
+The official documentation for the REST API of mastodon can be found here:
+
+https://docs.joinmastodon.org/
