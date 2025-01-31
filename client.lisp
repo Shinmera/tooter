@@ -60,9 +60,12 @@
 
 (defmethod shared-initialize :after ((client client) slots &key)
   (when (access-token client)
-    (let ((ideal-class (ecase (max-api-version client)
-                         (2 (find-class 'v2:client))
-                         (1 (find-class 'client)))))
+    (let ((ideal-class (case (max-api-version client)
+                         ((2 3) (find-class 'v2:client))
+                         (1 (find-class 'client))
+                         (otherwise
+                          (error "Unsupported API version: ~a (supported are versions 1, 2 and 3 in development)."
+                                 (max-api-version client))))))
       (unless (eq ideal-class (class-of client))
         (change-class client ideal-class)))))
 
@@ -127,7 +130,9 @@
 (defmethod max-api-version ((client client))
   (let ((instance (ignore-errors (decode-instance (query client "/api/v2/instance")))))
     (if instance
-        (getf (getf (api-versions instance) :api-versions) :mastodon 1)
+        (getf (getf (api-versions instance)
+                    :api-versions)
+              :mastodon 1)
         1)))
 
 (defmethod register ((client client))
