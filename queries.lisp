@@ -141,10 +141,10 @@
            :since-id since-id
            :limit limit)))
 
-(defmethod get-followers ((client client) (account account) &rest args)
+(defmethod get-followers ((client client) (account account) &rest args &key &allow-other-keys)
   (apply #'get-followers client (id account) args))
 
-(defmethod get-followers ((client client) (self (eql T)) &rest args)
+(defmethod get-followers ((client client) (self (eql T)) &rest args &key &allow-other-keys)
   (apply #'get-followers client (id (account client)) args))
 
 (defmethod get-following ((client client) (id string) &key max-id since-id limit)
@@ -157,10 +157,10 @@
            :since-id since-id
            :limit limit)))
 
-(defmethod get-following ((client client) (account account) &rest args)
+(defmethod get-following ((client client) (account account) &rest args &key &allow-other-keys)
   (apply #'get-following client (id account) args))
 
-(defmethod get-following ((client client) (self (eql T)) &rest args)
+(defmethod get-following ((client client) (self (eql T)) &rest args &key &allow-other-keys)
   (apply #'get-following client (id (account client)) args))
 
 (defmethod get-statuses ((client client) (id string) &key (only-media NIL o-p) (pinned NIL p-p) (exclude-replies NIL e-p) max-id since-id limit)
@@ -176,10 +176,10 @@
            :since-id since-id
            :limit limit)))
 
-(defmethod get-statuses ((client client) (account account) &rest args)
+(defmethod get-statuses ((client client) (account account) &rest args &key &allow-other-keys)
   (apply #'get-statuses client (id account) args))
 
-(defmethod get-statuses ((client client) (self (eql T)) &rest args)
+(defmethod get-statuses ((client client) (self (eql T)) &rest args &key &allow-other-keys)
   (apply #'get-statuses client (id (account client)) args))
 
 ;;; Bookmarks
@@ -347,7 +347,7 @@
   (decode-relationship (submit client (format NIL "/api/v1/accounts/~a/mute" id)
                                :notifications (coerce-boolean notifications n-p))))
 
-(defmethod mute ((client client) (account account) &rest args)
+(defmethod mute ((client client) (account account) &rest args &key &allow-other-keys)
   (apply #'mute client (id account) args))
 
 (defmethod unmute ((client client) (id string))
@@ -485,7 +485,7 @@
            :since-id since-id
            :limit (or limit 0))))
 
-(defmethod user-list-accounts ((client client) (user-list user-list) &rest args)
+(defmethod user-list-accounts ((client client) (user-list user-list) &rest args &key &allow-other-keys)
   (apply #'user-list-accounts client (id user-list) args))
 
 ;; Convenience.
@@ -523,7 +523,7 @@
                       :replies-policy replies-policy
                       :title title)))
 
-(defmethod update-user-list ((client client) (user-list user-list) &rest args)
+(defmethod update-user-list ((client client) (user-list user-list) &rest args &key &allow-other-keys)
   (apply #'update-user-list client (id user-list) args))
 
 (defmethod delete-user-list ((client client) (id string))
@@ -572,7 +572,7 @@
                              :description description
                              :focus (when focus (format NIL "~f,~f" (car focus) (cdr focus))))))
 
-(defmethod update-media ((client client) (attachment attachment) &rest args)
+(defmethod update-media ((client client) (attachment attachment) &rest args &key &allow-other-keys)
   (apply #'update-media client (id attachment) args))
 
 ;;; Mutes
@@ -814,7 +814,7 @@
                          :comment comment
                          :forward (coerce-boolean forward t))))
 
-(defmethod make-report ((client client) (account account) &rest args)
+(defmethod make-report ((client client) (account account) &rest args &key &allow-other-keys)
   (apply #'make-report client (id account) args))
 
 ;;; Search
@@ -865,7 +865,7 @@
            :limit limit)))
 
 (defmethod rebloggers ((client client) (status status) &rest args)
-  (apply #'rebloggers client (id status) args))
+  (apply #'rebloggers client (id status) args &key &allow-other-keys))
 
 (defmethod favouriters ((client client) (id string) &key max-id since-id (limit 40))
   (check-type max-id (or null string))
@@ -877,7 +877,7 @@
            :since-id since-id
            :limit limit)))
 
-(defmethod favouriters ((client client) (status status) &rest args)
+(defmethod favouriters ((client client) (status status) &rest args &key &allow-other-keys)
   (apply #'favouriters client (id status) args))
 
 (defmethod status-ensure-media-id ((client client) (media string))
@@ -1086,29 +1086,29 @@
 
 (defgeneric timeline-tag (client tag &rest args))
 
-(defmethod timeline-tag ((client client) (tag string) &rest args)
+(defmethod timeline-tag ((client client) (tag string) &rest args &key &allow-other-keys)
   (apply #'%timeline client (format NIL "tag/~a" tag) args))
 
 (defgeneric timeline (client kind &key local only-media max-id since-id limit min-id))
 
-(defmethod timeline ((client client) (kind (eql :home)) &rest args)
+(defmethod timeline ((client client) (kind (eql :home)) &rest args &key &allow-other-keys)
   (apply #'%timeline client "home" args))
 
-(defmethod timeline ((client client) (kind (eql :public)) &rest args)
+(defmethod timeline ((client client) (kind (eql :public)) &rest args &key &allow-other-keys)
   (apply #'%timeline client "public" args))
 
-(defmethod timeline ((client client) (id string) &rest args)
+(defmethod timeline ((client client) (id string) &rest args &key &allow-other-keys)
   (apply #'%timeline client (format NIL "list/~a" id) args))
 
-(defmethod timeline ((client client) (tag tag) &rest args)
+(defmethod timeline ((client client) (tag tag) &rest args &key &allow-other-keys)
   (apply #'timeline-tag client (name tag) args))
 
-(defmethod timeline ((client client) (user-list user-list) &rest args)
+(defmethod timeline ((client client) (user-list user-list) &rest args &key &allow-other-keys)
   (apply #'timeline client (id user-list) args))
 
 (defgeneric timeline-link (client url &rest args))
 
-(defmethod timeline-link ((client client) (url string) &rest args)
+(defmethod timeline-link ((client client) (url string) &rest args &key &allow-other-keys)
   (apply #'%timeline client "link" :other-args (list :url url) args))
 
 ;;; Trends
