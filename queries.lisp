@@ -167,13 +167,14 @@
   (check-type max-id (or null string))
   (check-type since-id (or null string))
   (check-type limit (or null (integer 0)))
-  (decode-status (query client (format NIL "/api/v1/accounts/~a/statuses" id)
-                        :only-media (coerce-boolean only-media o-p)
-                        :pinned (coerce-boolean pinned p-p)
-                        :exclude-replies (coerce-boolean exclude-replies e-p)
-                        :max-id max-id
-                        :since-id since-id
-                        :limit limit)))
+  (with-pagination-return (decode-status)
+    (query client (format NIL "/api/v1/accounts/~a/statuses" id)
+           :only-media (coerce-boolean only-media o-p)
+           :pinned (coerce-boolean pinned p-p)
+           :exclude-replies (coerce-boolean exclude-replies e-p)
+           :max-id max-id
+           :since-id since-id
+           :limit limit)))
 
 (defmethod get-statuses ((client client) (account account) &rest args)
   (apply #'get-statuses client (id account) args))

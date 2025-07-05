@@ -2078,6 +2078,8 @@ See ACCOUNT")
 The account can be an ACCOUNT instance, an account ID, or T for
 yourself.
 
+This function returns paginated results.
+
 See CLIENT
 See ACCOUNT
 See STATUS")
