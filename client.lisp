@@ -22,19 +22,21 @@
                      (request-method c) (uri c) (code c) (message c)))))
 
 (defun request (uri &key parameters headers (method :get) (content-type "application/x-www-form-urlencoded"))
-  (multiple-value-bind (stream code headers)
-      (%request uri parameters headers method content-type)
-    (let ((data (unwind-protect
-                     (yason:parse stream)
-                  (close stream))))
-      (if (= 200 code)
-          (values data headers)
-          (error 'request-failed :uri  uri
-                                 :request-method method
-                                 :code code
-                                 :data data
-                                 :message (or (getj data :error-description)
-                                              (getj data :error)))))))
+  (loop
+    (with-simple-restart (retry "Retry the request.")
+      (return (multiple-value-bind (stream code headers)
+                  (%request uri parameters headers method content-type)
+                (let ((data (unwind-protect
+                                 (yason:parse stream)
+                              (close stream))))
+                  (if (= 200 code)
+                      (values data headers)
+                      (error 'request-failed :uri  uri
+                                             :request-method method
+                                             :code code
+                                             :data data
+                                             :message (or (getj data :error-description)
+                                                          (getj data :error))))))))))
 
 (defclass client ()
   ((base :initarg :base :accessor base)
