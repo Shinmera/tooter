@@ -1,14 +1,17 @@
 (in-package #:org.shirakumo.tooter)
 
 (defun %request (uri parameters headers method content-type)
-  (let ((drakma:*text-content-types* '(("application" . "json"))))
-    (drakma:http-request uri :method method
-                             :parameters parameters
-                             :content-type content-type
-                             :additional-headers headers
-                             :external-format-out :utf-8
-                             :external-format-in :utf-8
-                             :want-stream T)))
+  (dex:request uri
+	       :method method
+	       :content (if (string-equal content-type "application/json")
+			    (with-output-to-string (out)
+			      (yason:encode
+			       (alexandria:alist-hash-table parameters :test 'equal)
+			       out))
+			    parameters)
+	       :headers (append headers
+				`(("content-type" . ,content-type)))
+	       :want-stream t))
 
 (define-condition request-failed (error)
   ((uri :initarg :uri :reader uri)
