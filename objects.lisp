@@ -12,33 +12,42 @@
   (loop for entry in data
         collect (decode-entity type entry)))
 
-(defmacro define-entity (name &body slots)
+(defmacro define-entity (name-and-super-classes &body slots)
   (let ((*print-case* (readtable-case *readtable*))
         (data (gensym "DATA"))
-        (value (gensym "VALUE")))
+        (value (gensym "VALUE"))
+        (actual-class-name  (if (listp name-and-super-classes)
+                                (first name-and-super-classes)
+                                name-and-super-classes))
+        (superclasses-names (if (listp name-and-super-classes)
+                                (second name-and-super-classes)
+                                '(entity))))
     `(progn
-       (defclass ,name (entity)
+       (defclass ,actual-class-name ,superclasses-names
          ,(loop for (slot . options) in slots
                 collect `(,slot :initarg ,(intern (string slot) "KEYWORD")
                                 :initform ,(if (getf options :nullable)
                                                NIL
-                                               `(error ,(format NIL "~a required for a ~a." slot name)))
+                                               `(error ,(format NIL
+                                                                "~a required for a ~a."
+                                                                slot actual-class-name)))
                                 :accessor ,slot)))
-       (defmethod decode-entity ((,name ,name) ,data)
+       (defmethod decode-entity ((,actual-class-name ,actual-class-name) ,data)
+         ,(when (listp name-and-super-classes)
+            `(call-next-method))
          ,@(loop for (slot . options) in slots
                  for field = (getf options :field #1='#.(make-symbol "no value"))
                  collect `(let ((,value ,(cond ((null field) data)
                                                ((eq field #1#) `(getj ,data ,(translate-key slot)))
                                                (T `(getj ,data ,field)))))
-                            (setf (slot-value ,name ',slot)
+                            (setf (slot-value ,actual-class-name ',slot)
                                   (when ,value
                                     (funcall ,(or (getf options :translate-with)
                                                   '#'identity)
                                              ,value)))))
-         ,name)
-
-       (defun ,(intern (format NIL "~a-~a" 'decode name)) (,data)
-         (decode-entity ',name ,data)))))
+         ,actual-class-name)
+       (defun ,(intern (format NIL "~a-~a" 'decode actual-class-name)) (,data)
+           (decode-entity ',actual-class-name ,data)))))
 
 (define-entity field
   (name)
@@ -638,26 +647,6 @@
 (defmethod print-object ((status-tag status-tag) stream)
   (print-unreadable-object (status-tag stream :type T)
     (format stream "name ~a url ~a" (name status-tag) (url status-tag))))
-
-(define-entity status-quote
-  (state)
-  (status :translate-with #'decode-status))
-
-(defmethod print-object ((object status-quote) stream)
-  (print-unreadable-object (object stream :type T)
-    (format t "quote state ~a " (state object))
-    (present (status object) stream)))
-
-(define-entity status-shallow-quote
-  (state)
-  (status-id :field "status_id"))
-
-(defmethod print-object ((object status-shallow-quote) stream)
-  (print-unreadable-object (object stream :type T)
-    (format t
-            "quote state ~a id ~a"
-            (state object)
-            (status-id object))))
 
 (define-entity status
   (id)

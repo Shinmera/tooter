@@ -11,6 +11,7 @@
                (:file "link-header-parser")
                (:file "client")
                (:file "objects")
+               (:file "objects-v6")
                (:file "queries")
                (:file "documentation"))
   :depends-on (:alexandria

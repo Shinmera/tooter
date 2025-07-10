@@ -842,6 +842,9 @@
 (defmethod find-status ((client client) (id string))
   (decode-status (query client (format NIL "/api/v1/statuses/~a" id))))
 
+(defmethod find-status ((client v6:client) (id string))
+  (v6:decode-status (query client (format NIL "/api/v1/statuses/~a" id))))
+
 (defmethod context ((client client) (id string))
   (decode-context (query client (format NIL "/api/v1/statuses/~a/context" id))))
 
@@ -1067,7 +1070,9 @@
 
 ;;; Timelines
 
-(defun %timeline (client url &key (local NIL l-p) (only-media NIL o-p) max-id since-id min-id (limit 20) (other-args nil))
+(defgeneric %timeline (client url &key local only-media max-id since-id min-id limit other-args))
+
+(defmethod %timeline (client url &key (local NIL l-p) (only-media NIL o-p) max-id since-id min-id (limit 20) (other-args nil))
   (check-type max-id (or null string))
   (check-type since-id (or null string))
   (check-type min-id (or null string))
@@ -1083,6 +1088,38 @@
                         :min-id min-id
                         :limit limit
                         other-args)))
+
+(defmethod %timeline :before (client url &key (local NIL l-p) (only-media NIL o-p) max-id since-id min-id (limit 20) (other-args nil))
+  (declare (ignore local only-media l-p o-p))
+  (check-type max-id (or null string))
+  (check-type since-id (or null string))
+  (check-type min-id (or null string))
+  (check-type limit (or null (integer 0)))
+  (check-type other-args list))
+
+(defmethod %timeline ((client client) url &key (local NIL l-p) (only-media NIL o-p) max-id since-id min-id (limit 20) (other-args nil))
+  (decode-status (apply #'query
+                        client
+                        (format NIL "/api/v1/timelines/~a" url)
+                        :local (coerce-boolean local l-p)
+                        :only-media (coerce-boolean only-media o-p)
+                        :max-id max-id
+                        :since-id since-id
+                        :min-id min-id
+                        :limit limit
+                        other-args)))
+
+(defmethod %timeline ((client v6:client) url &key (local NIL l-p) (only-media NIL o-p) max-id since-id min-id (limit 20) (other-args nil))
+  (v6:decode-status (apply #'query
+                           client
+                           (format NIL "/api/v1/timelines/~a" url)
+                           :local (coerce-boolean local l-p)
+                           :only-media (coerce-boolean only-media o-p)
+                           :max-id max-id
+                           :since-id since-id
+                           :min-id min-id
+                           :limit limit
+                           other-args)))
 
 (defgeneric timeline-tag (client tag &rest args))
 

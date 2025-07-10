@@ -534,8 +534,15 @@
 (defpackage tooter-client-v6
   (:nicknames #:org.shirakumo.tooter.client.v6)
   (:local-nicknames (#:v2 #:org.shirakumo.tooter.client.v2))
-  (:use :cl)
-  (:export #:client))
+  (:use #:cl #:tooter-objects)
+  (:shadow #:tooter-objects #:status)
+  (:export
+   #:client
+   #:status-quote
+   #:status-shallow-quote
+   #:status
+   #:decode-status
+   #:state))
 
 (defpackage #:tooter
   (:nicknames #:org.shirakumo.tooter)

@@ -65,11 +65,10 @@
 (defmethod shared-initialize :after ((client client) slots &key)
   (when (access-token client)
     (let ((ideal-class (case (max-api-version client)
+                         (1 (find-class 'client))
                          ('(2 3 4 5) (find-class 'v2:client))
                          (6
-                          (warn "Version 3 of the API is in progress, using version 2 of the client")
                           (find-class 'v6:client))
-                         (1 (find-class 'client))
                          (otherwise
                           (warn "Unsupported API version: ~a (supported are versions <= 6)"
                                 (max-api-version client))
