@@ -68,8 +68,9 @@
                           (find-class 'v2:client))
                          (1 (find-class 'client))
                          (otherwise
-                          (error "Unsupported API version: ~a (supported are versions 1, 2 and 3 in development)."
-                                 (max-api-version client))))))
+                          (warn "Unsupported API version: ~a (supported are versions 1, 2 and 3 in development)."
+                                (max-api-version client))
+                          (find-class 'v2:client)))))
       (unless (eq ideal-class (class-of client))
         (change-class client ideal-class)))))
 
