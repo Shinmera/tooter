@@ -865,7 +865,7 @@
            :limit limit)))
 
 (defmethod rebloggers ((client client) (status status) &rest args)
-  (apply #'rebloggers client (id status) args &key &allow-other-keys))
+  (apply #'rebloggers client (id status) args))
 
 (defmethod favouriters ((client client) (id string) &key max-id since-id (limit 40))
   (check-type max-id (or null string))
