@@ -639,6 +639,26 @@
   (print-unreadable-object (status-tag stream :type T)
     (format stream "name ~a url ~a" (name status-tag) (url status-tag))))
 
+(define-entity status-quote
+  (state)
+  (status :translate-with #'decode-status))
+
+(defmethod print-object ((object status-quote) stream)
+  (print-unreadable-object (object stream :type T)
+    (format t "quote state ~a " (state object))
+    (present (status object) stream)))
+
+(define-entity status-shallow-quote
+  (state)
+  (status-id :field "status_id"))
+
+(defmethod print-object ((object status-shallow-quote) stream)
+  (print-unreadable-object (object stream :type T)
+    (format t
+            "quote state ~a id ~a"
+            (state object)
+            (status-id object))))
+
 (define-entity status
   (id)
   (uri)

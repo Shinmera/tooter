@@ -60,17 +60,20 @@
 
 (defclass v2:client (client) ())
 
+(defclass v6:client (v2:client) ())
+
 (defmethod shared-initialize :after ((client client) slots &key)
   (when (access-token client)
     (let ((ideal-class (case (max-api-version client)
-                         (2 (find-class 'v2:client))
-                         (3 (warn "Version 3 of the API is in progress, using version 2 of the client")
-                          (find-class 'v2:client))
+                         ('(2 3 4 5) (find-class 'v2:client))
+                         (6
+                          (warn "Version 3 of the API is in progress, using version 2 of the client")
+                          (find-class 'v6:client))
                          (1 (find-class 'client))
                          (otherwise
-                          (warn "Unsupported API version: ~a (supported are versions 1, 2 and 3 in development)."
+                          (warn "Unsupported API version: ~a (supported are versions <= 6)"
                                 (max-api-version client))
-                          (find-class 'v2:client)))))
+                          (find-class 'v6:client)))))
       (unless (eq ideal-class (class-of client))
         (change-class client ideal-class)))))
 

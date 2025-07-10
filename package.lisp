@@ -531,11 +531,18 @@
   (:use :cl)
   (:export #:client))
 
+(defpackage tooter-client-v6
+  (:nicknames #:org.shirakumo.tooter.client.v6)
+  (:local-nicknames (#:v2 #:org.shirakumo.tooter.client.v2))
+  (:use :cl)
+  (:export #:client))
+
 (defpackage #:tooter
   (:nicknames #:org.shirakumo.tooter)
   (:use #:cl #:tooter-objects #:tooter-queries #:tooter-client)
   (:local-nicknames (#:a  #:alexandria)
-                    (#:v2 #:org.shirakumo.tooter.client.v2))
+                    (#:v2 #:org.shirakumo.tooter.client.v2)
+                    (#:v6 #:org.shirakumo.tooter.client.v6))
   (:shadowing-import-from #:tooter-queries #:block))
 
 (dolist (package '(#:tooter-objects #:tooter-queries #:tooter-client))
