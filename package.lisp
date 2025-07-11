@@ -470,6 +470,9 @@
    #:favourite
    #:unfavourite
    #:endorsements
+   #:featured-accounts
+   #:feature-account
+   #:unfeature-account
    #:pin
    #:unpin
    #:mute-conversation

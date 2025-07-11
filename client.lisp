@@ -65,8 +65,10 @@
 (defmethod shared-initialize :after ((client client) slots &key)
   (when (access-token client)
     (let ((ideal-class (case (max-api-version client)
-                         (1 (find-class 'client))
-                         ('(2 3 4 5) (find-class 'v2:client))
+                         (1
+                          (find-class 'client))
+                         ('(2 3 4 5)
+                          (find-class 'v2:client))
                          (6
                           (find-class 'v6:client))
                          (otherwise

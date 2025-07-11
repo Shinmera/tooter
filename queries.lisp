@@ -998,6 +998,24 @@
 (defmethod endorsements ((client client))
   (decode-account (query client "/api/v1/endorsements")))
 
+(defmethod featured-accounts ((client v6:client) (account-id string))
+  (decode-account (query client
+                         (format NIL
+                                 "/api/v1/accounts/~a/endorsements"
+                                 account-id))))
+
+(defmethod feature-account ((client v6:client) (account-id string))
+  (decode-relationship (submit client
+                               (format NIL
+                                       "/api/v1/accounts/~a/endorse"
+                                       account-id))))
+
+(defmethod unfeature-account ((client v6:client) (account-id string))
+  (decode-relationship (submit client
+                               (format NIL
+                                       "/api/v1/accounts/~a/unendorse"
+                                       account-id))))
+
 (defmethod pin ((client client) (id string))
   (decode-status (submit client (format NIL "/api/v1/statuses/~a/pin" id))))
 
