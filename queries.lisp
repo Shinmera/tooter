@@ -119,6 +119,7 @@
   (check-type fields list)
   (setf (account client)
         (decode-account (apply #'submit client "/api/v1/accounts/update_credentials"
+                               :http-method :patch
                                :display-name display-name
                                :note note
                                :avatar avatar
@@ -130,6 +131,53 @@
                                      collect key
                                      collect (format NIL "fields_attributes[~a][value]" i)
                                      collect val)))))
+
+(defmethod update-credentials ((client v6:client)
+                               &key
+                                 display-name
+                                 note
+                                 avatar
+                                 header
+                                 (locked NIL l-p)
+                                 fields
+                                 language
+                                 (privacy :public)
+                                 (sensitive NIL s-p)
+                                 (indexable NIL i-p)
+                                 (attribution-domains '()))
+  (check-type display-name (or null string))
+  (check-type note (or null string))
+  (check-type avatar (or null pathname))
+  (check-type header (or null pathname))
+  (check-type language (or null string))
+  (assert (member privacy '(:public :unlisted :private)))
+  (check-type fields list)
+  (setf (account client)
+        (decode-account (apply #'submit client "/api/v1/accounts/update_credentials"
+                               :http-method :patch
+                               :display-name display-name
+                               :note note
+                               :avatar avatar
+                               :header header
+                               :locked (coerce-boolean locked l-p)
+                               :indexable (coerce-boolean indexable i-p)
+                               (loop for i from 0
+                                     for (key . val) in fields
+                                     collect (format NIL "fields_attributes[~a][name]" i)
+                                     collect key
+                                     collect (format NIL "fields_attributes[~a][value]" i)
+                                     collect val)
+                               (loop for attributed-domain in attribution-domains
+                                     collect
+                                     (format nil "attribution_domains[]")
+                                     collect attributed-domain)
+                               (when language
+                                 (list "source[language]" language))
+                               (when privacy
+                                 (list "source[privacy]" privacy))
+                               (when sensitive
+                                 (list "source[sensitive]"
+                                       (coerce-boolean sensitive s-p)))))))
 
 (defmethod get-followers ((client client) (id string) &key max-id since-id limit)
   (check-type max-id (or null string))

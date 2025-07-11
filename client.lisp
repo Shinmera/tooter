@@ -1,6 +1,6 @@
 (in-package #:org.shirakumo.tooter)
 
-(defun %request (uri parameters headers method content-type)
+(defun %request (uri parameters headers method content-type &key (want-stream T))
   (let ((drakma:*text-content-types* '(("application" . "json"))))
     (drakma:http-request uri :method method
                              :parameters parameters
@@ -8,7 +8,7 @@
                              :additional-headers headers
                              :external-format-out :utf-8
                              :external-format-in :utf-8
-                             :want-stream T)))
+                             :want-stream want-stream)))
 
 (define-condition request-failed (error)
   ((uri :initarg :uri :reader uri)
@@ -21,22 +21,37 @@
                      "Mastodon ~a request to ~s failed with code ~d~@[:~%  ~a~]"
                      (request-method c) (uri c) (code c) (message c)))))
 
+(defparameter *debug-request* nil)
+
 (defun request (uri &key parameters headers (method :get) (content-type "application/x-www-form-urlencoded"))
-  (loop
-    (with-simple-restart (retry "Retry the request.")
-      (return (multiple-value-bind (stream code headers)
-                  (%request uri parameters headers method content-type)
-                (let ((data (unwind-protect
-                                 (yason:parse stream)
-                              (close stream))))
-                  (if (= 200 code)
-                      (values data headers)
-                      (error 'request-failed :uri  uri
-                                             :request-method method
-                                             :code code
-                                             :data data
-                                             :message (or (getj data :error-description)
-                                                          (getj data :error))))))))))
+  (if *debug-request*
+      (format t
+              "~a ~a ~a ~a -> ~a~%"
+              uri
+              parameters
+              headers
+              method
+              (%request uri
+                        parameters
+                        headers
+                        method
+                        content-type
+                        :want-stream t))
+      (loop
+        (with-simple-restart (retry "Retry the request.")
+          (return (multiple-value-bind (stream code headers)
+                      (%request uri parameters headers method content-type)
+                    (let ((data (unwind-protect
+                                     (yason:parse stream)
+                                  (close stream))))
+                      (if (= 200 code)
+                          (values data headers)
+                          (error 'request-failed :uri  uri
+                                                 :request-method method
+                                                 :code code
+                                                 :data data
+                                                 :message (or (getj data :error-description)
+                                                              (getj data :error)))))))))))
 
 (defclass client ()
   ((base :initarg :base :accessor base)
@@ -64,14 +79,15 @@
 
 (defmethod shared-initialize :after ((client client) slots &key)
   (when (access-token client)
-    (let ((ideal-class (case (max-api-version client)
-                         (1
+    (let* ((api-version (max-api-version client))
+           (ideal-class (cond
+                         ((= api-version 1)
                           (find-class 'client))
-                         ('(2 3 4 5)
+                         ((= api-version 2)
                           (find-class 'v2:client))
-                         (6
+                         ((<= api-version 6)
                           (find-class 'v6:client))
-                         (otherwise
+                         (t
                           (warn "Unsupported API version: ~a (supported are versions <= 6)"
                                 (max-api-version client))
                           (find-class 'v6:client)))))
