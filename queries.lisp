@@ -1016,6 +1016,14 @@
                                        "/api/v1/accounts/~a/unendorse"
                                        account-id))))
 
+(defmethod set-private-note ((client v6:client) (account-id string) (comment string))
+  (decode-relationship (submit
+                        client
+                        (format NIL
+                                "/api/v1/accounts/~a/note"
+                                account-id)
+                        :comment "")))
+
 (defmethod pin ((client client) (id string))
   (decode-status (submit client (format NIL "/api/v1/statuses/~a/pin" id))))
 
