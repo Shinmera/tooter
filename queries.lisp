@@ -1094,6 +1094,25 @@
 (defmethod tag-information ((client client) (tag string))
   (decode-tag (query client (format NIL "/api/v1/tags/~a" tag))))
 
+
+(defmethod feature-tag ((client v6:client) (tag string))
+  (decode-relationship (submit client
+                               (format NIL
+                                       "/api/v1/tags/~a/feature"
+                                       tag))))
+
+(defmethod feature-tag ((client v6:client) (tag tag))
+  (feature-tag client (name tag)))
+
+(defmethod unfeature-tag ((client v6:client) (tag string))
+  (decode-relationship (submit client
+                               (format NIL
+                                       "/api/v1/tags/~a/unfeature"
+                                       tag))))
+
+(defmethod unfeature-tag ((client v6:client) (tag tag))
+  (unfeature-tag client (name tag)))
+
 ;;; Timelines
 
 (defgeneric %timeline (client url &key local only-media max-id since-id min-id limit other-args))

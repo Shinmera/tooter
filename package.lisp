@@ -481,6 +481,8 @@
    #:follow-tag
    #:unfollow-tag
    #:tag-information
+   #:feature-tag
+   #:unfeature-tag
    #:timeline-tag
    #:timeline
    #:timeline-link
