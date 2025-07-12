@@ -24,34 +24,25 @@
 (defparameter *debug-request* nil)
 
 (defun request (uri &key parameters headers (method :get) (content-type "application/x-www-form-urlencoded"))
-  (if *debug-request*
-      (format t
-              "~a ~a ~a ~a -> ~a~%"
-              uri
-              parameters
-              headers
-              method
-              (%request uri
-                        parameters
-                        headers
-                        method
-                        content-type
-                        :want-stream t))
-      (loop
-        (with-simple-restart (retry "Retry the request.")
-          (return (multiple-value-bind (stream code headers)
-                      (%request uri parameters headers method content-type)
-                    (let ((data (unwind-protect
-                                     (yason:parse stream)
-                                  (close stream))))
-                      (if (= 200 code)
-                          (values data headers)
-                          (error 'request-failed :uri  uri
-                                                 :request-method method
-                                                 :code code
-                                                 :data data
-                                                 :message (or (getj data :error-description)
-                                                              (getj data :error)))))))))))
+  (loop
+    (with-simple-restart (retry "Retry the request.")
+      (when *debug-request*
+        (format *debug-io* "~&; ~a ~a ~a ~a"
+                uri parameters headers method))
+      (return (multiple-value-bind (stream code headers)
+                  (%request uri parameters headers method content-type)
+                (when *debug-request*
+                  (format *debug-io* "-> ~a~%~@<;  ~@;~a~;~:> " code headers))
+                (let ((data (unwind-protect (yason:parse stream)
+                              (close stream))))
+                  (if (= 200 code)
+                      (values data headers)
+                      (error 'request-failed :uri  uri
+                                             :request-method method
+                                             :code code
+                                             :data data
+                                             :message (or (getj data :error-description)
+                                                          (getj data :error))))))))))
 
 (defclass client ()
   ((base :initarg :base :accessor base)
