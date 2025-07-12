@@ -508,6 +508,9 @@
 (defmethod instance ((client v2:client))
   (decode-instance (query client "/api/v2/instance")))
 
+(defmethod instance ((client v6:client))
+  (v6:decode-instance (query client "/api/v2/instance")))
+
 (defmethod peers ((client client))
   (query client "/api/v1/instance/peers"))
 
@@ -1000,24 +1003,26 @@
         (decode-scheduled-status results-entity)
         (decode-status results-entity))))
 
-(defmethod delete-status ((client client) (id string))
+(defgeneric delete-status (client id &key &allow-other-keys))
+
+(defmethod delete-status ((client client) (id string) &key &allow-other-keys)
   (submit client (format NIL "/api/v1/statuses/~a" id)
           :http-method :delete)
   T)
 
-(defmethod delete-status ((client client) (status status))
+(defmethod delete-status ((client client) (status status) &key &allow-other-keys)
   (delete-status client (id status)))
 
-
-(defmethod delete-status ((client v6:client) (status string))
+(defmethod delete-status ((client v6:client) (status string)
+                          &key (delete-media NIL da-p) &allow-other-keys)
   (submit client
           (format NIL "/api/v1/statuses/~a" status)
+          :delete-media (coerce-boolean delete-media da-p)
           :http-method :delete))
 
-(defmethod delete-status ((client v6:client) (status status))
-  (submit client
-          (format NIL "/api/v1/statuses/~a" (id status))
-          :http-method :delete))
+(defmethod delete-status ((client v6:client) (status status)
+                          &key (delete-media NIL) &allow-other-keys)
+  (delete-status client (id status) :delete-media delete-media))
 
 (defmethod edit-status ((client client) (status status) (text string) &key media (sensitive NIL s-p) spoiler-text language poll-options poll-expire-seconds (poll-multiple NIL m-p) (poll-hide-totals NIL h-p))
   (edit-status client

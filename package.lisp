@@ -547,7 +547,10 @@
    #:status-shallow-quote
    #:status
    #:decode-status
-   #:state))
+   #:state
+   #:instance-rule
+   #:translations
+   #:decode-instance))
 
 (defpackage #:tooter
   (:nicknames #:org.shirakumo.tooter)
