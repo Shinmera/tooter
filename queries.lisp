@@ -320,7 +320,7 @@
   (assert (stringp id))
   (assert (stringp title))
   (check-filter-context context)
-  (check-filter-action filter-action)
+  (check-filter-action client filter-action)
   (decode-filter (apply #'submit
                         client
                         (format NIL "/api/v2/filters/~a" id)
@@ -627,6 +627,17 @@
 
 (defmethod update-media ((client client) (attachment attachment) &rest args &key &allow-other-keys)
   (apply #'update-media client (id attachment) args))
+
+
+(defmethod delete-media ((client v6:client) (attachment string))
+  (submit client
+          (format NIL "/api/v1/media/~a" attachment)
+          :http-method :delete))
+
+(defmethod delete-media ((client v6:client) (attachment attachment))
+  (submit client
+          (format NIL "/api/v1/media/~a" (id attachment))
+          :http-method :delete))
 
 ;;; Mutes
 
@@ -996,6 +1007,17 @@
 
 (defmethod delete-status ((client client) (status status))
   (delete-status client (id status)))
+
+
+(defmethod delete-status ((client v6:client) (status string))
+  (submit client
+          (format NIL "/api/v1/statuses/~a" status)
+          :http-method :delete))
+
+(defmethod delete-status ((client v6:client) (status status))
+  (submit client
+          (format NIL "/api/v1/statuses/~a" (id status))
+          :http-method :delete))
 
 (defmethod edit-status ((client client) (status status) (text string) &key media (sensitive NIL s-p) spoiler-text language poll-options poll-expire-seconds (poll-multiple NIL m-p) (poll-hide-totals NIL h-p))
   (edit-status client
