@@ -13,6 +13,7 @@
                (:file "objects")
                (:file "objects-v6")
                (:file "queries")
+               (:file "v2")
                (:file "documentation"))
   :depends-on (:alexandria
                :yason
