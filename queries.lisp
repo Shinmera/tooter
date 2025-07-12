@@ -269,8 +269,13 @@
 (defmethod filter ((client v2:client) (filter filter))
   (filter client (id filter)))
 
-(defun check-filter-action (value)
+(defgeneric check-filter-action (object value))
+
+(defmethod check-filter-action ((object v2:client) value)
   (assert (member value '("warn" "hide") :test #'string=)))
+
+(defmethod check-filter-action ((object v6:client) value)
+  (assert (member value '("warn" "hide" "blur") :test #'string=)))
 
 (defun check-filter-context (value)
   (assert (consp value))
@@ -290,7 +295,7 @@
                             (filter-action "hide")
                             (fields '()))
   (check-filter-context context)
-  (check-filter-action filter-action)
+  (check-filter-action client filter-action)
   (assert (stringp title))
   (assert (consp context))
   (decode-filter (apply #'submit
