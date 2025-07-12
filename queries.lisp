@@ -17,7 +17,7 @@
       `(multiple-value-bind (,return-body ,return-headers)
            ,@body
          (multiple-value-bind (,link-to-next-page ,link-to-previous-page)
-             (tooter-link-header-parser:find-pagination-links ,return-headers)
+             (org.shirakumo.tooter.link-header-parser:find-pagination-links ,return-headers)
            (values (funcall ,actual-decoding-function ,return-body)
                    (make-pagination-handle ,actual-decoding-function
                                            ,link-to-next-page)
@@ -132,53 +132,6 @@
                                      collect (format NIL "fields_attributes[~a][value]" i)
                                      collect val)))))
 
-(defmethod update-credentials ((client v6:client)
-                               &key
-                                 display-name
-                                 note
-                                 avatar
-                                 header
-                                 (locked NIL l-p)
-                                 fields
-                                 language
-                                 (privacy :public)
-                                 (sensitive NIL s-p)
-                                 (indexable NIL i-p)
-                                 (attribution-domains '()))
-  (check-type display-name (or null string))
-  (check-type note (or null string))
-  (check-type avatar (or null pathname))
-  (check-type header (or null pathname))
-  (check-type language (or null string))
-  (assert (member privacy '(:public :unlisted :private)))
-  (check-type fields list)
-  (setf (account client)
-        (decode-account (apply #'submit client "/api/v1/accounts/update_credentials"
-                               :http-method :patch
-                               :display-name display-name
-                               :note note
-                               :avatar avatar
-                               :header header
-                               :locked (coerce-boolean locked l-p)
-                               :indexable (coerce-boolean indexable i-p)
-                               (loop for i from 0
-                                     for (key . val) in fields
-                                     collect (format NIL "fields_attributes[~a][name]" i)
-                                     collect key
-                                     collect (format NIL "fields_attributes[~a][value]" i)
-                                     collect val)
-                               (loop for attributed-domain in attribution-domains
-                                     collect
-                                     (format nil "attribution_domains[]")
-                                     collect attributed-domain)
-                               (when language
-                                 (list "source[language]" language))
-                               (when privacy
-                                 (list "source[privacy]" privacy))
-                               (when sensitive
-                                 (list "source[sensitive]"
-                                       (coerce-boolean sensitive s-p)))))))
-
 (defmethod get-followers ((client client) (id string) &key max-id since-id limit)
   (check-type max-id (or null string))
   (check-type since-id (or null string))
@@ -259,9 +212,6 @@
   (unbookmark client (id status)))
 
 ;;; Filters
-
-(defmethod check-filter-action ((object v6:client) value)
-  (assert (member value '("warn" "hide" "blur") :test #'string=)))
 
 (defun check-filter-context (value)
   (assert (consp value))
@@ -411,9 +361,6 @@
 (defmethod instance ((client client))
   (decode-instance (query client "/api/v1/instance")))
 
-(defmethod instance ((client v6:client))
-  (v6:decode-instance (query client "/api/v2/instance")))
-
 (defmethod peers ((client client))
   (query client "/api/v1/instance/peers"))
 
@@ -533,17 +480,6 @@
 
 (defmethod update-media ((client client) (attachment attachment) &rest args &key &allow-other-keys)
   (apply #'update-media client (id attachment) args))
-
-
-(defmethod delete-media ((client v6:client) (attachment string))
-  (submit client
-          (format NIL "/api/v1/media/~a" attachment)
-          :http-method :delete))
-
-(defmethod delete-media ((client v6:client) (attachment attachment))
-  (submit client
-          (format NIL "/api/v1/media/~a" (id attachment))
-          :http-method :delete))
 
 ;;; Mutes
 
@@ -719,9 +655,6 @@
 (defmethod find-status ((client client) (id string))
   (decode-status (query client (format NIL "/api/v1/statuses/~a" id))))
 
-(defmethod find-status ((client v6:client) (id string))
-  (v6:decode-status (query client (format NIL "/api/v1/statuses/~a" id))))
-
 (defmethod context ((client client) (id string))
   (decode-context (query client (format NIL "/api/v1/statuses/~a/context" id))))
 
@@ -823,17 +756,6 @@
 (defmethod delete-status ((client client) (status status) &key &allow-other-keys)
   (delete-status client (id status)))
 
-(defmethod delete-status ((client v6:client) (status string)
-                          &key (delete-media NIL da-p) &allow-other-keys)
-  (submit client
-          (format NIL "/api/v1/statuses/~a" status)
-          :delete-media (coerce-boolean delete-media da-p)
-          :http-method :delete))
-
-(defmethod delete-status ((client v6:client) (status status)
-                          &key (delete-media NIL) &allow-other-keys)
-  (delete-status client (id status) :delete-media delete-media))
-
 (defmethod edit-status ((client client) (status status) (text string) &key media (sensitive NIL s-p) spoiler-text language poll-options poll-expire-seconds (poll-multiple NIL m-p) (poll-hide-totals NIL h-p))
   (edit-status client
                (id status)
@@ -887,32 +809,6 @@
 
 (defmethod endorsements ((client client))
   (decode-account (query client "/api/v1/endorsements")))
-
-(defmethod featured-accounts ((client v6:client) (account-id string))
-  (decode-account (query client
-                         (format NIL
-                                 "/api/v1/accounts/~a/endorsements"
-                                 account-id))))
-
-(defmethod feature-account ((client v6:client) (account-id string))
-  (decode-relationship (submit client
-                               (format NIL
-                                       "/api/v1/accounts/~a/endorse"
-                                       account-id))))
-
-(defmethod unfeature-account ((client v6:client) (account-id string))
-  (decode-relationship (submit client
-                               (format NIL
-                                       "/api/v1/accounts/~a/unendorse"
-                                       account-id))))
-
-(defmethod set-private-note ((client v6:client) (account-id string) (comment string))
-  (decode-relationship (submit
-                        client
-                        (format NIL
-                                "/api/v1/accounts/~a/note"
-                                account-id)
-                        :comment "")))
 
 (defmethod pin ((client client) (id string))
   (decode-status (submit client (format NIL "/api/v1/statuses/~a/pin" id))))
@@ -984,25 +880,6 @@
 (defmethod tag-information ((client client) (tag string))
   (decode-tag (query client (format NIL "/api/v1/tags/~a" tag))))
 
-
-(defmethod feature-tag ((client v6:client) (tag string))
-  (decode-relationship (submit client
-                               (format NIL
-                                       "/api/v1/tags/~a/feature"
-                                       tag))))
-
-(defmethod feature-tag ((client v6:client) (tag tag))
-  (feature-tag client (name tag)))
-
-(defmethod unfeature-tag ((client v6:client) (tag string))
-  (decode-relationship (submit client
-                               (format NIL
-                                       "/api/v1/tags/~a/unfeature"
-                                       tag))))
-
-(defmethod unfeature-tag ((client v6:client) (tag tag))
-  (unfeature-tag client (name tag)))
-
 ;;; Timelines
 
 (defgeneric %timeline (client url &key local only-media max-id since-id min-id limit other-args))
@@ -1043,18 +920,6 @@
                         :min-id min-id
                         :limit limit
                         other-args)))
-
-(defmethod %timeline ((client v6:client) url &key (local NIL l-p) (only-media NIL o-p) max-id since-id min-id (limit 20) (other-args nil))
-  (v6:decode-status (apply #'query
-                           client
-                           (format NIL "/api/v1/timelines/~a" url)
-                           :local (coerce-boolean local l-p)
-                           :only-media (coerce-boolean only-media o-p)
-                           :max-id max-id
-                           :since-id since-id
-                           :min-id min-id
-                           :limit limit
-                           other-args)))
 
 (defgeneric timeline-tag (client tag &rest args))
 

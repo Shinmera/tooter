@@ -73,8 +73,6 @@
    :scopes '(:read :write :follow)
    :website NIL))
 
-(defclass v6:client (v2:client) ())
-
 (defmethod shared-initialize :after ((client client) slots &key)
   (when (access-token client)
     (let* ((api-version (max-api-version client))

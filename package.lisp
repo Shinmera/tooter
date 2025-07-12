@@ -368,10 +368,11 @@
    #:notifications-count
    #:last-status))
 
-(defpackage :tooter-link-header-parser
-  (:use :cl)
-  (:local-nicknames (:re :cl-ppcre)
-                    (:a  :alexandria))
+(defpackage #:org.shirakumo.tooter.link-header-parser
+  (:use #:cl)
+  (:local-nicknames
+   (#:re #:cl-ppcre)
+   (#:a #:alexandria))
   (:export
    #:parse
    #:link-record-url
@@ -531,16 +532,15 @@
    #:to-keyword
    #:plain-format-html))
 
-(defpackage tooter-client-v2
-  (:nicknames #:org.shirakumo.tooter.client.v2)
+(defpackage #:org.shirakumo.tooter.client.v2
   (:use :cl)
   (:export #:client))
 
-(defpackage tooter-client-v6
-  (:nicknames #:org.shirakumo.tooter.client.v6)
-  (:local-nicknames (#:v2 #:org.shirakumo.tooter.client.v2))
+(defpackage #:org.shirakumo.tooter.client.v6
   (:use #:cl #:tooter-objects)
   (:shadow #:tooter-objects #:status)
+  (:local-nicknames
+   (#:v2 #:org.shirakumo.tooter.client.v2))
   (:export
    #:client
    #:status-quote
@@ -555,9 +555,10 @@
 (defpackage #:tooter
   (:nicknames #:org.shirakumo.tooter)
   (:use #:cl #:tooter-objects #:tooter-queries #:tooter-client)
-  (:local-nicknames (#:a  #:alexandria)
-                    (#:v2 #:org.shirakumo.tooter.client.v2)
-                    (#:v6 #:org.shirakumo.tooter.client.v6))
+  (:local-nicknames
+   (#:a #:alexandria)
+   (#:v2 #:org.shirakumo.tooter.client.v2)
+   (#:v6 #:org.shirakumo.tooter.client.v6))
   (:shadowing-import-from #:tooter-queries #:block))
 
 (dolist (package '(#:tooter-objects #:tooter-queries #:tooter-client))

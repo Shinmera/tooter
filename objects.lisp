@@ -15,39 +15,34 @@
 (defmacro define-entity (name-and-super-classes &body slots)
   (let ((*print-case* (readtable-case *readtable*))
         (data (gensym "DATA"))
-        (value (gensym "VALUE"))
-        (actual-class-name  (if (listp name-and-super-classes)
-                                (first name-and-super-classes)
-                                name-and-super-classes))
-        (superclasses-names (if (listp name-and-super-classes)
-                                (second name-and-super-classes)
-                                '(entity))))
-    `(progn
-       (defclass ,actual-class-name ,superclasses-names
-         ,(loop for (slot . options) in slots
-                collect `(,slot :initarg ,(intern (string slot) "KEYWORD")
-                                :initform ,(if (getf options :nullable)
-                                               NIL
-                                               `(error ,(format NIL
-                                                                "~a required for a ~a."
-                                                                slot actual-class-name)))
-                                :accessor ,slot)))
-       (defmethod decode-entity ((,actual-class-name ,actual-class-name) ,data)
-         ,(when (listp name-and-super-classes)
-            `(call-next-method))
-         ,@(loop for (slot . options) in slots
-                 for field = (getf options :field #1='#.(make-symbol "no value"))
-                 collect `(let ((,value ,(cond ((null field) data)
-                                               ((eq field #1#) `(getj ,data ,(translate-key slot)))
-                                               (T `(getj ,data ,field)))))
-                            (setf (slot-value ,actual-class-name ',slot)
-                                  (when ,value
-                                    (funcall ,(or (getf options :translate-with)
-                                                  '#'identity)
-                                             ,value)))))
-         ,actual-class-name)
-       (defun ,(intern (format NIL "~a-~a" 'decode actual-class-name)) (,data)
-           (decode-entity ',actual-class-name ,data)))))
+        (value (gensym "VALUE")))
+    (destructuring-bind (name . superclasses) (if (listp name-and-super-classes) (list name-and-super-classes))
+      `(progn
+         (defclass ,name ,(or superclasses (entity))
+           ,(loop for (slot . options) in slots
+                  collect `(,slot :initarg ,(intern (string slot) "KEYWORD")
+                                  :initform ,(if (getf options :nullable)
+                                                 NIL
+                                                 `(error ,(format NIL
+                                                                  "~a required for a ~a."
+                                                                  slot name)))
+                                  :accessor ,slot)))
+         (defmethod decode-entity ((,name ,name) ,data)
+           ,(when (listp name-and-super-classes)
+              `(call-next-method))
+           ,@(loop for (slot . options) in slots
+                   for field = (getf options :field #1='#.(make-symbol "no value"))
+                   collect `(let ((,value ,(cond ((null field) data)
+                                                 ((eq field #1#) `(getj ,data ,(translate-key slot)))
+                                                 (T `(getj ,data ,field)))))
+                              (setf (slot-value ,name ',slot)
+                                    (when ,value
+                                      (funcall ,(or (getf options :translate-with)
+                                                    '#'identity)
+                                               ,value)))))
+           ,name)
+         (defun ,(intern (format NIL "~a-~a" 'decode name) (symbol-package name)) (,data)
+           (decode-entity ',name ,data))))))
 
 (define-entity field
   (name)
