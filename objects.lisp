@@ -16,9 +16,10 @@
   (let ((*print-case* (readtable-case *readtable*))
         (data (gensym "DATA"))
         (value (gensym "VALUE")))
-    (destructuring-bind (name . superclasses) (if (listp name-and-super-classes) (list name-and-super-classes))
+    (destructuring-bind (name . superclasses)
+        (if (listp name-and-super-classes) name-and-super-classes (list name-and-super-classes))
       `(progn
-         (defclass ,name ,(or superclasses (entity))
+         (defclass ,name ,(or superclasses '(entity))
            ,(loop for (slot . options) in slots
                   collect `(,slot :initarg ,(intern (string slot) "KEYWORD")
                                   :initform ,(if (getf options :nullable)

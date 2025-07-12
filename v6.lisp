@@ -2,29 +2,29 @@
 
 (defclass v6:client (v2:client) ())
 
-(define-entity quote-state
+(define-entity v6:quote-state
   (state :translate-with #'to-keyword))
 
-(define-entity (status-quote quote-state)
+(define-entity (v6:status-quote v6:quote-state)
   (status :translate-with #'decode-status))
 
-(defmethod print-object ((object status-quote) stream)
+(defmethod print-object ((object v6:status-quote) stream)
   (print-unreadable-object (object stream :type T)
     (format stream "~a " (state object))
     (present (status object) stream)))
 
-(define-entity (status-shallow-quote quote-state)
+(define-entity (v6:status-shallow-quote v6:quote-state)
   (status-id :field "status_id"))
 
-(defmethod print-object ((object status-shallow-quote) stream)
+(defmethod print-object ((object v6:status-shallow-quote) stream)
   (print-unreadable-object (object stream :type T)
     (format stream "~a id ~a" (state object) (status-id object))))
 
 (defun %decode-quoted-status (quoted-data)
   (let ((shallowp (getj quoted-data "status_id")))
     (if shallowp
-        (decode-entity 'status-shallow-quote quoted-data)
-        (decode-entity 'status-quote quoted-data))))
+        (decode-entity 'v6:status-shallow-quote quoted-data)
+        (decode-entity 'v6:status-quote quoted-data))))
 
 (define-entity (v6:status status)
   (quoted-status :fields "quote" :nullable T :translate-with #'%decode-quoted-status))

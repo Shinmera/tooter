@@ -1,5 +1,5 @@
-(defpackage #:tooter-objects
-  (:nicknames #:org.shirakumo.tooter.objects)
+(defpackage #:org.shirakumo.tooter.objects
+  (:nicknames #:tooter-objects)
   (:use)
   ;; objects.lisp
   (:export
@@ -366,7 +366,52 @@
    #:updated-at
    #:account
    #:notifications-count
-   #:last-status))
+   #:last-status
+   #:translations
+   #:decode-account
+   #:decode-account-warning
+   #:decode-announcement
+   #:decode-announcement-account
+   #:decode-announcement-status
+   #:decode-appeal
+   #:decode-application
+   #:decode-attachment
+   #:decode-card
+   #:decode-context
+   #:decode-conversation
+   #:decode-credential-application
+   #:decode-emoji
+   #:decode-filter
+   #:decode-filter-keyword
+   #:decode-filter-status
+   #:decode-grouped-notifications-results
+   #:decode-instance
+   #:decode-instance-rule
+   #:decode-marker
+   #:decode-mention
+   #:decode-notification
+   #:decode-notification-group
+   #:decode-notification-policy
+   #:decode-notification-request
+   #:decode-partial-account-with-avatar
+   #:decode-poll
+   #:decode-poll-option
+   #:decode-preferences
+   #:decode-push-subscription
+   #:decode-push-subscription-alerts
+   #:decode-reaction
+   #:decode-relationship
+   #:decode-relationship-severance-event
+   #:decode-report
+   #:decode-results
+   #:decode-scheduled-status
+   #:decode-source
+   #:decode-status
+   #:decode-status-params
+   #:decode-status-tag
+   #:decode-tag
+   #:decode-tag-history
+   #:decode-user-list))
 
 (defpackage #:org.shirakumo.tooter.link-header-parser
   (:use #:cl)
@@ -379,8 +424,8 @@
    #:link-record-parameters
    #:find-pagination-links))
 
-(defpackage #:tooter-queries
-  (:nicknames #:org.shirakumo.tooter.queries)
+(defpackage #:org.shirakumo.tooter.queries
+  (:nicknames #:tooter-queries)
   (:use #:org.shirakumo.tooter.objects)
   ;; queries.lisp
   (:export
@@ -497,8 +542,8 @@
    #:markers
    #:save-markers))
 
-(defpackage #:tooter-client
-  (:nicknames #:org.shirakumo.tooter.client)
+(defpackage #:org.shirakumo.tooter.client
+  (:nicknames #:tooter-client)
   (:use #:org.shirakumo.tooter.objects)
   ;; client.lisp
   (:export
@@ -533,34 +578,38 @@
    #:plain-format-html))
 
 (defpackage #:org.shirakumo.tooter.client.v2
-  (:use :cl)
-  (:export #:client))
+  (:use #:cl)
+  (:export
+   #:client))
 
 (defpackage #:org.shirakumo.tooter.client.v6
-  (:use #:cl #:tooter-objects)
-  (:shadow #:tooter-objects #:status)
-  (:local-nicknames
-   (#:v2 #:org.shirakumo.tooter.client.v2))
+  (:use #:cl)
   (:export
    #:client
+   #:quote-state
    #:status-quote
    #:status-shallow-quote
    #:status
    #:decode-status
-   #:state
    #:instance-rule
-   #:translations
+   #:instance
    #:decode-instance))
 
-(defpackage #:tooter
-  (:nicknames #:org.shirakumo.tooter)
-  (:use #:cl #:tooter-objects #:tooter-queries #:tooter-client)
+(defpackage #:org.shirakumo.tooter
+  (:nicknames #:tooter)
+  (:use
+   #:cl
+   #:org.shirakumo.tooter.objects
+   #:org.shirakumo.tooter.queries
+   #:org.shirakumo.tooter.client)
   (:local-nicknames
    (#:a #:alexandria)
    (#:v2 #:org.shirakumo.tooter.client.v2)
    (#:v6 #:org.shirakumo.tooter.client.v6))
-  (:shadowing-import-from #:tooter-queries #:block))
+  (:shadowing-import-from #:org.shirakumo.tooter.queries #:block))
 
-(dolist (package '(#:tooter-objects #:tooter-queries #:tooter-client))
+(dolist (package '(#:org.shirakumo.tooter.objects
+                   #:org.shirakumo.tooter.queries
+                   #:org.shirakumo.tooter.client))
   (do-symbols (symbol package)
-    (export symbol '#:tooter)))
+    (export symbol '#:org.shirakumo.tooter)))
