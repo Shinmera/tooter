@@ -18,5 +18,5 @@
   :depends-on (:alexandria
                :yason
                :cl-ppcre
-               :drakma
+               :dexador
                :documentation-utils))
