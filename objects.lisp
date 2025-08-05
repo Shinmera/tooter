@@ -61,7 +61,7 @@
   (display-name)
   (locked)
   (emojis :translate-with #'decode-emoji)
-  (discoverable)
+  (discoverable :nullable T)
   (created-at :translate-with #'convert-timestamp)
   (followers-count)
   (following-count)

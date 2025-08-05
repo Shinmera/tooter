@@ -53,6 +53,21 @@
 (define-entity (v6:instance instance)
   (registrations :translate-with #'v6::%decode-registrations))
 
+(define-entity (v6:source source)
+  (attribution-domains :fields "attribution_domains"))
+
+(defmethod print-object ((source v6:source) stream)
+  (print-unreadable-object (source stream :type T)
+    (format stream "~a ~a" (note source) (attribution-domains source))))
+
+(define-entity (v6:account account)
+  (group)
+  (indexable)
+  (noindex :nullable T)
+  (memorial)
+  (suspended)
+  (limited))
+
 (defmethod update-credentials ((client v6:client)
                                &key
                                  display-name
