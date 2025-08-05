@@ -590,7 +590,11 @@
    #:status-quote
    #:status-shallow-quote
    #:status
+   #:source
+   #:decode-source
    #:decode-status
+   #:account
+   #:decode-account
    #:instance-rule
    #:instance
    #:decode-instance))
