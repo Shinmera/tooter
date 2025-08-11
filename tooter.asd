@@ -4,7 +4,7 @@
   :author "Yukari Hafner <shinmera@tymoon.eu>"
   :maintainer "Yukari Hafner <shinmera@tymoon.eu>"
   :description "A client library for Mastodon instances."
-  :homepage "https://github.com/Shinmera/tooter"
+  :homepage "https://shinmera.com/project/tooter"
   :serial T
   :components ((:file "package")
                (:file "toolkit")
